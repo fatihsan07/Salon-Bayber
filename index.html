@@ -7,94 +7,130 @@
     <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 Randevu</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
-      /* ÖZEL YAZI TİPİ VE RENK AYARLARI */
+      /* RENK VE TASARIM DÜZELTMELERİ */
       :root {
-        --primary: #FFD700; /* Altın Sarı */
-        --bg: #000000; /* Tam Siyah Arka Plan */
-        --surface: #121212; /* Koyu Gri Paneller */
-        --text: #FFFFFF; /* Beyaz Yazılar */
-        --text-muted: #CCCCCC;
-        --border: #333333;
-        --font-special: "Courier New", Courier, monospace; /* 𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 stili için */
+        --primary: #FFD700 !important; /* Altın Sarı */
+        --bg: #0a0a0a !important; /* Gerçek Siyah */
+        --surface: #141414 !important; /* Koyu Gri (Kutular için) */
+        --text: #ffffff !important; /* Bembeyaz Yazılar */
+        --border: #333333 !important;
       }
 
+      /* Tüm site için modern, temiz ve okunaklı yazı tipi */
       body { 
         background-color: var(--bg) !important; 
-        color: var(--text) !important; 
-        font-family: var(--font-special) !important;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; 
       }
 
-      /* Panel ve Kutuların Arka Planı Siyah/Koyu Gri */
-      .panel, .sidebar, .topbar, .appointment-card, .admin-row-box { 
+      /* Tüm kutular ve arka planlar Koyu Gri/Siyah */
+      .panel, .sidebar, .topbar, .admin-row-box { 
         background-color: var(--surface) !important; 
         border: 1px solid var(--border) !important; 
-        color: var(--text) !important;
       }
 
-      /* Başlıklar ve Özel Yazı Stili */
-      h1, h2, h3, .brand-mark, .primary-button { 
-        font-family: var(--font-special) !important;
-        color: var(--text) !important;
+      /* BÜTÜN YAZILARI ZORLA BEYAZ VE KALIN (BOLD) YAPIYORUZ */
+      body, h1, h2, h3, h4, p, label, span, div, input, select, button { 
+        color: var(--text) !important; 
+        font-weight: 800 !important; /* YAZILAR BURADAN KALINLAŞTIRILDI */
       }
 
-      .eyebrow { color: var(--primary) !important; font-weight: bold; }
+      /* Üst başlıklar (Eyebrow) Sarı */
+      .eyebrow { 
+        color: var(--primary) !important; 
+        letter-spacing: 1px; 
+        text-transform: uppercase; 
+        font-size: 0.8rem;
+      }
 
-      /* Form Elemanları: Siyah Arka Plan, Beyaz Yazı */
+      /* Form Elemanları (Kutu Boyutları ve Berber Seçeneği Düzeltildi) */
       input, select, textarea { 
-        background-color: #1a1a1a !important; 
-        color: #ffffff !important; 
-        border: 1px solid var(--primary) !important; 
-        padding: 10px;
-        border-radius: 5px;
+        background-color: #111111 !important; 
+        border: 1px solid #444 !important; 
+        padding: 10px !important; /* Boyut makul seviyeye çekildi */
+        border-radius: 6px !important;
+        font-family: inherit !important;
+        box-sizing: border-box !important; /* Kutunun kontrolsüz büyümesini engeller */
+        width: 100% !important;
+      }
+      input:focus, select:focus { 
+        border-color: var(--primary) !important; 
+        outline: none !important; 
       }
 
-      /* Butonlar: Sarı Arka Plan, Siyah Yazı */
+      /* HİZMETLER KUTULARI */
+      .checkbox-label { 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        background-color: #111111 !important; 
+        padding: 12px !important; 
+        border: 1px solid var(--border) !important; 
+        margin-bottom: 8px !important;
+        border-radius: 8px !important;
+        cursor: pointer;
+      }
+      .checkbox-label:hover { border-color: var(--primary) !important; }
+      .checkbox-label span { color: #ffffff !important; font-size: 1.1rem; }
+      .service-price-tag { color: var(--primary) !important; margin-left: auto; }
+
+      /* BERBER KARTI */
+      .barber-card {
+        background-color: #111111 !important;
+        border: 1px solid var(--border) !important;
+        padding: 15px !important;
+        border-radius: 8px !important;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .barber-card h3 { margin: 0 0 5px 0 !important; font-size: 1.2rem; }
+      .barber-card p { margin: 0 !important; color: #aaaaaa !important; }
+
+      /* Butonlar */
       .primary-button { 
         background-color: var(--primary) !important; 
         color: #000000 !important; 
         border: none !important;
-        font-weight: bold !important;
+        padding: 12px 20px !important;
+        border-radius: 6px !important;
         cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
+      .primary-button:hover { background-color: #e6c200 !important; }
 
       .ghost-button { 
         color: var(--primary) !important; 
         border: 1px solid var(--primary) !important; 
         background: transparent !important;
+        padding: 10px 15px !important;
+        border-radius: 6px !important;
+        cursor: pointer;
       }
 
-      /* Hizmet Seçim Kutuları */
-      .checkbox-label { 
-        display: flex; 
-        align-items: center; 
-        gap: 12px; 
-        background: #1a1a1a; 
-        padding: 15px; 
-        border: 1px solid var(--border); 
-        margin-bottom: 8px;
-        border-radius: 8px;
+      .danger-button {
+         background-color: #ff4d4d !important; 
+         color: white !important; 
+         border: none !important;
       }
-      
-      .checkbox-label:hover { border-color: var(--primary); }
-      
-      .service-price-tag { color: var(--primary); font-weight: bold; margin-left: auto; }
 
-      /* Diğer Düzeltmeler */
-      .status-grid article span { color: var(--primary) !important; font-size: 2em; font-weight: bold; }
-      #totalPriceDisplay { color: var(--primary) !important; font-size: 1.5em; }
+      /* Vurgular */
+      .status-grid article span, #totalPriceDisplay { color: var(--primary) !important; font-size: 1.6em; }
+      .brand-mark { background: var(--primary) !important; color: #000 !important; padding: 10px; border-radius: 6px; font-size: 1.2rem;}
     </style>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand-row">
-          <div class="brand-mark" id="brandMark" style="background:var(--primary); color:#000; font-size: 1.5rem; padding: 10px; border-radius: 5px;">SB</div>
+          <div class="brand-mark" id="brandMark">SB</div>
           <div>
             <p class="eyebrow">Berber randevu sistemi</p>
-            <h1 id="salonNameDisplay" style="letter-spacing: -1px;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1>
+            <!-- ANA LOGO -->
+            <h1 style="font-size: 2.2rem; margin-top: 5px; font-weight: normal !important; font-family: 'Courier New', Courier, monospace !important;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1>
           </div>
         </div>
-        <figure class="shop-photo" style="border: 2px solid var(--primary); margin: 20px 0;">
+        <figure class="shop-photo" style="border: 2px solid var(--primary); margin: 20px 0; border-radius: 8px; overflow: hidden;">
           <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" alt="Berber" />
         </figure>
         <div class="status-grid">
@@ -128,15 +164,20 @@
           
           <form id="settingsForm" class="settings-form" hidden>
             <div class="field-group">
-              <label>Salon Adı</label>
+              <label>Sistem Adı (Arka plan kayıtları için)</label>
               <input id="salonNameInput" name="salonName" type="text" required />
             </div>
+            
+            <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
             <div id="serviceSettings"></div>
-            <button class="ghost-button" id="addService" type="button">+ Hizmet Ekle</button>
+            <button class="ghost-button" id="addService" type="button" style="margin-bottom: 20px;">+ Yeni Hizmet Ekle</button>
+            
+            <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Ekip</p></div>
             <div id="barberSettings"></div>
             <button class="ghost-button" id="addBarber" type="button">+ Berber Ekle</button>
-            <div class="settings-actions" style="margin-top:20px;">
-              <button class="ghost-button" id="lockSettings" type="button">Kilitle</button>
+            
+            <div class="settings-actions" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 20px;">
+              <button class="ghost-button" id="lockSettings" type="button">Paneli Kilitle</button>
               <button class="primary-button" type="submit">Kaydet</button>
             </div>
             <p id="settingsMessage"></p>
@@ -156,14 +197,14 @@
                 <input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required />
               </div>
               <div class="field-group">
-                <label>Berber</label>
+                <label>Berber Seçimi</label>
                 <select id="barberSelect" name="barberSelect" required></select>
               </div>
               <div class="field-group">
-                <label>Hizmetler</label>
+                <label>Hizmetler (Birden fazla seçebilirsiniz)</label>
                 <div id="serviceCheckboxes" class="checkbox-grid"></div>
-                <div style="text-align: right; padding: 10px;">
-                   Toplam: <span id="totalPriceDisplay">₺0</span>
+                <div style="text-align: right; padding: 15px 0; border-top: 1px solid var(--border); margin-top: 10px;">
+                   Toplam Tutar: <span id="totalPriceDisplay">₺0</span>
                 </div>
               </div>
               <div class="field-row">
@@ -171,7 +212,7 @@
                 <div class="field-group"><label>Saat</label><select id="timeSelect" name="timeSelect" required></select></div>
               </div>
               <p id="formMessage"></p>
-              <button class="primary-button submit-button" type="submit" style="width: 100%; padding: 15px;">RANDEVUYU ONAYLA</button>
+              <button class="primary-button submit-button" type="submit" style="width: 100%; padding: 18px !important; font-size: 1.1rem !important;">RANDEVUYU ONAYLA</button>
             </form>
           </section>
 
@@ -182,11 +223,11 @@
             </section>
             
             <section class="panel" style="margin-top: 20px; border-color: #ff4d4d !important;">
-              <div class="section-title"><p class="eyebrow" style="color: #ff4d4d !important;">Randevu İptali</p><h2>İptal Kodu</h2></div>
+              <div class="section-title"><p class="eyebrow" style="color: #ff4d4d !important;">Randevu İptali</p><h2 style="color: white !important;">İptal Kodu</h2></div>
               <form id="cancelForm">
-                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="width: 100%; margin-bottom: 10px;" />
-                <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%;">İPTAL ET</button>
-                <p id="cancelMessage"></p>
+                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu buraya yazın" required style="width: 100%; margin-bottom: 15px; border-color: #ff4d4d !important;" />
+                <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%;">RANDEVUYU İPTAL ET</button>
+                <p id="cancelMessage" style="margin-top: 10px;"></p>
               </form>
             </section>
           </aside>
@@ -198,7 +239,7 @@
         </section>
 
         <section class="panel appointments-panel" id="appointmentsPanel" hidden>
-          <div class="section-title"><p class="eyebrow">Yönetici</p><h2>Randevu Listesi</h2></div>
+          <div class="section-title"><p class="eyebrow">Yönetici Paneli</p><h2>Aktif Randevu Listesi</h2></div>
           <div id="appointmentsList"></div>
         </section>
       </main>
