@@ -8,16 +8,17 @@ const host = process.env.HOST || "0.0.0.0";
 const root = process.cwd();
 const adminSessions = new Map();
 
-// FİREBASE BAĞLANTISI BURADA AKTİF EDİLDİ
+// SENİN FİREBASE LİNKİN BURAYA EKLENDİ!
 const FIREBASE_URL = "https://salon-bayber-dbddd-default-rtdb.firebaseio.com"; 
 
 const defaultSettings = {
   salonName: "Salon Bayber",
   salonPhone: "05xx xxx xx xx",
   salonAddress: "Reyhanlı, Hatay",
+  salonImage: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80",
   adminPinHash: hashPin(process.env.ADMIN_PIN || "1234"),
   barbers: [
-    { id: "mehmet-ali-sanverdi", name: "Mehmet Ali Şanverdi", title: "Usta berber", initials: "MA" },
+    { id: "meh-ali", name: "Mehmet Ali Şanverdi", title: "Usta berber", initials: "MA" },
   ],
   services: [
     { id: "haircut", name: "Saç kesimi", price: 350 },
@@ -58,7 +59,6 @@ function getAvailableSlots(db, barberId, date) {
 async function readDb() {
   try {
     if (!FIREBASE_URL || FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") {
-      console.log("Firebase linki henüz eklenmedi.");
       return { settings: normalizeSettings({}), appointments: [] };
     }
     const baseUrl = FIREBASE_URL.replace(/\/$/, "");
@@ -73,7 +73,6 @@ async function readDb() {
     db.appointments = Array.isArray(db.appointments) ? db.appointments : [];
     return db;
   } catch (error) {
-    console.error("Veritabanı okuma hatası:", error);
     return { settings: normalizeSettings({}), appointments: [] };
   }
 }
@@ -87,19 +86,18 @@ async function writeDb(db) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(db)
     });
-  } catch (error) {
-    console.error("Veritabanı yazma hatası:", error);
-  }
+  } catch (error) {}
 }
 
 function normalizeSettings(settings = {}) {
   const salonName = settings.salonName || defaultSettings.salonName;
   const salonPhone = settings.salonPhone || defaultSettings.salonPhone;
   const salonAddress = settings.salonAddress || defaultSettings.salonAddress;
+  const salonImage = settings.salonImage || defaultSettings.salonImage;
   const adminPinHash = settings.adminPinHash || defaultSettings.adminPinHash;
   const barbers = Array.isArray(settings.barbers) && settings.barbers.length ? settings.barbers : structuredClone(defaultSettings.barbers);
   const services = Array.isArray(settings.services) && settings.services.length ? settings.services : structuredClone(defaultSettings.services);
-  return { salonName, salonPhone, salonAddress, adminPinHash, barbers, services };
+  return { salonName, salonPhone, salonAddress, salonImage, adminPinHash, barbers, services };
 }
 
 function sendJson(res, status, payload) {
@@ -124,7 +122,14 @@ async function handlePublicState(req, res, url) {
   const date = url.searchParams.get("date") || todayISO();
   const barberId = url.searchParams.get("barberId") || db.settings.barbers[0]?.id || "";
   sendJson(res, 200, {
-    settings: { salonName: db.settings.salonName, salonPhone: db.settings.salonPhone, salonAddress: db.settings.salonAddress, barbers: db.settings.barbers, services: db.settings.services },
+    settings: { 
+      salonName: db.settings.salonName, 
+      salonPhone: db.settings.salonPhone, 
+      salonAddress: db.settings.salonAddress, 
+      salonImage: db.settings.salonImage,
+      barbers: db.settings.barbers, 
+      services: db.settings.services 
+    },
     timeSlots,
     availableSlots: getAvailableSlots(db, barberId, date),
     todayCount: db.appointments.filter(a => a.date === todayISO()).length,
@@ -170,15 +175,13 @@ async function handleUpdateSettings(req, res) {
   const db = await readDb();
   const payload = await readJson(req);
   
-  if (payload.services && Array.isArray(payload.services) && payload.services.length > 0) {
-    db.settings.services = payload.services;
-  }
-  if (payload.barbers && Array.isArray(payload.barbers) && payload.barbers.length > 0) {
-    db.settings.barbers = payload.barbers;
-  }
+  if (payload.services && Array.isArray(payload.services) && payload.services.length > 0) db.settings.services = payload.services;
+  if (payload.barbers && Array.isArray(payload.barbers) && payload.barbers.length > 0) db.settings.barbers = payload.barbers;
+  
   db.settings.salonName = payload.salonName || db.settings.salonName;
   db.settings.salonPhone = payload.salonPhone || db.settings.salonPhone;
   db.settings.salonAddress = payload.salonAddress || db.settings.salonAddress;
+  db.settings.salonImage = payload.salonImage || db.settings.salonImage;
   
   await writeDb(db);
   sendJson(res, 200, { settings: db.settings });
@@ -210,7 +213,6 @@ const server = createServer(async (req, res) => {
       return sendJson(res, 200, { message: "İptal edildi." });
     }
     
-    // Statik Dosyalar
     const pathname = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
     if (pathname.startsWith("/data/") || pathname === "/server.mjs") { res.writeHead(404); return res.end("Not found"); }
     const filePath = normalize(join(root, pathname));

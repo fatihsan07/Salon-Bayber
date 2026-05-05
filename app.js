@@ -1,5 +1,5 @@
 const state = {
-  settings: { services: [], barbers: [], salonName: "", salonPhone: "", salonAddress: "" },
+  settings: { services: [], barbers: [], salonName: "", salonPhone: "", salonAddress: "", salonImage: "" },
   timeSlots: [],
   selectedDate: todayISO(),
   selectedBarberId: "",
@@ -40,15 +40,17 @@ const elements = {
   salonNameInput: document.querySelector("#salonNameInput"),
   salonPhoneInput: document.querySelector("#salonPhoneInput"),
   salonAddressInput: document.querySelector("#salonAddressInput"),
+  salonImageInput: document.querySelector("#salonImageInput"), // YENİ
+  
   displayPhone: document.querySelector("#displayPhone"),
   displayAddress: document.querySelector("#displayAddress"),
   displayMapLink: document.querySelector("#displayMapLink"),
+  mainShopImage: document.querySelector("#mainShopImage"), // YENİ
   
   settingsMessage: document.querySelector("#settingsMessage"),
   barberSettings: document.querySelector("#barberSettings"),
   serviceSettings: document.querySelector("#serviceSettings"),
   salonNameDisplay: document.querySelector("#salonNameDisplay"),
-  brandMark: document.querySelector("#brandMark"),
   addBarber: document.querySelector("#addBarber"),
   addService: document.querySelector("#addService"),
   barberList: document.querySelector("#barberList"),
@@ -69,12 +71,6 @@ function todayISO() {
 
 function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-}
-
-function makeInitials(name) {
-  const words = String(name).trim().split(/\s+/).filter(Boolean);
-  if (!words.length) return "BL";
-  return words.slice(0, 2).map((word) => word[0].toLocaleUpperCase("tr-TR")).join("");
 }
 
 function formatPrice(price) {
@@ -105,16 +101,17 @@ function renderBrand() {
   const salonName = state.settings?.salonName || "Salon Bayber";
   const salonPhone = state.settings?.salonPhone || "05xx xxx xx xx";
   const salonAddress = state.settings?.salonAddress || "Reyhanlı, Hatay";
+  const salonImage = state.settings?.salonImage || "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80";
 
   if(elements.salonNameInput) elements.salonNameInput.value = salonName;
-  if(elements.brandMark) elements.brandMark.textContent = makeInitials(salonName);
-  
   if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone;
   if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
+  if(elements.salonImageInput) elements.salonImageInput.value = salonImage; // GÖRSEL LİNKİNİ KUTUYA YAZ
   
   if(elements.displayPhone) elements.displayPhone.textContent = salonPhone;
   if(elements.displayAddress) elements.displayAddress.textContent = salonAddress;
   if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
+  if(elements.mainShopImage) elements.mainShopImage.src = salonImage; // GÖRSELİ UYGULA
 
   document.title = `${salonName} Randevu`;
 }
@@ -166,9 +163,9 @@ function renderBarbersList() {
   if(!elements.barberList) return;
   elements.barberList.innerHTML = state.settings.barbers.map(b => {
     const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
-    return `<article class="barber-card${selectedClass}" style="border-color: var(--border);">
-              <div class="barber-avatar" style="background:var(--primary); color:#000; padding:10px; border-radius:5px;">${escapeHtml(b.initials)}</div>
-              <div><h3>${escapeHtml(b.name)}</h3><p style="color:var(--text-muted); font-weight: normal !important;">${escapeHtml(b.title)}</p></div>
+    return `<article class="barber-card${selectedClass}">
+              <div style="background:var(--primary); color:#000; padding:10px 14px; border-radius:8px; font-weight:800; font-size:1.1rem;">${escapeHtml(b.initials)}</div>
+              <div><h3>${escapeHtml(b.name)}</h3><p>${escapeHtml(b.title)}</p></div>
             </article>`;
   }).join("");
 }
@@ -188,10 +185,8 @@ function renderStats() {
   if(elements.openSlots) elements.openSlots.textContent = String(state.availableSlots.length);
 }
 
-// BİZİM YARATTIĞIMIZ "İKİ DÜNYA" MANTIĞI BURADA ÇALIŞIYOR
 function renderSettingsVisibility() {
   if (state.adminUnlocked) {
-    // 1. Durum: Yönetici giriş yaptıysa her yeri ele geçirir
     elements.customerMain.hidden = true;
     elements.adminMain.hidden = false;
     elements.adminLoginSection.hidden = true;
@@ -199,7 +194,6 @@ function renderSettingsVisibility() {
     elements.lockSettings.hidden = false;
     elements.adminGreeting.textContent = "Kontrol Paneli";
   } else if (state.showLoginScreen) {
-    // 2. Durum: Müşteri gizli linke tıkladı, şifre sorma ekranı
     elements.customerMain.hidden = true;
     elements.adminMain.hidden = false;
     elements.adminLoginSection.hidden = false;
@@ -207,7 +201,6 @@ function renderSettingsVisibility() {
     elements.lockSettings.hidden = true;
     elements.adminGreeting.textContent = "Yetkili Girişi";
   } else {
-    // 3. Durum: Standart Müşteri Ekranı (Varsayılan)
     elements.customerMain.hidden = false;
     elements.adminMain.hidden = true;
   }
@@ -217,27 +210,27 @@ function renderSettingsForm() {
   if(!elements.serviceSettings || !elements.barberSettings) return;
 
   elements.serviceSettings.innerHTML = state.settings.services.map((s, index) => `
-    <div class="admin-row-box" style="padding: 15px; margin-bottom: 10px; border-radius: 8px;">
-      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-        <span style="color:var(--primary); font-weight:bold;">Hizmet ${index + 1}</span>
-        <button class="danger-button mini-danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="background:transparent !important; color:#ff4d4d !important; border:1px solid #ff4d4d !important; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
+    <div class="admin-row-box" style="padding: 20px; margin-bottom: 15px; border-radius: 10px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
+        <span style="color:var(--primary); font-size:1.1rem;">Hizmet ${index + 1}</span>
+        <button class="danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="padding:4px 10px; font-size:0.8rem;">Sil</button>
       </div>
-      <div class="field-row" style="display:flex; gap:10px;">
-        <div class="field-group" style="flex:1;"><label>Hizmet Adı</label><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required /></div>
-        <div class="field-group" style="flex:1;"><label>Fiyat (₺)</label><input name="servicePrice-${s.id}" type="number" value="${s.price}" required /></div>
+      <div class="field-row" style="display:flex; gap:15px;">
+        <div class="field-group" style="flex:2;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Hizmet Adı</label><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required /></div>
+        <div class="field-group" style="flex:1;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Fiyat (₺)</label><input name="servicePrice-${s.id}" type="number" value="${s.price}" required /></div>
       </div>
     </div>
   `).join("");
 
   elements.barberSettings.innerHTML = state.settings.barbers.map((b, index) => `
-    <div class="admin-row-box" style="padding: 15px; margin-bottom: 10px; border-radius: 8px;">
-      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-        <span style="color:var(--primary); font-weight:bold;">Berber ${index + 1}</span>
-        <button class="danger-button mini-danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="background:transparent !important; color:#ff4d4d !important; border:1px solid #ff4d4d !important; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
+    <div class="admin-row-box" style="padding: 20px; margin-bottom: 15px; border-radius: 10px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
+        <span style="color:var(--primary); font-size:1.1rem;">Berber ${index + 1}</span>
+        <button class="danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="padding:4px 10px; font-size:0.8rem;">Sil</button>
       </div>
-      <div class="field-row" style="display:flex; gap:10px;">
-        <div class="field-group" style="flex:1;"><label>Berber Adı</label><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required /></div>
-        <div class="field-group" style="flex:1;"><label>Uzmanlık</label><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required /></div>
+      <div class="field-row" style="display:flex; gap:15px;">
+        <div class="field-group" style="flex:1;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Berber Adı</label><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required /></div>
+        <div class="field-group" style="flex:1;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Uzmanlık</label><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required /></div>
       </div>
     </div>
   `).join("");
@@ -246,9 +239,11 @@ function renderSettingsForm() {
 function renderAppointments() {
   if(!elements.appointmentsList) return;
   if (!state.appointments.length) {
-    elements.appointmentsList.innerHTML = `<p class="empty-state" style="color:#aaa; text-align:center;">Şu an aktif bir randevu bulunmuyor.</p>`;
+    elements.appointmentsList.innerHTML = `<div style="text-align:center; padding:30px; background:#0a0a0a; border-radius:10px; border:1px dashed #333;"><p style="color:#888; font-weight:normal; margin:0;">Şu an bekleyen randevu yok.</p></div>`;
     return;
   }
+  
+  // PROFESYONEL RANDEVU KARTLARI
   elements.appointmentsList.innerHTML = state.appointments.map(app => {
     const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
     const serviceNames = app.serviceIds.map(id => {
@@ -256,19 +251,23 @@ function renderAppointments() {
        return s ? s.name : "Hizmet";
     }).join(", ");
 
-    return `<article class="appointment-card" style="display: flex; justify-content: space-between; background:#000000; border: 1px solid var(--border); padding:15px; border-radius:8px; margin-bottom:10px;">
-              <div>
-                <h3 style="color:var(--primary); margin:0; font-size:1.4rem;">${escapeHtml(app.customerName)}</h3>
-                <p style="margin:5px 0; font-weight: normal !important; color: #aaaaaa !important;">📞 ${escapeHtml(app.customerPhone)}</p>
-                <div class="appointment-meta" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-                  <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">📅 ${formatDate(app.date)} ⏰ ${app.time}</span>
-                  <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">✂️ ${escapeHtml(barber.name)}</span>
-                  <span class="meta-chip" style="border:1px solid var(--primary); color:var(--primary); padding:5px 10px; border-radius:5px;">${escapeHtml(serviceNames)}</span>
-                  <span class="meta-chip" style="border:1px solid #ff4d4d; color:#ff4d4d; padding:5px 10px; border-radius:5px;">İPTAL KODU: ${escapeHtml(app.cancelCode || '-')}</span>
-                </div>
-              </div>
-              <button class="danger-button" type="button" data-cancel="${app.id}" style="background-color: #ff4d4d !important; color:white !important; border:none; padding:10px 15px; border-radius:5px; height:fit-content; cursor:pointer;">Randevuyu Sil</button>
-            </article>`;
+    return `
+      <article class="appointment-card" style="background:#0a0a0a; border:1px solid #222; padding:20px; border-radius:12px; margin-bottom:15px; display:flex; flex-direction:column; gap:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+          <div>
+            <h3 style="color:var(--text); font-size:1.3rem; margin:0 0 5px 0;">${escapeHtml(app.customerName)}</h3>
+            <p style="margin:0; color:#aaa; font-weight:normal; font-size:0.9rem;">📞 ${escapeHtml(app.customerPhone)}</p>
+          </div>
+          <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:8px 15px; font-size:0.85rem;">Randevuyu İptal Et</button>
+        </div>
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap; border-top:1px solid #222; padding-top:15px; width:100%;">
+          <span class="meta-chip highlight">📅 ${formatDate(app.date)} - ${app.time}</span>
+          <span class="meta-chip">✂️ ${escapeHtml(barber.name)}</span>
+          <span class="meta-chip">${escapeHtml(serviceNames)}</span>
+          <span class="meta-chip danger">KOD: ${escapeHtml(app.cancelCode || '-')}</span>
+        </div>
+      </article>`;
   }).join("");
 }
 
@@ -419,6 +418,7 @@ async function saveSettings(event) {
         salonName: formData.get("salonName").trim(),
         salonPhone: formData.get("salonPhone").trim(),
         salonAddress: formData.get("salonAddress").trim(),
+        salonImage: formData.get("salonImage").trim(), // GÖRSEL URL'SİNİ KAYDET
         services: newServices,
         barbers: newBarbers
       }),
@@ -436,7 +436,6 @@ function bindEvents() {
   if(elements.adminLoginForm) elements.adminLoginForm.addEventListener("submit", unlockSettings);
   if(elements.settingsForm) elements.settingsForm.addEventListener("submit", saveSettings);
   
-  // YÖNETİCİ BUTONLARI İÇİN YENİ DİNLEYİCİLER
   if(elements.btnShowLogin) elements.btnShowLogin.addEventListener("click", (e) => {
     e.preventDefault();
     state.showLoginScreen = true;
