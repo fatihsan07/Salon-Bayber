@@ -16,41 +16,18 @@
         --border: #333333 !important;
       }
 
-      body { 
-        background-color: var(--bg) !important; 
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; 
-        margin: 0;
-      }
-
-      .panel, .sidebar, .topbar, .admin-row-box { 
-        background-color: var(--surface) !important; 
-        border: 1px solid var(--border) !important; 
-      }
-
-      body, h1, h2, h3, h4, p, label, span, div, input, select, button, textarea { 
-        color: var(--text) !important; 
-        font-weight: 800 !important; 
-      }
-
-      .eyebrow { 
-        color: var(--primary) !important; 
-        letter-spacing: 1px; 
-        text-transform: uppercase; 
-        font-size: 0.8rem;
-      }
+      body { background-color: var(--bg) !important; font-family: system-ui, -apple-system, sans-serif !important; margin: 0; }
+      .panel, .sidebar, .topbar, .admin-row-box { background-color: var(--surface) !important; border: 1px solid var(--border) !important; }
+      body, h1, h2, h3, h4, p, label, span, div, input, select, button, textarea { color: var(--text) !important; font-weight: 800 !important; }
+      .eyebrow { color: var(--primary) !important; letter-spacing: 1px; text-transform: uppercase; font-size: 0.8rem; }
 
       input, select, textarea { 
-        background-color: #000000 !important; 
-        color: #ffffff !important;
-        border: 1px solid #444 !important; 
-        padding: 10px !important; 
-        border-radius: 6px !important;
-        font-family: inherit !important;
-        box-sizing: border-box !important; 
-        width: 100% !important;
+        background-color: #000000 !important; color: #ffffff !important;
+        border: 1px solid #444 !important; padding: 12px !important; 
+        border-radius: 6px !important; font-family: inherit !important;
+        box-sizing: border-box !important; width: 100% !important;
       }
       input:focus, select:focus, textarea:focus { border-color: var(--primary) !important; outline: none !important; }
-      
       option { background-color: #000000 !important; color: #ffffff !important; }
 
       .checkbox-label { 
@@ -74,8 +51,7 @@
       .primary-button { 
         background-color: var(--primary) !important; color: #000000 !important; 
         border: none !important; padding: 12px 20px !important;
-        border-radius: 6px !important; cursor: pointer;
-        text-transform: uppercase; letter-spacing: 1px;
+        border-radius: 6px !important; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
       }
       .primary-button:hover { background-color: #e6c200 !important; }
 
@@ -84,46 +60,27 @@
         background: transparent !important; padding: 10px 15px !important;
         border-radius: 6px !important; cursor: pointer;
       }
-
       .danger-button { background-color: #ff4d4d !important; color: white !important; border: none !important; }
 
       .status-grid article span, #totalPriceDisplay { color: var(--primary) !important; font-size: 1.6em; }
       .brand-mark { background: var(--primary) !important; color: #000 !important; padding: 10px; border-radius: 6px; font-size: 1.2rem;}
 
-      .slot-board {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 10px;
-        margin-top: 15px;
-      }
+      .slot-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 15px; }
       .slot-button {
-        background-color: #000000 !important;
-        color: #ffffff !important;
-        border: 1px solid #444 !important;
-        padding: 12px !important;
-        border-radius: 6px !important;
-        cursor: pointer;
-        font-weight: 800 !important;
-        transition: all 0.2s;
-        width: 100%;
+        background-color: #000000 !important; color: #ffffff !important;
+        border: 1px solid #444 !important; padding: 12px !important;
+        border-radius: 6px !important; cursor: pointer; font-weight: 800 !important;
+        transition: all 0.2s; width: 100%;
       }
-      .slot-button:hover:not(:disabled) {
-        border-color: var(--primary) !important;
-        color: var(--primary) !important;
-      }
-      .slot-button.is-selected {
-        background-color: var(--primary) !important;
-        color: #000000 !important;
-        border-color: var(--primary) !important;
-      }
-      .slot-button:disabled {
-        opacity: 0.3 !important;
-        cursor: not-allowed !important;
-      }
+      .slot-button:hover:not(:disabled) { border-color: var(--primary) !important; color: var(--primary) !important; }
+      .slot-button.is-selected { background-color: var(--primary) !important; color: #000000 !important; border-color: var(--primary) !important; }
+      .slot-button:disabled { opacity: 0.3 !important; cursor: not-allowed !important; }
     </style>
   </head>
   <body>
     <div class="app-shell">
+      
+      <!-- SABİT SOL MENÜ (Hem Müşteri Hem Yönetici Görür) -->
       <aside class="sidebar">
         <div class="brand-row">
           <div class="brand-mark" id="brandMark">SB</div>
@@ -143,104 +100,35 @@
 
         <div style="margin-top: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background-color: #111111;">
           <p class="eyebrow" style="margin-bottom: 15px;">İletişim & Konum</p>
-          
           <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px;">
             <span style="font-size: 1.3rem;">📍</span>
-            <div>
-              <p style="margin: 0; color: #aaaaaa !important; font-size: 0.85rem; font-weight: normal !important;">Adres</p>
-              <p id="displayAddress" style="margin: 2px 0 0 0; font-size: 0.95rem;">Reyhanlı, Hatay</p>
-            </div>
+            <div><p style="margin: 0; color: #aaaaaa !important; font-size: 0.85rem; font-weight: normal !important;">Adres</p><p id="displayAddress" style="margin: 2px 0 0 0; font-size: 0.95rem;">Reyhanlı, Hatay</p></div>
           </div>
-
           <div style="display: flex; align-items: flex-start; gap: 12px;">
             <span style="font-size: 1.3rem;">📞</span>
-            <div>
-              <p style="margin: 0; color: #aaaaaa !important; font-size: 0.85rem; font-weight: normal !important;">Telefon</p>
-              <p id="displayPhone" style="margin: 2px 0 0 0; font-size: 0.95rem;">05xx xxx xx xx</p>
-            </div>
+            <div><p style="margin: 0; color: #aaaaaa !important; font-size: 0.85rem; font-weight: normal !important;">Telefon</p><p id="displayPhone" style="margin: 2px 0 0 0; font-size: 0.95rem;">05xx xxx xx xx</p></div>
           </div>
-          
-          <a id="displayMapLink" href="#" target="_blank" style="display: block; text-align: center; margin-top: 15px; padding: 10px; background: transparent; border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; transition: 0.2s;">Haritada Göster</a>
+          <a id="displayMapLink" href="#" target="_blank" style="display: block; text-align: center; margin-top: 15px; padding: 10px; background: transparent; border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem;">Haritada Göster</a>
         </div>
       </aside>
 
-      <main class="main-content">
+      <!-- 1. MÜŞTERİ EKRANI -->
+      <main class="main-content" id="customerMain">
         <header class="topbar">
-          <div>
-            <p class="eyebrow">Randevu paneli</p>
-            <h2>Berberini seç, saatini ayarla</h2>
-          </div>
-          <div class="top-actions">
-            <button class="ghost-button" id="openSettings" type="button">Yönetici Girişi</button>
-          </div>
+          <div><p class="eyebrow">Randevu paneli</p><h2>Berberini seç, saatini ayarla</h2></div>
         </header>
 
-        <section class="panel settings-panel" id="settingsPanel" hidden>
-          <div class="section-title"><p class="eyebrow">Yönetim</p><h2>Yetkili Girişi</h2></div>
-          <form id="adminLoginForm" class="admin-login-form">
-            <div class="field-group">
-              <label>Yönetici şifresi</label>
-              <input id="adminPinInput" name="adminPin" type="password" required />
-            </div>
-            <button class="primary-button" type="submit">Giriş Yap</button>
-            <p id="adminMessage"></p>
-          </form>
-          
-          <form id="settingsForm" class="settings-form" hidden>
-            <div class="section-title" style="margin-top:10px;"><p class="eyebrow">Genel Ayarlar</p></div>
-            <div class="field-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
-              <div class="field-group" style="flex: 1;">
-                <label>Sistem Adı</label>
-                <input id="salonNameInput" name="salonName" type="text" required />
-              </div>
-              <div class="field-group" style="flex: 1;">
-                <label>İletişim Numarası</label>
-                <input id="salonPhoneInput" name="salonPhone" type="text" required />
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Açık Adres (Harita konumu bu yazıya göre bulunur)</label>
-              <textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea>
-            </div>
-            
-            <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
-            <div id="serviceSettings"></div>
-            <button class="ghost-button" id="addService" type="button" style="margin-bottom: 20px;">+ Yeni Hizmet Ekle</button>
-            
-            <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Ekip</p></div>
-            <div id="barberSettings"></div>
-            <button class="ghost-button" id="addBarber" type="button">+ Berber Ekle</button>
-            
-            <div class="settings-actions" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 20px;">
-              <button class="ghost-button" id="lockSettings" type="button">Paneli Kilitle (Çıkış Yap)</button>
-              <button class="primary-button" type="submit">Kaydet</button>
-            </div>
-            <p id="settingsMessage"></p>
-          </form>
-        </section>
-
-        <section class="workspace-grid" id="customerWorkspace">
-          <section class="panel booking-panel" id="bookingPanel">
+        <section class="workspace-grid">
+          <section class="panel booking-panel">
             <div class="section-title"><p class="eyebrow">Randevu Al</p><h2>Bilgilerinizi Girin</h2></div>
             <form id="bookingForm" class="booking-form">
-              <div class="field-group">
-                <label>Ad soyad</label>
-                <input id="customerName" name="customerName" type="text" required />
-              </div>
-              <div class="field-group">
-                <label>Telefon</label>
-                <input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required />
-              </div>
-              <div class="field-group">
-                <label>Berber Seçimi</label>
-                <select id="barberSelect" name="barberSelect" required></select>
-              </div>
+              <div class="field-group"><label>Ad soyad</label><input id="customerName" name="customerName" type="text" required /></div>
+              <div class="field-group"><label>Telefon</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
+              <div class="field-group"><label>Berber Seçimi</label><select id="barberSelect" name="barberSelect" required></select></div>
               <div class="field-group">
                 <label>Hizmetler (Birden fazla seçebilirsiniz)</label>
                 <div id="serviceCheckboxes" class="checkbox-grid"></div>
-                <div style="text-align: right; padding: 15px 0; border-top: 1px solid var(--border); margin-top: 10px;">
-                   Toplam Tutar: <span id="totalPriceDisplay">₺0</span>
-                </div>
+                <div style="text-align: right; padding: 15px 0; border-top: 1px solid var(--border); margin-top: 10px;">Toplam Tutar: <span id="totalPriceDisplay">₺0</span></div>
               </div>
               <div class="field-row">
                 <div class="field-group"><label>Tarih</label><input id="dateSelect" name="dateSelect" type="date" required /></div>
@@ -256,11 +144,10 @@
               <div class="section-title"><p class="eyebrow">Ekip</p><h2>Berberler</h2></div>
               <div class="barber-list" id="barberList"></div>
             </section>
-            
             <section class="panel" style="margin-top: 20px; border-color: #ff4d4d !important;">
               <div class="section-title"><p class="eyebrow" style="color: #ff4d4d !important;">Randevu İptali</p><h2 style="color: white !important;">İptal Kodu</h2></div>
               <form id="cancelForm">
-                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu buraya yazın" required style="width: 100%; margin-bottom: 15px; border-color: #ff4d4d !important;" />
+                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="width: 100%; margin-bottom: 15px; border-color: #ff4d4d !important;" />
                 <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%;">RANDEVUYU İPTAL ET</button>
                 <p id="cancelMessage" style="margin-top: 10px;"></p>
               </form>
@@ -268,16 +155,70 @@
           </aside>
         </section>
 
-        <section class="panel schedule-panel" id="customerSchedule">
+        <section class="panel schedule-panel">
           <div class="section-title"><p class="eyebrow">Müsaitlik</p><h2>Saat Seçimi</h2></div>
           <div class="slot-board" id="slotBoard"></div>
         </section>
 
-        <section class="panel appointments-panel" id="appointmentsPanel" hidden>
-          <div class="section-title"><p class="eyebrow">Yönetici Paneli</p><h2>Aktif Randevu Listesi</h2></div>
-          <div id="appointmentsList"></div>
-        </section>
+        <!-- SADECE SENİN BİLDİĞİN GİZLİ YÖNETİCİ BUTONU -->
+        <div style="text-align: center; margin-top: 50px; padding-bottom: 20px;">
+          <a href="#" id="btnShowLogin" style="color: #2a2a2a; text-decoration: none; font-size: 0.8rem; font-weight: normal !important; cursor: pointer;">Sistem Yönetimi</a>
+        </div>
       </main>
+
+      <!-- 2. YÖNETİCİ EKRANI (Başlangıçta Gizli) -->
+      <main class="main-content" id="adminMain" hidden>
+        <header class="topbar">
+          <div><p class="eyebrow">Yönetim Paneli</p><h2 id="adminGreeting">Yetkili Girişi</h2></div>
+          <button class="danger-button" id="lockSettings" type="button" style="padding: 10px 20px; border-radius: 6px; cursor: pointer;" hidden>Güvenli Çıkış Yap</button>
+        </header>
+
+        <!-- YÖNETİCİ GİRİŞ FORMU -->
+        <section class="panel" id="adminLoginSection">
+          <div class="section-title"><h2>Lütfen Şifrenizi Girin</h2></div>
+          <form id="adminLoginForm">
+            <div class="field-group"><label>Şifre</label><input id="adminPinInput" name="adminPin" type="password" required /></div>
+            <button class="primary-button" type="submit" style="margin-top: 15px;">Giriş Yap</button>
+            <p id="adminMessage" style="margin-top: 10px;"></p>
+          </form>
+          <div style="margin-top: 20px;">
+            <a href="#" id="btnCancelLogin" style="color: #888; text-decoration: none; font-size: 0.9rem;">← Müşteri Ekranına Dön</a>
+          </div>
+        </section>
+
+        <!-- YÖNETİCİ KONTROL PANELİ (DASHBOARD) -->
+        <div id="adminDashboardSection" hidden>
+          <section class="panel" style="margin-bottom: 20px; border-color: var(--primary) !important;">
+            <div class="section-title"><p class="eyebrow">Randevu Takibi</p><h2>Aktif Randevular</h2></div>
+            <div id="appointmentsList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title"><p class="eyebrow">Sistem</p><h2>Genel Ayarlar</h2></div>
+            <form id="settingsForm">
+              <div class="field-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <div class="field-group" style="flex: 1;"><label>Sistem Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div>
+                <div class="field-group" style="flex: 1;"><label>İletişim Numarası</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div>
+              </div>
+              <div class="field-group"><label>Açık Adres (Harita için)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
+              
+              <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
+              <div id="serviceSettings"></div>
+              <button class="ghost-button" id="addService" type="button" style="margin-bottom: 20px;">+ Yeni Hizmet Ekle</button>
+              
+              <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Ekip</p></div>
+              <div id="barberSettings"></div>
+              <button class="ghost-button" id="addBarber" type="button">+ Berber Ekle</button>
+              
+              <div style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 20px;">
+                <button class="primary-button" type="submit" style="width: 100%; padding: 15px !important;">TÜM AYARLARI KAYDET</button>
+                <p id="settingsMessage" style="margin-top: 10px; text-align: center;"></p>
+              </div>
+            </form>
+          </section>
+        </div>
+      </main>
+
     </div>
     <script src="app.js"></script>
   </body>

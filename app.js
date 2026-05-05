@@ -8,11 +8,20 @@ const state = {
   todayCount: 0,
   adminToken: sessionStorage.getItem("barberline-admin-token") || "",
   adminUnlocked: Boolean(sessionStorage.getItem("barberline-admin-token")),
-  adminPanelOpen: Boolean(sessionStorage.getItem("barberline-admin-token")),
+  showLoginScreen: false,
   appointments: [],
 };
 
 const elements = {
+  customerMain: document.querySelector("#customerMain"),
+  adminMain: document.querySelector("#adminMain"),
+  adminLoginSection: document.querySelector("#adminLoginSection"),
+  adminDashboardSection: document.querySelector("#adminDashboardSection"),
+  btnShowLogin: document.querySelector("#btnShowLogin"),
+  btnCancelLogin: document.querySelector("#btnCancelLogin"),
+  lockSettings: document.querySelector("#lockSettings"),
+  adminGreeting: document.querySelector("#adminGreeting"),
+
   bookingForm: document.querySelector("#bookingForm"),
   customerName: document.querySelector("#customerName"),
   customerPhone: document.querySelector("#customerPhone"),
@@ -22,7 +31,7 @@ const elements = {
   dateSelect: document.querySelector("#dateSelect"),
   timeSelect: document.querySelector("#timeSelect"),
   formMessage: document.querySelector("#formMessage"),
-  settingsPanel: document.querySelector("#settingsPanel"),
+  
   settingsForm: document.querySelector("#settingsForm"),
   adminLoginForm: document.querySelector("#adminLoginForm"),
   adminPinInput: document.querySelector("#adminPinInput"),
@@ -31,7 +40,6 @@ const elements = {
   salonNameInput: document.querySelector("#salonNameInput"),
   salonPhoneInput: document.querySelector("#salonPhoneInput"),
   salonAddressInput: document.querySelector("#salonAddressInput"),
-  
   displayPhone: document.querySelector("#displayPhone"),
   displayAddress: document.querySelector("#displayAddress"),
   displayMapLink: document.querySelector("#displayMapLink"),
@@ -41,21 +49,16 @@ const elements = {
   serviceSettings: document.querySelector("#serviceSettings"),
   salonNameDisplay: document.querySelector("#salonNameDisplay"),
   brandMark: document.querySelector("#brandMark"),
-  lockSettings: document.querySelector("#lockSettings"),
-  openSettings: document.querySelector("#openSettings"),
   addBarber: document.querySelector("#addBarber"),
   addService: document.querySelector("#addService"),
   barberList: document.querySelector("#barberList"),
   slotBoard: document.querySelector("#slotBoard"),
-  appointmentsPanel: document.querySelector("#appointmentsPanel"),
   appointmentsList: document.querySelector("#appointmentsList"),
   todayCount: document.querySelector("#todayCount"),
   openSlots: document.querySelector("#openSlots"),
   cancelForm: document.querySelector("#cancelForm"),
   cancelCodeInput: document.querySelector("#cancelCodeInput"),
-  cancelMessage: document.querySelector("#cancelMessage"),
-  customerWorkspace: document.querySelector("#customerWorkspace"),
-  customerSchedule: document.querySelector("#customerSchedule")
+  cancelMessage: document.querySelector("#cancelMessage")
 };
 
 function todayISO() {
@@ -103,15 +106,12 @@ function renderBrand() {
   const salonPhone = state.settings?.salonPhone || "05xx xxx xx xx";
   const salonAddress = state.settings?.salonAddress || "Reyhanlı, Hatay";
 
-  // Sadece logoyu ve başlığı güncelliyoruz
   if(elements.salonNameInput) elements.salonNameInput.value = salonName;
   if(elements.brandMark) elements.brandMark.textContent = makeInitials(salonName);
   
-  // YÖNETİCİ GİRİŞİ KUTULARINI GÜNCELLE
   if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone;
   if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
   
-  // SOL TARAFTAKİ MÜŞTERİ KARTINI GÜNCELLE
   if(elements.displayPhone) elements.displayPhone.textContent = salonPhone;
   if(elements.displayAddress) elements.displayAddress.textContent = salonAddress;
   if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
@@ -188,19 +188,28 @@ function renderStats() {
   if(elements.openSlots) elements.openSlots.textContent = String(state.availableSlots.length);
 }
 
+// BİZİM YARATTIĞIMIZ "İKİ DÜNYA" MANTIĞI BURADA ÇALIŞIYOR
 function renderSettingsVisibility() {
-  const isAdmin = state.adminUnlocked;
-
-  if(elements.settingsPanel) elements.settingsPanel.hidden = !state.adminPanelOpen;
-  if(elements.adminLoginForm) elements.adminLoginForm.hidden = isAdmin;
-  if(elements.settingsForm) elements.settingsForm.hidden = !isAdmin;
-  if(elements.appointmentsPanel) elements.appointmentsPanel.hidden = !isAdmin;
-
-  if(elements.customerWorkspace) elements.customerWorkspace.hidden = isAdmin;
-  if(elements.customerSchedule) elements.customerSchedule.hidden = isAdmin;
-
-  if(elements.openSettings) {
-    elements.openSettings.style.display = isAdmin ? "none" : "block";
+  if (state.adminUnlocked) {
+    // 1. Durum: Yönetici giriş yaptıysa her yeri ele geçirir
+    elements.customerMain.hidden = true;
+    elements.adminMain.hidden = false;
+    elements.adminLoginSection.hidden = true;
+    elements.adminDashboardSection.hidden = false;
+    elements.lockSettings.hidden = false;
+    elements.adminGreeting.textContent = "Kontrol Paneli";
+  } else if (state.showLoginScreen) {
+    // 2. Durum: Müşteri gizli linke tıkladı, şifre sorma ekranı
+    elements.customerMain.hidden = true;
+    elements.adminMain.hidden = false;
+    elements.adminLoginSection.hidden = false;
+    elements.adminDashboardSection.hidden = true;
+    elements.lockSettings.hidden = true;
+    elements.adminGreeting.textContent = "Yetkili Girişi";
+  } else {
+    // 3. Durum: Standart Müşteri Ekranı (Varsayılan)
+    elements.customerMain.hidden = false;
+    elements.adminMain.hidden = true;
   }
 }
 
@@ -214,14 +223,8 @@ function renderSettingsForm() {
         <button class="danger-button mini-danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="background:transparent !important; color:#ff4d4d !important; border:1px solid #ff4d4d !important; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
       </div>
       <div class="field-row" style="display:flex; gap:10px;">
-        <div class="field-group" style="flex:1;">
-          <label>Hizmet Adı</label>
-          <input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required />
-        </div>
-        <div class="field-group" style="flex:1;">
-          <label>Fiyat (₺)</label>
-          <input name="servicePrice-${s.id}" type="number" value="${s.price}" required />
-        </div>
+        <div class="field-group" style="flex:1;"><label>Hizmet Adı</label><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required /></div>
+        <div class="field-group" style="flex:1;"><label>Fiyat (₺)</label><input name="servicePrice-${s.id}" type="number" value="${s.price}" required /></div>
       </div>
     </div>
   `).join("");
@@ -233,14 +236,8 @@ function renderSettingsForm() {
         <button class="danger-button mini-danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="background:transparent !important; color:#ff4d4d !important; border:1px solid #ff4d4d !important; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
       </div>
       <div class="field-row" style="display:flex; gap:10px;">
-        <div class="field-group" style="flex:1;">
-          <label>Berber Adı</label>
-          <input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required />
-        </div>
-        <div class="field-group" style="flex:1;">
-          <label>Uzmanlık</label>
-          <input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required />
-        </div>
+        <div class="field-group" style="flex:1;"><label>Berber Adı</label><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required /></div>
+        <div class="field-group" style="flex:1;"><label>Uzmanlık</label><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required /></div>
       </div>
     </div>
   `).join("");
@@ -249,7 +246,7 @@ function renderSettingsForm() {
 function renderAppointments() {
   if(!elements.appointmentsList) return;
   if (!state.appointments.length) {
-    elements.appointmentsList.innerHTML = `<p class="empty-state" style="color:#aaa;">Aktif randevu bulunmuyor.</p>`;
+    elements.appointmentsList.innerHTML = `<p class="empty-state" style="color:#aaa; text-align:center;">Şu an aktif bir randevu bulunmuyor.</p>`;
     return;
   }
   elements.appointmentsList.innerHTML = state.appointments.map(app => {
@@ -261,16 +258,16 @@ function renderAppointments() {
 
     return `<article class="appointment-card" style="display: flex; justify-content: space-between; background:#000000; border: 1px solid var(--border); padding:15px; border-radius:8px; margin-bottom:10px;">
               <div>
-                <h3 style="color:var(--primary); margin:0;">${escapeHtml(app.customerName)}</h3>
-                <p style="margin:5px 0; font-weight: normal !important; color: #aaaaaa !important;">${escapeHtml(app.customerPhone)}</p>
+                <h3 style="color:var(--primary); margin:0; font-size:1.4rem;">${escapeHtml(app.customerName)}</h3>
+                <p style="margin:5px 0; font-weight: normal !important; color: #aaaaaa !important;">📞 ${escapeHtml(app.customerPhone)}</p>
                 <div class="appointment-meta" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-                  <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">${formatDate(app.date)} ${app.time}</span>
-                  <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">${escapeHtml(barber.name)}</span>
+                  <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">📅 ${formatDate(app.date)} ⏰ ${app.time}</span>
+                  <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">✂️ ${escapeHtml(barber.name)}</span>
                   <span class="meta-chip" style="border:1px solid var(--primary); color:var(--primary); padding:5px 10px; border-radius:5px;">${escapeHtml(serviceNames)}</span>
-                  <span class="meta-chip" style="border:1px solid #ff4d4d; color:#ff4d4d; padding:5px 10px; border-radius:5px;">KOD: ${escapeHtml(app.cancelCode || '-')}</span>
+                  <span class="meta-chip" style="border:1px solid #ff4d4d; color:#ff4d4d; padding:5px 10px; border-radius:5px;">İPTAL KODU: ${escapeHtml(app.cancelCode || '-')}</span>
                 </div>
               </div>
-              <button class="danger-button" type="button" data-cancel="${app.id}" style="background-color: #ff4d4d !important; color:white !important; border:none; padding:10px 15px; border-radius:5px; height:fit-content; cursor:pointer;">İptal Et</button>
+              <button class="danger-button" type="button" data-cancel="${app.id}" style="background-color: #ff4d4d !important; color:white !important; border:none; padding:10px 15px; border-radius:5px; height:fit-content; cursor:pointer;">Randevuyu Sil</button>
             </article>`;
   }).join("");
 }
@@ -297,7 +294,7 @@ async function loadAdminDashboard() {
     state.appointments = payload.appointments;
     state.settings = payload.settings;
   } catch {
-    state.adminToken = ""; state.adminUnlocked = false; state.adminPanelOpen = false;
+    state.adminToken = ""; state.adminUnlocked = false; state.showLoginScreen = false;
     sessionStorage.removeItem("barberline-admin-token");
   }
 }
@@ -386,24 +383,16 @@ async function unlockSettings(event) {
       method: "POST",
       body: JSON.stringify({ pin: new FormData(elements.adminLoginForm).get("adminPin").trim() }),
     });
-    state.adminToken = payload.token; state.adminUnlocked = true; state.adminPanelOpen = true;
+    state.adminToken = payload.token; 
+    state.adminUnlocked = true; 
+    state.showLoginScreen = false;
     sessionStorage.setItem("barberline-admin-token", payload.token);
-    elements.adminPinInput.value = ""; setMessage(elements.adminMessage, "");
+    elements.adminPinInput.value = ""; 
+    setMessage(elements.adminMessage, "");
     await refreshAll();
   } catch (error) {
     setMessage(elements.adminMessage, error.message, "error");
   }
-}
-
-function openSettingsPanel() {
-  state.adminPanelOpen = true; renderSettingsVisibility();
-  if(elements.settingsPanel) elements.settingsPanel.scrollIntoView({ behavior: "smooth" });
-}
-
-function lockSettingsPanel() {
-  state.adminToken = ""; state.adminUnlocked = false; state.adminPanelOpen = false;
-  sessionStorage.removeItem("barberline-admin-token");
-  renderAll();
 }
 
 async function saveSettings(event) {
@@ -446,8 +435,29 @@ function bindEvents() {
   if(elements.cancelForm) elements.cancelForm.addEventListener("submit", customerCancelAppointment);
   if(elements.adminLoginForm) elements.adminLoginForm.addEventListener("submit", unlockSettings);
   if(elements.settingsForm) elements.settingsForm.addEventListener("submit", saveSettings);
-  if(elements.openSettings) elements.openSettings.addEventListener("click", openSettingsPanel);
-  if(elements.lockSettings) elements.lockSettings.addEventListener("click", lockSettingsPanel);
+  
+  // YÖNETİCİ BUTONLARI İÇİN YENİ DİNLEYİCİLER
+  if(elements.btnShowLogin) elements.btnShowLogin.addEventListener("click", (e) => {
+    e.preventDefault();
+    state.showLoginScreen = true;
+    renderAll();
+  });
+
+  if(elements.btnCancelLogin) elements.btnCancelLogin.addEventListener("click", (e) => {
+    e.preventDefault();
+    state.showLoginScreen = false;
+    elements.adminPinInput.value = "";
+    setMessage(elements.adminMessage, "");
+    renderAll();
+  });
+
+  if(elements.lockSettings) elements.lockSettings.addEventListener("click", () => {
+    state.adminToken = ""; 
+    state.adminUnlocked = false; 
+    state.showLoginScreen = false;
+    sessionStorage.removeItem("barberline-admin-token");
+    renderAll();
+  });
 
   if(elements.addService) elements.addService.addEventListener("click", () => {
     state.settings.services.push({ id: `srv-${Date.now()}`, name: "Yeni Hizmet", price: 100 });
@@ -462,20 +472,26 @@ function bindEvents() {
   document.addEventListener("click", async (event) => {
     const btnCancel = event.target.closest("[data-cancel]");
     if (btnCancel) {
-      try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } 
-      catch (e) { alert("Hata: " + e.message); }
+      if(confirm("Bu randevuyu silmek istediğinize emin misiniz?")) {
+        try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } 
+        catch (e) { alert("Hata: " + e.message); }
+      }
     }
     
     const btnDelSrv = event.target.closest("[data-delete-service]");
     if(btnDelSrv) {
-      state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService);
-      renderSettingsForm();
+      if(confirm("Bu hizmeti silmek istiyor musunuz?")) {
+        state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService);
+        renderSettingsForm();
+      }
     }
 
     const btnDelBrb = event.target.closest("[data-delete-barber]");
     if(btnDelBrb) {
-      state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBrb.dataset.deleteBarber);
-      renderSettingsForm();
+      if(confirm("Bu berberi silmek istiyor musunuz?")) {
+        state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBrb.dataset.deleteBarber);
+        renderSettingsForm();
+      }
     }
   });
 
