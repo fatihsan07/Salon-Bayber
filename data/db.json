@@ -1,0 +1,50 @@
+{
+  "settings": {
+    "salonName": "Salon Bayber",
+    "adminPinHash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "barbers": [
+      {
+        "id": "mehmet-ali-sanverdi",
+        "name": "Mehmet Ali Şanverdi",
+        "title": "Usta berber",
+        "initials": "MA"
+      }
+    ]
+  },
+  "appointments": [],
+  "notifications": [
+    {
+      "id": "cc414864-27fb-4f26-a9f5-252e4890a1b4",
+      "appointmentId": "939871b3-67cb-4e82-81fa-def881ce0914",
+      "customerName": "Fatih Sanverdi",
+      "phone": "+905395772999",
+      "message": "Salon Bayber: 2026-05-05 saat 18:00 için Bakım paketi randevunuz oluşturuldu. Berber: Mehmet Ali Şanverdi.",
+      "status": "queued",
+      "label": "SMS servisi bağlı değil",
+      "detail": "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN ve TWILIO_FROM_NUMBER tanımlanınca gerçek SMS gönderilir.",
+      "createdAt": "2026-05-05T13:54:13.247Z"
+    },
+    {
+      "id": "d8f32a80-6b95-4e4e-8a28-648b0b18ce10",
+      "appointmentId": "72861d19-34c4-4582-9ce1-c2fcf594f81c",
+      "customerName": "Fatih Sanverdi",
+      "phone": "+905395772999",
+      "message": "Salon Bayber: 2026-05-05 saat 19:00 için Saç kesimi randevunuz oluşturuldu. Berber: Mehmet Ali Şanverdi.",
+      "status": "queued",
+      "label": "SMS servisi bağlı değil",
+      "detail": "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN ve TWILIO_FROM_NUMBER tanımlanınca gerçek SMS gönderilir.",
+      "createdAt": "2026-05-05T13:53:52.655Z"
+    },
+    {
+      "id": "75632e91-8925-4a00-a19a-6cb14fd4f5e1",
+      "appointmentId": "69a19adb-1322-44aa-b087-9edc76a2a72f",
+      "customerName": "Fatih Sanverdi",
+      "phone": "+905395772999",
+      "message": "Salon Bayber: 2026-05-05 saat 17:00 için Saç kesimi randevunuz oluşturuldu. Berber: Mehmet Ali Şanverdi.",
+      "status": "queued",
+      "label": "SMS servisi bağlı değil",
+      "detail": "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN ve TWILIO_FROM_NUMBER tanımlanınca gerçek SMS gönderilir.",
+      "createdAt": "2026-05-05T13:52:00.154Z"
+    }
+  ]
+}

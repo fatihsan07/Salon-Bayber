@@ -1,0 +1,9 @@
+{
+  "name": "Salon Bayber Randevu",
+  "short_name": "Salon Bayber",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#1f2723",
+  "description": "Salon Bayber icin web tabanli randevu sistemi."
+}

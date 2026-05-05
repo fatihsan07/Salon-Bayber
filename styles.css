@@ -1,0 +1,672 @@
+:root {
+  color-scheme: light;
+  --ink: #1f2723;
+  --muted: #69736d;
+  --line: #dfe5df;
+  --paper: #f7f8f5;
+  --surface: #ffffff;
+  --surface-alt: #edf2ee;
+  --accent: #236452;
+  --accent-dark: #173f34;
+  --copper: #a76542;
+  --danger: #a33e3e;
+  --shadow: 0 18px 48px rgba(31, 39, 35, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow: auto;
+  padding: 28px;
+  background: #1f2723;
+  color: #f7f8f5;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: #2f3d37;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.brand-row h1,
+.topbar h2,
+.section-title h2 {
+  margin: 0;
+  line-height: 1.08;
+}
+
+.brand-row h1 {
+  font-size: 1.6rem;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar .eyebrow {
+  color: #aeb9b1;
+}
+
+.shop-photo {
+  margin: 28px 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #111;
+}
+
+.shop-photo img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.status-grid article {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: #2a332f;
+}
+
+.status-grid span {
+  display: block;
+  color: #ffffff;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 850;
+  line-height: 1;
+}
+
+.status-grid p {
+  margin: 8px 0 0;
+  color: #cfd7d0;
+  font-size: 0.9rem;
+}
+
+.main-content {
+  min-width: 0;
+  padding: 28px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.topbar h2 {
+  font-size: clamp(1.5rem, 2.2vw, 2.4rem);
+}
+
+.top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.compact-panel {
+  margin-top: 16px;
+  padding: 18px;
+  background: #26302b;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.08fr) minmax(280px, 0.92fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.settings-panel,
+.booking-panel,
+.team-panel,
+.schedule-panel,
+.appointments-panel,
+.notification-panel {
+  padding: 22px;
+}
+
+.settings-panel {
+  margin-bottom: 18px;
+}
+
+.section-title {
+  margin-bottom: 18px;
+}
+
+.section-title h2 {
+  font-size: 1.15rem;
+}
+
+.booking-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-login-form,
+.settings-form {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-login-form {
+  grid-template-columns: minmax(220px, 1fr) auto;
+  align-items: end;
+}
+
+.barber-settings {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.barber-setting-row {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.barber-setting-row legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.mini-danger-button {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 0.76rem;
+}
+
+.add-barber-button {
+  justify-self: start;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-group {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+}
+
+.span-all,
+.field-row,
+.submit-button,
+.form-message {
+  grid-column: 1 / -1;
+}
+
+label {
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #cfd8d1;
+  border-radius: 8px;
+  background: #fbfcfa;
+  color: var(--ink);
+  outline: none;
+  padding: 11px 12px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(35, 100, 82, 0.16);
+}
+
+.primary-button,
+.ghost-button,
+.danger-button {
+  min-height: 42px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0 16px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.primary-button:hover {
+  background: var(--accent-dark);
+}
+
+.ghost-button {
+  border-color: #cfd8d1;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.ghost-button:hover {
+  background: var(--surface-alt);
+}
+
+.danger-button {
+  min-height: 36px;
+  border-color: rgba(163, 62, 62, 0.22);
+  background: #fff5f4;
+  color: var(--danger);
+}
+
+.danger-button:hover {
+  background: #fde8e6;
+}
+
+.submit-button {
+  width: 100%;
+}
+
+.form-message {
+  min-height: 20px;
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.form-message.error {
+  color: var(--danger);
+}
+
+.barber-list {
+  display: grid;
+  gap: 12px;
+}
+
+.barber-card {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.barber-card.is-selected {
+  border-color: rgba(35, 100, 82, 0.55);
+  background: #eef5f1;
+}
+
+.barber-avatar {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 8px;
+  background: #25302b;
+  color: #ffffff;
+  font-weight: 850;
+}
+
+.barber-card h3,
+.appointment-card h3,
+.notification-card h3 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.barber-card p,
+.appointment-card p,
+.notification-card p,
+.mini-list {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.notification-card h3 {
+  margin-bottom: 4px;
+}
+
+.notification-text {
+  margin-top: 8px;
+}
+
+.notification-detail {
+  margin-top: 6px;
+  color: var(--copper);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.sidebar .mini-list {
+  color: #d8ded9;
+}
+
+.pill {
+  border: 1px solid rgba(167, 101, 66, 0.24);
+  border-radius: 999px;
+  background: #fff6ef;
+  color: #7a4429;
+  padding: 6px 9px;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.mini-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.mini-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mini-list strong {
+  color: inherit;
+}
+
+.schedule-panel,
+.appointments-panel,
+.notification-panel {
+  margin-top: 18px;
+}
+
+.slot-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.slot-button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.slot-button:hover:not(:disabled),
+.slot-button.is-selected {
+  border-color: var(--accent);
+  background: #eef5f1;
+  color: var(--accent-dark);
+}
+
+.slot-button:disabled {
+  cursor: not-allowed;
+  background: #f1f2ef;
+  color: #9ba39e;
+  text-decoration: line-through;
+}
+
+.appointments-list {
+  display: grid;
+  gap: 12px;
+}
+
+.notification-list {
+  display: grid;
+  gap: 12px;
+}
+
+.appointment-card,
+.notification-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.notification-status {
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 0.76rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.notification-status.sent {
+  background: #e9f6ef;
+  color: #1d6545;
+}
+
+.notification-status.queued {
+  background: #fff6ef;
+  color: #7a4429;
+}
+
+.notification-status.failed {
+  background: #fff5f4;
+  color: var(--danger);
+}
+
+.appointment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.meta-chip {
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: #3d4741;
+  padding: 6px 9px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed #c9d2cc;
+  border-radius: 8px;
+  color: var(--muted);
+  background: #fbfcfa;
+}
+
+@media (max-width: 1040px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: relative;
+    height: auto;
+  }
+
+  .shop-photo img {
+    aspect-ratio: 16 / 7;
+  }
+}
+
+@media (max-width: 760px) {
+  .main-content,
+  .sidebar {
+    padding: 18px;
+  }
+
+  .topbar,
+  .appointment-card,
+  .notification-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .topbar {
+    display: grid;
+  }
+
+  .top-actions,
+  .top-actions button {
+    width: 100%;
+  }
+
+  .workspace-grid,
+  .booking-form,
+  .admin-login-form,
+  .field-row,
+  .barber-settings {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-actions,
+  .settings-actions button {
+    width: 100%;
+  }
+
+  .barber-card {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .barber-card .pill {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .appointment-card,
+  .notification-card {
+    grid-template-columns: 1fr;
+  }
+
+  .danger-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slot-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

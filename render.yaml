@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: salon-bayber-randevu
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+    disk:
+      name: salon-bayber-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
