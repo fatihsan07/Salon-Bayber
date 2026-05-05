@@ -335,13 +335,12 @@ async function createAppointment(event) {
     elements.bookingForm.reset();
     calculateTotal();
     elements.dateSelect.value = state.selectedDate;
-    setMessage(elements.formMessage, "Randevu oluşturuldu! WhatsApp fişiniz açılıyor...");
+    setMessage(elements.formMessage, "Randevu oluşturuldu! Yöneticiye bilgi veriliyor...");
     await refreshAll();
 
-    let phone = customerPhone.replace(/[^0-9]/g, '');
-    if (phone.startsWith('0')) phone = '90' + phone.substring(1);
-    if (phone.length === 10) phone = '90' + phone; 
-
+    // DİKKAT: MESAJ ARTIK DİREKT BERBERİN (0539 577 2999) WHATSAPP'INA GİDECEK
+    const barberPhone = "905395772999"; 
+    
     let totalPrice = 0;
     const serviceNames = checkedServices.map(id => {
       const s = state.settings.services.find(serv => serv.id === id);
@@ -349,8 +348,9 @@ async function createAppointment(event) {
       return s ? s.name : "";
     }).join(", ");
 
-    const waText = encodeURIComponent(`Merhaba ${customerName}! Salon Bayber randevunuz başarıyla oluşturulmuştur.\n\n📅 Tarih: ${formatDate(dateSelect)}\n⏰ Saat: ${timeSelect}\n✂️ Hizmetler: ${serviceNames}\n💰 Toplam Tutar: ₺${totalPrice}\n\nİPTAL KODUNUZ: ${payload.cancelCode}\nFikriniz değişirse sitemizden bu kod ile randevunuzu iptal edebilirsiniz.`);
-    window.open(`https://wa.me/${phone}?text=${waText}`, '_blank');
+    const waText = encodeURIComponent(`Merhaba, sistem üzerinden yeni bir randevu aldım!\n\n👤 Adım: ${customerName}\n📞 Telefonum: ${customerPhone}\n📅 Tarih: ${formatDate(dateSelect)}\n⏰ Saat: ${timeSelect}\n✂️ Hizmetler: ${serviceNames}\n💰 Toplam Tutar: ₺${totalPrice}`);
+    
+    window.open(`https://wa.me/${barberPhone}?text=${waText}`, '_blank');
 
   } catch (error) {
     setMessage(elements.formMessage, error.message, "error");
@@ -393,7 +393,6 @@ async function unlockSettings(event) {
   }
 }
 
-// KAYDETME SORUNUNU ÇÖZEN YENİ VE SAĞLAM KAYDETME FONKSİYONU
 async function saveSettings(event) {
   event.preventDefault();
   
@@ -433,7 +432,7 @@ async function saveSettings(event) {
       method: "PUT",
       body: JSON.stringify(payload),
     });
-    setMessage(elements.settingsMessage, "Ayarlar başarıyla Firebase'e kaydedildi!");
+    setMessage(elements.settingsMessage, "Ayarlar başarıyla kaydedildi!");
     await refreshAll();
   } catch (error) {
     setMessage(elements.settingsMessage, "Hata oluştu: " + error.message, "error");

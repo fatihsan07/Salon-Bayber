@@ -8,7 +8,7 @@ const host = process.env.HOST || "0.0.0.0";
 const root = process.cwd();
 const adminSessions = new Map();
 
-// SENİN FİREBASE LİNKİN BURAYA EKLENDİ!
+// SENİN FİREBASE LİNKİN
 const FIREBASE_URL = "https://salon-bayber-dbddd-default-rtdb.firebaseio.com"; 
 
 const defaultSettings = {
@@ -58,9 +58,7 @@ function getAvailableSlots(db, barberId, date) {
 
 async function readDb() {
   try {
-    if (!FIREBASE_URL || FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") {
-      return { settings: normalizeSettings({}), appointments: [] };
-    }
+    if (!FIREBASE_URL) return { settings: normalizeSettings({}), appointments: [] };
     const baseUrl = FIREBASE_URL.replace(/\/$/, "");
     const response = await fetch(`${baseUrl}/db.json`);
     let db = await response.json();
@@ -79,7 +77,7 @@ async function readDb() {
 
 async function writeDb(db) {
   try {
-    if (!FIREBASE_URL || FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") return;
+    if (!FIREBASE_URL) return;
     const baseUrl = FIREBASE_URL.replace(/\/$/, "");
     await fetch(`${baseUrl}/db.json`, {
       method: "PUT",
@@ -178,10 +176,11 @@ async function handleUpdateSettings(req, res) {
   if (payload.services && Array.isArray(payload.services) && payload.services.length > 0) db.settings.services = payload.services;
   if (payload.barbers && Array.isArray(payload.barbers) && payload.barbers.length > 0) db.settings.barbers = payload.barbers;
   
-  db.settings.salonName = payload.salonName || db.settings.salonName;
-  db.settings.salonPhone = payload.salonPhone || db.settings.salonPhone;
-  db.settings.salonAddress = payload.salonAddress || db.settings.salonAddress;
-  db.settings.salonImage = payload.salonImage || db.settings.salonImage;
+  // KAYDETME KISMI BURADA GÜNCELLENDİ (Garantili Yazım)
+  if (payload.salonName !== undefined) db.settings.salonName = payload.salonName;
+  if (payload.salonPhone !== undefined) db.settings.salonPhone = payload.salonPhone;
+  if (payload.salonAddress !== undefined) db.settings.salonAddress = payload.salonAddress;
+  if (payload.salonImage !== undefined) db.settings.salonImage = payload.salonImage;
   
   await writeDb(db);
   sendJson(res, 200, { settings: db.settings });
