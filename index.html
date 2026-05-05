@@ -3,51 +3,103 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#121212" />
-    <title>Salon Bayber Randevu</title>
+    <meta name="theme-color" content="#000000" />
+    <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 Randevu</title>
     <link rel="stylesheet" href="styles.css" />
-    <!-- SARI SİYAH TEMA KODLARI BURAYA EKLENDİ -->
     <style>
+      /* ÖZEL YAZI TİPİ VE RENK AYARLARI */
       :root {
-        --primary: #FFD700 !important; /* Altın Sarı */
-        --primary-hover: #E6C200 !important;
-        --bg: #121212 !important; /* Siyah */
-        --surface: #1E1E1E !important; /* Koyu Gri */
-        --text: #FFFFFF !important; /* Beyaz Metin */
-        --text-muted: #AAAAAA !important;
-        --border: #333333 !important;
+        --primary: #FFD700; /* Altın Sarı */
+        --bg: #000000; /* Tam Siyah Arka Plan */
+        --surface: #121212; /* Koyu Gri Paneller */
+        --text: #FFFFFF; /* Beyaz Yazılar */
+        --text-muted: #CCCCCC;
+        --border: #333333;
+        --font-special: "Courier New", Courier, monospace; /* 𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 stili için */
       }
-      body { background-color: var(--bg) !important; color: var(--text) !important; }
-      .panel, .sidebar, .topbar { background-color: var(--surface) !important; border-color: var(--border) !important; }
-      h1, h2, h3, p, label { color: var(--text) !important; }
-      .eyebrow { color: var(--primary) !important; }
-      input, select, textarea { background-color: var(--bg) !important; color: var(--text) !important; border: 1px solid var(--border) !important; }
-      .primary-button { background-color: var(--primary) !important; color: #000000 !important; font-weight: bold !important; }
-      .ghost-button { color: var(--primary) !important; border-color: var(--primary) !important; }
-      .checkbox-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-      .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; background: var(--bg); padding: 12px; border: 1px solid var(--border); border-radius: 8px; transition: 0.2s; }
+
+      body { 
+        background-color: var(--bg) !important; 
+        color: var(--text) !important; 
+        font-family: var(--font-special) !important;
+      }
+
+      /* Panel ve Kutuların Arka Planı Siyah/Koyu Gri */
+      .panel, .sidebar, .topbar, .appointment-card, .admin-row-box { 
+        background-color: var(--surface) !important; 
+        border: 1px solid var(--border) !important; 
+        color: var(--text) !important;
+      }
+
+      /* Başlıklar ve Özel Yazı Stili */
+      h1, h2, h3, .brand-mark, .primary-button { 
+        font-family: var(--font-special) !important;
+        color: var(--text) !important;
+      }
+
+      .eyebrow { color: var(--primary) !important; font-weight: bold; }
+
+      /* Form Elemanları: Siyah Arka Plan, Beyaz Yazı */
+      input, select, textarea { 
+        background-color: #1a1a1a !important; 
+        color: #ffffff !important; 
+        border: 1px solid var(--primary) !important; 
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      /* Butonlar: Sarı Arka Plan, Siyah Yazı */
+      .primary-button { 
+        background-color: var(--primary) !important; 
+        color: #000000 !important; 
+        border: none !important;
+        font-weight: bold !important;
+        cursor: pointer;
+      }
+
+      .ghost-button { 
+        color: var(--primary) !important; 
+        border: 1px solid var(--primary) !important; 
+        background: transparent !important;
+      }
+
+      /* Hizmet Seçim Kutuları */
+      .checkbox-label { 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        background: #1a1a1a; 
+        padding: 15px; 
+        border: 1px solid var(--border); 
+        margin-bottom: 8px;
+        border-radius: 8px;
+      }
+      
       .checkbox-label:hover { border-color: var(--primary); }
-      .checkbox-label input { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; }
-      .service-price-tag { margin-left: auto; font-weight: bold; color: var(--primary); font-size: 1.1em; }
-      .admin-row-box { border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; border-radius: 8px; background: var(--bg); }
+      
+      .service-price-tag { color: var(--primary); font-weight: bold; margin-left: auto; }
+
+      /* Diğer Düzeltmeler */
+      .status-grid article span { color: var(--primary) !important; font-size: 2em; font-weight: bold; }
+      #totalPriceDisplay { color: var(--primary) !important; font-size: 1.5em; }
     </style>
   </head>
   <body>
     <div class="app-shell">
-      <aside class="sidebar" aria-label="Salon özeti">
+      <aside class="sidebar">
         <div class="brand-row">
-          <div class="brand-mark" id="brandMark" aria-hidden="true" style="background:var(--primary); color:#000;">BL</div>
+          <div class="brand-mark" id="brandMark" style="background:var(--primary); color:#000; font-size: 1.5rem; padding: 10px; border-radius: 5px;">SB</div>
           <div>
             <p class="eyebrow">Berber randevu sistemi</p>
-            <h1 id="salonNameDisplay">Salon Bayber</h1>
+            <h1 id="salonNameDisplay" style="letter-spacing: -1px;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1>
           </div>
         </div>
-        <figure class="shop-photo">
-          <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" alt="Profesyonel berber" />
+        <figure class="shop-photo" style="border: 2px solid var(--primary); margin: 20px 0;">
+          <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" alt="Berber" />
         </figure>
-        <div class="status-grid" aria-label="Günlük durum">
-          <article><span id="todayCount" style="color:var(--primary);">0</span><p>Bugün randevu</p></article>
-          <article><span id="openSlots" style="color:var(--primary);">0</span><p>Müsait saat</p></article>
+        <div class="status-grid">
+          <article><span id="todayCount">0</span><p>Bugün randevu</p></article>
+          <article><span id="openSlots">0</span><p>Müsait saat</p></article>
         </div>
       </aside>
 
@@ -59,115 +111,95 @@
           </div>
           <div class="top-actions">
             <button class="ghost-button" id="openSettings" type="button">Yönetici Girişi</button>
-            <!-- İSTEDİĞİN GİBİ "RANDEVU AL" BUTONU BURADAN SİLİNDİ -->
           </div>
         </header>
 
+        <!-- YÖNETİCİ PANELİ -->
         <section class="panel settings-panel" id="settingsPanel" hidden>
-          <div class="section-title"><p class="eyebrow">Salon ayarları</p><h2>Yetkili Yönetim Paneli</h2></div>
+          <div class="section-title"><p class="eyebrow">Yönetim</p><h2>Yetkili Girişi</h2></div>
           <form id="adminLoginForm" class="admin-login-form">
             <div class="field-group">
-              <label for="adminPinInput">Yönetici şifresi</label>
+              <label>Yönetici şifresi</label>
               <input id="adminPinInput" name="adminPin" type="password" required />
             </div>
             <button class="primary-button" type="submit">Giriş Yap</button>
-            <p class="form-message" id="adminMessage"></p>
+            <p id="adminMessage"></p>
           </form>
           
           <form id="settingsForm" class="settings-form" hidden>
             <div class="field-group">
-              <label for="salonNameInput">Berber Salonu Adı</label>
+              <label>Salon Adı</label>
               <input id="salonNameInput" name="salonName" type="text" required />
             </div>
-
-            <!-- HİZMET VE FİYAT YÖNETİMİ -->
-            <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
-            <div class="barber-settings" id="serviceSettings"></div>
-            <button class="ghost-button" id="addService" type="button" style="margin-bottom: 20px;">+ Yeni Hizmet Ekle</button>
-
-            <!-- BERBER YÖNETİMİ -->
-            <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Ekip</p></div>
-            <div class="barber-settings" id="barberSettings"></div>
-            <button class="ghost-button add-barber-button" id="addBarber" type="button">+ Berber Ekle</button>
-            
-            <div class="settings-actions" style="margin-top: 40px; border-top: 1px solid #333; padding-top:20px;">
-              <button class="ghost-button" id="lockSettings" type="button">Paneli Kilitle</button>
-              <button class="primary-button" type="submit">Tüm Değişiklikleri Kaydet</button>
+            <div id="serviceSettings"></div>
+            <button class="ghost-button" id="addService" type="button">+ Hizmet Ekle</button>
+            <div id="barberSettings"></div>
+            <button class="ghost-button" id="addBarber" type="button">+ Berber Ekle</button>
+            <div class="settings-actions" style="margin-top:20px;">
+              <button class="ghost-button" id="lockSettings" type="button">Kilitle</button>
+              <button class="primary-button" type="submit">Kaydet</button>
             </div>
-            <p class="form-message" id="settingsMessage"></p>
+            <p id="settingsMessage"></p>
           </form>
         </section>
 
         <section class="workspace-grid">
           <section class="panel booking-panel" id="bookingPanel">
-            <div class="section-title"><p class="eyebrow">Yeni randevu</p><h2>Randevu bilgileri</h2></div>
+            <div class="section-title"><p class="eyebrow">Randevu Al</p><h2>Bilgilerinizi Girin</h2></div>
             <form id="bookingForm" class="booking-form">
               <div class="field-group">
-                <label for="customerName">Ad soyad</label>
+                <label>Ad soyad</label>
                 <input id="customerName" name="customerName" type="text" required />
               </div>
               <div class="field-group">
-                <label for="customerPhone">Telefon</label>
+                <label>Telefon</label>
                 <input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required />
               </div>
-              
               <div class="field-group">
-                <label for="barberSelect">Berber Seçimi</label>
+                <label>Berber</label>
                 <select id="barberSelect" name="barberSelect" required></select>
               </div>
-
-              <!-- YENİ ÇOKLU SEÇİM SİSTEMİ -->
               <div class="field-group">
-                <label>Hizmetler (Birden fazla seçebilirsiniz)</label>
+                <label>Hizmetler</label>
                 <div id="serviceCheckboxes" class="checkbox-grid"></div>
-                <div style="margin-top: 15px; font-size: 1.2em; text-align: right; border-top: 1px solid var(--border); padding-top: 10px;">
-                   Toplam Tutar: <span id="totalPriceDisplay" style="color: var(--primary); font-weight: bold; font-size: 1.3em;">₺0</span>
+                <div style="text-align: right; padding: 10px;">
+                   Toplam: <span id="totalPriceDisplay">₺0</span>
                 </div>
               </div>
-
               <div class="field-row">
-                <div class="field-group">
-                  <label for="dateSelect">Tarih</label>
-                  <input id="dateSelect" name="dateSelect" type="date" required />
-                </div>
-                <div class="field-group">
-                  <label for="timeSelect">Saat</label>
-                  <select id="timeSelect" name="timeSelect" required></select>
-                </div>
+                <div class="field-group"><label>Tarih</label><input id="dateSelect" name="dateSelect" type="date" required /></div>
+                <div class="field-group"><label>Saat</label><select id="timeSelect" name="timeSelect" required></select></div>
               </div>
-              <p class="form-message" id="formMessage"></p>
-              <button class="primary-button submit-button" type="submit">Randevuyu onayla</button>
+              <p id="formMessage"></p>
+              <button class="primary-button submit-button" type="submit" style="width: 100%; padding: 15px;">RANDEVUYU ONAYLA</button>
             </form>
           </section>
 
-          <div>
+          <aside>
             <section class="panel team-panel">
-              <div class="section-title"><p class="eyebrow">Ekip</p><h2>Uygun berberler</h2></div>
+              <div class="section-title"><p class="eyebrow">Ekip</p><h2>Berberler</h2></div>
               <div class="barber-list" id="barberList"></div>
             </section>
             
-            <section class="panel" style="margin-top: 20px;">
-              <div class="section-title"><p class="eyebrow">Fikriniz mi değişti?</p><h2>Randevu İptali</h2></div>
-              <form id="cancelForm" class="booking-form">
-                <div class="field-group">
-                  <label for="cancelCodeInput">İptal Kodunuz</label>
-                  <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Örn: A7B2X9" required />
-                </div>
-                <button class="danger-button submit-button" type="submit" style="margin-top: 10px; background-color: #ff4d4d; color: black; border: none;">Randevuyu İptal Et</button>
-                <p class="form-message" id="cancelMessage"></p>
+            <section class="panel" style="margin-top: 20px; border-color: #ff4d4d !important;">
+              <div class="section-title"><p class="eyebrow" style="color: #ff4d4d !important;">Randevu İptali</p><h2>İptal Kodu</h2></div>
+              <form id="cancelForm">
+                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="width: 100%; margin-bottom: 10px;" />
+                <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%;">İPTAL ET</button>
+                <p id="cancelMessage"></p>
               </form>
             </section>
-          </div>
+          </aside>
         </section>
 
         <section class="panel schedule-panel">
-          <div class="section-title"><p class="eyebrow">Takvim</p><h2>Saatler</h2></div>
+          <div class="section-title"><p class="eyebrow">Müsaitlik</p><h2>Saat Seçimi</h2></div>
           <div class="slot-board" id="slotBoard"></div>
         </section>
 
         <section class="panel appointments-panel" id="appointmentsPanel" hidden>
-          <div class="section-title"><p class="eyebrow">Randevular</p><h2>Aktif kayıtlar</h2></div>
-          <div class="appointments-list" id="appointmentsList"></div>
+          <div class="section-title"><p class="eyebrow">Yönetici</p><h2>Randevu Listesi</h2></div>
+          <div id="appointmentsList"></div>
         </section>
       </main>
     </div>
