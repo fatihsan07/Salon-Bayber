@@ -8,6 +8,8 @@ const host = process.env.HOST || "0.0.0.0";
 const root = process.cwd();
 const adminSessions = new Map();
 
+// FİREBASE BAĞLANTISI BURADA AKTİF EDİLDİ
+const FIREBASE_URL = "https://salon-bayber-dbddd-default-rtdb.firebaseio.com"; 
 
 const defaultSettings = {
   salonName: "Salon Bayber",
@@ -55,7 +57,7 @@ function getAvailableSlots(db, barberId, date) {
 
 async function readDb() {
   try {
-    if (FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") {
+    if (!FIREBASE_URL || FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") {
       console.log("Firebase linki henüz eklenmedi.");
       return { settings: normalizeSettings({}), appointments: [] };
     }
@@ -78,7 +80,7 @@ async function readDb() {
 
 async function writeDb(db) {
   try {
-    if (FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") return;
+    if (!FIREBASE_URL || FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") return;
     const baseUrl = FIREBASE_URL.replace(/\/$/, "");
     await fetch(`${baseUrl}/db.json`, {
       method: "PUT",
