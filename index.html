@@ -3,159 +3,140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#050505" />
+    
+    <!-- 1. ÖZELLİK: WHATSAPP VE INSTAGRAM İÇİN ŞIK LİNK ÖNİZLEME (SEO) VİTRİNİ -->
+    <meta property="og:title" content="Salon Bayber | Online Randevu Sistemi" />
+    <meta property="og:description" content="Sıra beklemeden berber randevunuzu saniyeler içinde alın! Sistem Altyapısı: FTH MEDYA" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    
     <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 Randevu</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
       :root {
         color-scheme: dark !important; 
         --primary: #FFD700;
-        --bg: #070707; /* Kusursuz Derin Siyah */
-        --surface: #121212; /* Zarif Koyu Gri */
+        --bg: #050505; 
+        --surface: #111111; 
         --surface-hover: #1a1a1a;
-        --text: #f0f0f0; 
+        --text: #ffffff; 
         --text-muted: #888888;
         --border: #222222;
       }
 
-      body { 
-        background-color: var(--bg); 
-        color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-        margin: 0;
-        line-height: 1.5;
-      }
-
-      /* Zarif Kutular */
-      .panel, .sidebar, .topbar, .admin-row-box { 
-        background-color: var(--surface); 
-        border: 1px solid var(--border); 
-        border-radius: 12px;
-      }
+      body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; line-height: 1.5; }
+      .panel, .sidebar, .topbar, .admin-row-box { background-color: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
       .panel { padding: 25px; margin-bottom: 20px; }
-
       h1, h2, h3, h4 { color: #ffffff; margin-top: 0; font-weight: 600; }
       p, label, span, div { color: var(--text); }
+      .eyebrow { color: var(--primary); letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; }
 
-      .eyebrow { 
-        color: var(--primary); 
-        letter-spacing: 1.5px; 
-        text-transform: uppercase; 
-        font-size: 0.75rem;
-        font-weight: 700;
-        margin-bottom: 5px;
-      }
-
-      /* Profesyonel Form Elemanları */
       input, select, textarea { 
-        background-color: #0a0a0a; 
-        color: #ffffff;
-        border: 1px solid var(--border); 
-        padding: 12px 15px; 
-        border-radius: 8px;
-        font-family: inherit;
-        font-size: 0.95rem;
-        box-sizing: border-box; 
-        width: 100%;
-        transition: 0.2s border-color;
+        background-color: #0a0a0a !important; color: #ffffff !important;
+        border: 1px solid var(--border) !important; padding: 12px 15px; 
+        border-radius: 8px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; width: 100%; transition: 0.2s border-color;
       }
-      input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
-      option { background-color: #0a0a0a; color: #ffffff; }
+      input:focus, select:focus, textarea:focus { border-color: var(--primary) !important; outline: none; }
+      option { background-color: #0a0a0a !important; color: #ffffff !important; }
+      
+      input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
+        -webkit-text-fill-color: #ffffff !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+      ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
-      /* Hizmet Seçim Kutuları */
       .checkbox-label { 
-        display: flex; align-items: center; gap: 12px; 
-        background-color: #0a0a0a; padding: 15px; 
-        border: 1px solid var(--border); margin-bottom: 10px;
-        border-radius: 10px; cursor: pointer;
-        transition: 0.2s all;
+        display: flex; align-items: center; gap: 12px; background-color: #0a0a0a; padding: 15px; 
+        border: 1px solid var(--border); margin-bottom: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s all;
       }
       .checkbox-label:hover { border-color: #444; background-color: var(--surface-hover); }
       .checkbox-label span { color: #ffffff; font-size: 1rem; font-weight: 500; }
       .service-price-tag { color: var(--primary) !important; margin-left: auto; font-weight: 600; }
 
-      /* Ekip Kartları */
       .barber-card {
-        background-color: #0a0a0a; border: 1px solid var(--border);
-        padding: 15px; border-radius: 10px;
-        display: flex; align-items: center; gap: 15px;
-        margin-bottom: 10px;
+        background-color: #0a0a0a; border: 1px solid var(--border); padding: 15px; border-radius: 10px;
+        display: flex; align-items: center; gap: 15px; margin-bottom: 10px;
       }
       .barber-card h3 { margin: 0 0 3px 0; font-size: 1.1rem; }
       .barber-card p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
 
-      /* Butonlar */
       .primary-button { 
-        background-color: var(--primary); color: #000000; 
-        border: none; padding: 14px 24px;
-        border-radius: 8px; cursor: pointer;
-        font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-        transition: 0.2s all;
-        font-size: 0.9rem;
+        background-color: var(--primary); color: #000000 !important; border: none; padding: 14px 24px;
+        border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 0.9rem;
       }
       .primary-button:hover { background-color: #e6c200; transform: translateY(-1px); }
 
       .ghost-button { 
-        color: var(--primary); border: 1px solid var(--primary); 
-        background: transparent; padding: 10px 18px;
-        border-radius: 8px; cursor: pointer; font-weight: 600;
-        transition: 0.2s all;
+        color: var(--primary); border: 1px solid var(--primary); background: transparent; padding: 10px 18px;
+        border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s all;
       }
       .ghost-button:hover { background-color: rgba(255, 215, 0, 0.1); }
-      
-      .danger-button { background-color: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: 0.2s; }
+      .danger-button { background-color: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: 0.2s; font-weight:bold;}
       .danger-button:hover { background-color: #ff4d4d; color: #fff; }
 
-      /* Vurgular */
       .status-grid { display: flex; gap: 10px; margin-top: 20px; }
       .status-grid article { flex: 1; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
       .status-grid article span { color: var(--primary); font-size: 1.8rem; font-weight: 700; display: block; }
       .status-grid article p { margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
-      
       .brand-mark { background: var(--primary); color: #000; padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 1.1rem;}
 
-      /* Saat Seçimi */
       .slot-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; margin-top: 20px; }
-      .slot-button {
-        background-color: #0a0a0a; color: #ffffff;
-        border: 1px solid var(--border); padding: 12px;
-        border-radius: 8px; cursor: pointer; font-weight: 600;
-        transition: all 0.2s; width: 100%; font-size: 0.95rem;
-      }
+      .slot-button { background-color: #0a0a0a; color: #ffffff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%; font-size: 0.95rem; }
       .slot-button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
-      .slot-button.is-selected { background-color: var(--primary); color: #000 !important; border-color: var(--primary); }
+      .slot-button.is-selected { background-color: var(--primary) !important; color: #000 !important; border-color: var(--primary) !important; }
       .slot-button:disabled { opacity: 0.2; cursor: not-allowed; }
 
-      /* FTH MEDYA İmzası */
-      .fth-watermark {
-        position: fixed; bottom: 15px; right: 20px;
-        font-size: 0.75rem; color: #666;
-        z-index: 1000; letter-spacing: 0.5px;
-      }
-      .fth-watermark a { color: #666; text-decoration: none; transition: 0.2s; }
-      .fth-watermark a:hover { color: var(--primary); }
-      .fth-watermark strong { color: #888; font-weight: 800; }
-
-      /* Randevu Kartı (Düzeltildi) */
-      .appointment-card {
-        display: flex; justify-content: space-between; align-items: flex-start;
-        background-color: #0a0a0a; border: 1px solid var(--border); 
-        padding: 20px; border-radius: 12px; margin-bottom: 15px;
-      }
+      .appointment-card { display: flex; justify-content: space-between; align-items: flex-start; background-color: #0a0a0a; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 15px; }
       .appointment-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-      .meta-chip { 
-        border: 1px solid #333; padding: 6px 12px; 
-        border-radius: 6px; font-size: 0.85rem; color: #ddd; background: #111;
-      }
+      .meta-chip { border: 1px solid #333; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; color: #ddd; background: #111; }
       .meta-chip.highlight { border-color: var(--primary); color: var(--primary); background: rgba(255, 215, 0, 0.05); }
       .meta-chip.danger { border-color: #ff4d4d; color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }
+
+      /* FTH MEDYA İMZASI (SAĞ ALT) */
+      .fth-medya-badge {
+        position: fixed; bottom: 20px; right: 20px;
+        background: rgba(10, 10, 10, 0.9); border: 1px solid #333;
+        padding: 8px 15px; border-radius: 30px;
+        display: flex; align-items: center; gap: 10px;
+        z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        transition: 0.3s all; text-decoration: none;
+      }
+      .fth-medya-badge:hover { border-color: var(--primary); transform: translateY(-2px); }
+      .fth-icon { background: var(--text); color: #000; font-weight: 900; padding: 4px 6px; border-radius: 50%; font-size: 0.7rem; }
+      .fth-text { color: #ccc; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px; }
+      .fth-text strong { color: #fff; font-weight: 800; letter-spacing: 1px; }
+
+      /* 3. ÖZELLİK: CANLI DESTEK WHATSAPP BUTONU (SOL ALT) */
+      .whatsapp-float-btn {
+        position: fixed; bottom: 20px; left: 20px;
+        background-color: #25D366; color: #ffffff;
+        width: 55px; height: 55px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none; z-index: 1000;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        transition: 0.3s all;
+      }
+      .whatsapp-float-btn:hover { background-color: #1ebe57; transform: scale(1.1); }
+      .whatsapp-float-btn svg { width: 32px; height: 32px; fill: currentColor; }
     </style>
   </head>
   <body>
-    <!-- FTH MEDYA İMZASI -->
-    <div class="fth-watermark">
-      <a href="#" target="_blank">Sistem Altyapısı: <strong>FTH MEDYA</strong></a>
-    </div>
+    <!-- FTH MEDYA AMBLEMİ -->
+    <a href="#" class="fth-medya-badge">
+      <div class="fth-icon">FM</div>
+      <div class="fth-text">Powered by <strong>FTH MEDYA</strong></div>
+    </a>
+
+    <!-- WHATSAPP CANLI DESTEK BUTONU (DİKKAT: Linkteki 905xxxxxxxxx yazan yere kendi numaranı yaz) -->
+    <a href="https://wa.me/905xxxxxxxxx?text=Merhaba,%20randevu%20sistemi%20hakk%C4%B1nda%20bir%20sorum%20olacakt%C4%B1." target="_blank" class="whatsapp-float-btn" title="WhatsApp Canlı Destek">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.05-.084-.182-.133-.38-.232"/>
+      </svg>
+    </a>
 
     <div class="app-shell">
       <aside class="sidebar">
@@ -180,23 +161,22 @@
           <p class="eyebrow" style="margin-bottom: 20px;">İletişim & Konum</p>
           <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;">
             <span style="font-size: 1.1rem; opacity: 0.8;">📍</span>
-            <div>
-              <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Adres</p>
-              <p id="displayAddress" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">Reyhanlı, Hatay</p>
-            </div>
+            <div><p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Adres</p><p id="displayAddress" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">Reyhanlı, Hatay</p></div>
           </div>
-          <div style="display: flex; align-items: flex-start; gap: 15px;">
+          <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;">
             <span style="font-size: 1.1rem; opacity: 0.8;">📞</span>
-            <div>
-              <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Telefon</p>
-              <p id="displayPhone" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">05xx xxx xx xx</p>
-            </div>
+            <div><p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Telefon</p><p id="displayPhone" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">05xx xxx xx xx</p></div>
           </div>
+          <!-- 2. ÖZELLİK: ÇALIŞMA SAATLERİ EKLENDİ -->
+          <div style="display: flex; align-items: flex-start; gap: 15px;">
+            <span style="font-size: 1.1rem; opacity: 0.8;">🕒</span>
+            <div><p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Çalışma Saatleri</p><p style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">09:00 - 21:00</p></div>
+          </div>
+
           <a id="displayMapLink" href="#" target="_blank" style="display: block; text-align: center; margin-top: 25px; padding: 12px; background: rgba(255, 215, 0, 0.05); border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: 0.2s;">Haritada Göster</a>
         </div>
       </aside>
 
-      <!-- 1. MÜŞTERİ EKRANI -->
       <main class="main-content" id="customerMain">
         <header class="topbar" style="margin-bottom: 30px;">
           <div><p class="eyebrow">Randevu Paneli</p><h2 style="font-size: 1.5rem;">Berberini seç, saatini ayarla</h2></div>
@@ -234,8 +214,8 @@
             <section class="panel" style="margin-top: 20px; border: 1px solid #3a1a1a; background-color: #120505;">
               <div class="section-title" style="margin-bottom: 15px;"><p class="eyebrow" style="color: #ff4d4d;">Randevu İptali</p><h2 style="font-size: 1.1rem;">İptal Kodu</h2></div>
               <form id="cancelForm">
-                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="margin-bottom: 15px; border-color: #331111; background-color: #0a0000;" />
-                <button class="primary-button" type="submit" style="background: #ff4d4d; color: white; width: 100%; padding: 14px;">RANDEVUYU İPTAL ET</button>
+                <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="margin-bottom: 15px; border-color: #331111; background-color: #0a0000 !important;" />
+                <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%; padding: 14px;">RANDEVUYU İPTAL ET</button>
                 <p id="cancelMessage" style="margin-top: 10px; font-size: 0.85rem; text-align: center;"></p>
               </form>
             </section>
@@ -252,7 +232,6 @@
         </div>
       </main>
 
-      <!-- 2. YÖNETİCİ EKRANI -->
       <main class="main-content" id="adminMain" hidden>
         <header class="topbar" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
           <div><p class="eyebrow">Yönetim Paneli</p><h2 id="adminGreeting" style="font-size: 1.5rem; margin:0;">Yetkili Girişi</h2></div>
@@ -281,11 +260,9 @@
             <div class="section-title" style="margin-bottom: 25px;"><p class="eyebrow">Sistem</p><h2 style="font-size: 1.3rem;">Genel Ayarlar</h2></div>
             <form id="settingsForm">
               
-              <!-- YENİ: GÖRSEL DEĞİŞTİRME ALANI -->
               <div class="field-group" style="margin-bottom: 20px; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
                 <label style="font-size: 0.9rem; color: var(--primary); margin-bottom:8px; display:block;">Salon Ana Görseli (URL)</label>
                 <input id="salonImageInput" name="salonImage" type="url" placeholder="https://resim-linki.com/resim.jpg" required />
-                <p style="font-size: 0.75rem; color: #666; margin: 8px 0 0 0;">Sol menüde görünen berber fotoğrafını internetten bulduğunuz bir resim linkiyle değiştirebilirsiniz.</p>
               </div>
 
               <div class="field-row" style="display: flex; gap: 15px; margin-bottom: 15px;">

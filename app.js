@@ -40,12 +40,12 @@ const elements = {
   salonNameInput: document.querySelector("#salonNameInput"),
   salonPhoneInput: document.querySelector("#salonPhoneInput"),
   salonAddressInput: document.querySelector("#salonAddressInput"),
-  salonImageInput: document.querySelector("#salonImageInput"), // YENİ
+  salonImageInput: document.querySelector("#salonImageInput"),
   
   displayPhone: document.querySelector("#displayPhone"),
   displayAddress: document.querySelector("#displayAddress"),
   displayMapLink: document.querySelector("#displayMapLink"),
-  mainShopImage: document.querySelector("#mainShopImage"), // YENİ
+  mainShopImage: document.querySelector("#mainShopImage"),
   
   settingsMessage: document.querySelector("#settingsMessage"),
   barberSettings: document.querySelector("#barberSettings"),
@@ -106,12 +106,12 @@ function renderBrand() {
   if(elements.salonNameInput) elements.salonNameInput.value = salonName;
   if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone;
   if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
-  if(elements.salonImageInput) elements.salonImageInput.value = salonImage; // GÖRSEL LİNKİNİ KUTUYA YAZ
+  if(elements.salonImageInput) elements.salonImageInput.value = salonImage;
   
   if(elements.displayPhone) elements.displayPhone.textContent = salonPhone;
   if(elements.displayAddress) elements.displayAddress.textContent = salonAddress;
   if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
-  if(elements.mainShopImage) elements.mainShopImage.src = salonImage; // GÖRSELİ UYGULA
+  if(elements.mainShopImage) elements.mainShopImage.src = salonImage;
 
   document.title = `${salonName} Randevu`;
 }
@@ -137,7 +137,6 @@ function renderServicesAndBarbers() {
         <span class="service-price-tag">${formatPrice(s.price)}</span>
       </label>
     `).join("");
-    
     document.querySelectorAll('input[name="serviceItem"]').forEach(cb => cb.addEventListener('change', calculateTotal));
     calculateTotal(); 
   }
@@ -162,9 +161,10 @@ function renderTimeSelect() {
 function renderBarbersList() {
   if(!elements.barberList) return;
   elements.barberList.innerHTML = state.settings.barbers.map(b => {
+    const initials = b.initials || "BL";
     const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
     return `<article class="barber-card${selectedClass}">
-              <div style="background:var(--primary); color:#000; padding:10px 14px; border-radius:8px; font-weight:800; font-size:1.1rem;">${escapeHtml(b.initials)}</div>
+              <div style="background:var(--primary); color:#000; padding:10px 14px; border-radius:8px; font-weight:800; font-size:1.1rem;">${escapeHtml(initials)}</div>
               <div><h3>${escapeHtml(b.name)}</h3><p>${escapeHtml(b.title)}</p></div>
             </article>`;
   }).join("");
@@ -243,7 +243,6 @@ function renderAppointments() {
     return;
   }
   
-  // PROFESYONEL RANDEVU KARTLARI
   elements.appointmentsList.innerHTML = state.appointments.map(app => {
     const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
     const serviceNames = app.serviceIds.map(id => {
@@ -394,39 +393,50 @@ async function unlockSettings(event) {
   }
 }
 
+// KAYDETME SORUNUNU ÇÖZEN YENİ VE SAĞLAM KAYDETME FONKSİYONU
 async function saveSettings(event) {
   event.preventDefault();
-  const formData = new FormData(elements.settingsForm);
   
-  const newServices = state.settings.services.map(s => ({
-    id: s.id,
-    name: formData.get(`serviceName-${s.id}`)?.trim() || "",
-    price: Number(formData.get(`servicePrice-${s.id}`)) || 0
-  }));
+  const newServices = state.settings.services.map(s => {
+    const nameInput = document.querySelector(`input[name="serviceName-${s.id}"]`);
+    const priceInput = document.querySelector(`input[name="servicePrice-${s.id}"]`);
+    return {
+      id: s.id,
+      name: nameInput ? nameInput.value.trim() : s.name,
+      price: priceInput ? Number(priceInput.value) : s.price
+    };
+  });
 
-  const newBarbers = state.settings.barbers.map(b => ({
-    id: b.id,
-    name: formData.get(`barberName-${b.id}`)?.trim() || "",
-    title: formData.get(`barberTitle-${b.id}`)?.trim() || "",
-    initials: makeInitials(formData.get(`barberName-${b.id}`)?.trim() || "")
-  }));
+  const newBarbers = state.settings.barbers.map(b => {
+    const nameInput = document.querySelector(`input[name="barberName-${b.id}"]`);
+    const titleInput = document.querySelector(`input[name="barberTitle-${b.id}"]`);
+    const newName = nameInput ? nameInput.value.trim() : b.name;
+    return {
+      id: b.id,
+      name: newName,
+      title: titleInput ? titleInput.value.trim() : b.title,
+      initials: makeInitials(newName)
+    };
+  });
 
   try {
+    const payload = {
+      salonName: elements.salonNameInput.value.trim(),
+      salonPhone: elements.salonPhoneInput.value.trim(),
+      salonAddress: elements.salonAddressInput.value.trim(),
+      salonImage: elements.salonImageInput.value.trim(),
+      services: newServices,
+      barbers: newBarbers
+    };
+
     await api("/api/admin/settings", {
       method: "PUT",
-      body: JSON.stringify({
-        salonName: formData.get("salonName").trim(),
-        salonPhone: formData.get("salonPhone").trim(),
-        salonAddress: formData.get("salonAddress").trim(),
-        salonImage: formData.get("salonImage").trim(), // GÖRSEL URL'SİNİ KAYDET
-        services: newServices,
-        barbers: newBarbers
-      }),
+      body: JSON.stringify(payload),
     });
-    setMessage(elements.settingsMessage, "Ayarlar başarıyla kaydedildi.");
+    setMessage(elements.settingsMessage, "Ayarlar başarıyla Firebase'e kaydedildi!");
     await refreshAll();
   } catch (error) {
-    setMessage(elements.settingsMessage, error.message, "error");
+    setMessage(elements.settingsMessage, "Hata oluştu: " + error.message, "error");
   }
 }
 
