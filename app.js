@@ -1,5 +1,5 @@
 const state = {
-  settings: { services: [], barbers: [], salonName: "" },
+  settings: { services: [], barbers: [], salonName: "", salonPhone: "", salonAddress: "" },
   timeSlots: [],
   selectedDate: todayISO(),
   selectedBarberId: "",
@@ -27,7 +27,15 @@ const elements = {
   adminLoginForm: document.querySelector("#adminLoginForm"),
   adminPinInput: document.querySelector("#adminPinInput"),
   adminMessage: document.querySelector("#adminMessage"),
+  
   salonNameInput: document.querySelector("#salonNameInput"),
+  salonPhoneInput: document.querySelector("#salonPhoneInput"),
+  salonAddressInput: document.querySelector("#salonAddressInput"),
+  
+  displayPhone: document.querySelector("#displayPhone"),
+  displayAddress: document.querySelector("#displayAddress"),
+  displayMapLink: document.querySelector("#displayMapLink"),
+  
   settingsMessage: document.querySelector("#settingsMessage"),
   barberSettings: document.querySelector("#barberSettings"),
   serviceSettings: document.querySelector("#serviceSettings"),
@@ -46,8 +54,6 @@ const elements = {
   cancelForm: document.querySelector("#cancelForm"),
   cancelCodeInput: document.querySelector("#cancelCodeInput"),
   cancelMessage: document.querySelector("#cancelMessage"),
-  
-  // YENİ: Yöneticiden gizlenecek müşteri alanları
   customerWorkspace: document.querySelector("#customerWorkspace"),
   customerSchedule: document.querySelector("#customerSchedule")
 };
@@ -94,9 +100,22 @@ function setMessage(element, message, type = "success") {
 
 function renderBrand() {
   const salonName = state.settings?.salonName || "Salon Bayber";
-  if(elements.salonNameDisplay) elements.salonNameDisplay.textContent = salonName;
+  const salonPhone = state.settings?.salonPhone || "05xx xxx xx xx";
+  const salonAddress = state.settings?.salonAddress || "Reyhanlı, Hatay";
+
+  // Sadece logoyu ve başlığı güncelliyoruz
   if(elements.salonNameInput) elements.salonNameInput.value = salonName;
   if(elements.brandMark) elements.brandMark.textContent = makeInitials(salonName);
+  
+  // YÖNETİCİ GİRİŞİ KUTULARINI GÜNCELLE
+  if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone;
+  if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
+  
+  // SOL TARAFTAKİ MÜŞTERİ KARTINI GÜNCELLE
+  if(elements.displayPhone) elements.displayPhone.textContent = salonPhone;
+  if(elements.displayAddress) elements.displayAddress.textContent = salonAddress;
+  if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
+
   document.title = `${salonName} Randevu`;
 }
 
@@ -122,9 +141,7 @@ function renderServicesAndBarbers() {
       </label>
     `).join("");
     
-    document.querySelectorAll('input[name="serviceItem"]').forEach(cb => {
-      cb.addEventListener('change', calculateTotal);
-    });
+    document.querySelectorAll('input[name="serviceItem"]').forEach(cb => cb.addEventListener('change', calculateTotal));
     calculateTotal(); 
   }
 
@@ -151,7 +168,7 @@ function renderBarbersList() {
     const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
     return `<article class="barber-card${selectedClass}" style="border-color: var(--border);">
               <div class="barber-avatar" style="background:var(--primary); color:#000; padding:10px; border-radius:5px;">${escapeHtml(b.initials)}</div>
-              <div><h3>${escapeHtml(b.name)}</h3><p style="color:var(--text-muted);">${escapeHtml(b.title)}</p></div>
+              <div><h3>${escapeHtml(b.name)}</h3><p style="color:var(--text-muted); font-weight: normal !important;">${escapeHtml(b.title)}</p></div>
             </article>`;
   }).join("");
 }
@@ -162,7 +179,6 @@ function renderSlotBoard() {
     const isAvailable = state.availableSlots.includes(t);
     const selectedClass = state.selectedTime === t ? " is-selected" : "";
     const disabled = isAvailable ? "" : "disabled";
-    // Eski style="opacity:0.3" kodunu sildik, CSS'ten çekecek
     return `<button class="slot-button${selectedClass}" type="button" data-time="${t}" ${disabled}>${t}</button>`;
   }).join("");
 }
@@ -172,7 +188,6 @@ function renderStats() {
   if(elements.openSlots) elements.openSlots.textContent = String(state.availableSlots.length);
 }
 
-// BİZİM GÜNCELLEDİĞİMİZ KISIM: Müşteri Alanlarını Gizleme
 function renderSettingsVisibility() {
   const isAdmin = state.adminUnlocked;
 
@@ -181,11 +196,9 @@ function renderSettingsVisibility() {
   if(elements.settingsForm) elements.settingsForm.hidden = !isAdmin;
   if(elements.appointmentsPanel) elements.appointmentsPanel.hidden = !isAdmin;
 
-  // Yönetici giriş yaptıysa müşteri randevu alma ve saat seçme ekranları kaybolur
   if(elements.customerWorkspace) elements.customerWorkspace.hidden = isAdmin;
   if(elements.customerSchedule) elements.customerSchedule.hidden = isAdmin;
 
-  // Yönetici içerideyken üstteki "Yönetici Girişi" butonu da kaybolur
   if(elements.openSettings) {
     elements.openSettings.style.display = isAdmin ? "none" : "block";
   }
@@ -195,10 +208,10 @@ function renderSettingsForm() {
   if(!elements.serviceSettings || !elements.barberSettings) return;
 
   elements.serviceSettings.innerHTML = state.settings.services.map((s, index) => `
-    <div class="admin-row-box">
+    <div class="admin-row-box" style="padding: 15px; margin-bottom: 10px; border-radius: 8px;">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
         <span style="color:var(--primary); font-weight:bold;">Hizmet ${index + 1}</span>
-        <button class="danger-button mini-danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
+        <button class="danger-button mini-danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="background:transparent !important; color:#ff4d4d !important; border:1px solid #ff4d4d !important; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
       </div>
       <div class="field-row" style="display:flex; gap:10px;">
         <div class="field-group" style="flex:1;">
@@ -214,10 +227,10 @@ function renderSettingsForm() {
   `).join("");
 
   elements.barberSettings.innerHTML = state.settings.barbers.map((b, index) => `
-    <div class="admin-row-box">
+    <div class="admin-row-box" style="padding: 15px; margin-bottom: 10px; border-radius: 8px;">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
         <span style="color:var(--primary); font-weight:bold;">Berber ${index + 1}</span>
-        <button class="danger-button mini-danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
+        <button class="danger-button mini-danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="background:transparent !important; color:#ff4d4d !important; border:1px solid #ff4d4d !important; padding:5px 10px; border-radius:5px; cursor:pointer;">Sil</button>
       </div>
       <div class="field-row" style="display:flex; gap:10px;">
         <div class="field-group" style="flex:1;">
@@ -246,10 +259,10 @@ function renderAppointments() {
        return s ? s.name : "Hizmet";
     }).join(", ");
 
-    return `<article class="appointment-card" style="display: flex; justify-content: space-between; background:var(--bg); border-color:var(--border); padding:15px; border-radius:8px; margin-bottom:10px;">
+    return `<article class="appointment-card" style="display: flex; justify-content: space-between; background:#000000; border: 1px solid var(--border); padding:15px; border-radius:8px; margin-bottom:10px;">
               <div>
                 <h3 style="color:var(--primary); margin:0;">${escapeHtml(app.customerName)}</h3>
-                <p style="margin:5px 0;">${escapeHtml(app.customerPhone)}</p>
+                <p style="margin:5px 0; font-weight: normal !important; color: #aaaaaa !important;">${escapeHtml(app.customerPhone)}</p>
                 <div class="appointment-meta" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
                   <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">${formatDate(app.date)} ${app.time}</span>
                   <span class="meta-chip" style="border:1px solid #444; padding:5px 10px; border-radius:5px;">${escapeHtml(barber.name)}</span>
@@ -257,7 +270,7 @@ function renderAppointments() {
                   <span class="meta-chip" style="border:1px solid #ff4d4d; color:#ff4d4d; padding:5px 10px; border-radius:5px;">KOD: ${escapeHtml(app.cancelCode || '-')}</span>
                 </div>
               </div>
-              <button class="danger-button" type="button" data-cancel="${app.id}" style="background-color: #ff4d4d; color:white; border:none; padding:10px 15px; border-radius:5px; height:fit-content; cursor:pointer;">İptal Et</button>
+              <button class="danger-button" type="button" data-cancel="${app.id}" style="background-color: #ff4d4d !important; color:white !important; border:none; padding:10px 15px; border-radius:5px; height:fit-content; cursor:pointer;">İptal Et</button>
             </article>`;
   }).join("");
 }
@@ -415,6 +428,8 @@ async function saveSettings(event) {
       method: "PUT",
       body: JSON.stringify({
         salonName: formData.get("salonName").trim(),
+        salonPhone: formData.get("salonPhone").trim(),
+        salonAddress: formData.get("salonAddress").trim(),
         services: newServices,
         barbers: newBarbers
       }),

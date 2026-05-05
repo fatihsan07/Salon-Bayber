@@ -1,16 +1,18 @@
 import { createServer } from "node:http";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createHash, randomUUID } from "node:crypto";
-import { dirname, extname, join, normalize } from "node:path";
+import { extname, join, normalize } from "node:path";
+import { readFile } from "node:fs/promises";
 
 const port = Number(process.env.PORT || process.argv[2] || 5173);
 const host = process.env.HOST || "0.0.0.0";
 const root = process.cwd();
-const dbPath = join(root, "data", "db.json");
 const adminSessions = new Map();
+
 
 const defaultSettings = {
   salonName: "Salon Bayber",
+  salonPhone: "05xx xxx xx xx",
+  salonAddress: "Reyhanlı, Hatay",
   adminPinHash: hashPin(process.env.ADMIN_PIN || "1234"),
   barbers: [
     { id: "mehmet-ali-sanverdi", name: "Mehmet Ali Şanverdi", title: "Usta berber", initials: "MA" },
@@ -23,7 +25,6 @@ const defaultSettings = {
   ]
 };
 
-// YENİ SAATLER 09:00 - 21:00 ARASI YAPILDI
 const timeSlots = [
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
   "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
@@ -52,31 +53,51 @@ function getAvailableSlots(db, barberId, date) {
   return timeSlots.filter(t => !bookedTimes.includes(t) && !isPastSlot(date, t));
 }
 
-async function ensureDb() {
-  try { await readFile(dbPath, "utf8"); } 
-  catch { await writeDb({ settings: structuredClone(defaultSettings), appointments: [] }); }
-}
-
 async function readDb() {
-  await ensureDb();
-  const raw = await readFile(dbPath, "utf8");
-  const db = JSON.parse(raw);
-  db.settings = normalizeSettings(db.settings);
-  db.appointments = Array.isArray(db.appointments) ? db.appointments : [];
-  return db;
+  try {
+    if (FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") {
+      console.log("Firebase linki henüz eklenmedi.");
+      return { settings: normalizeSettings({}), appointments: [] };
+    }
+    const baseUrl = FIREBASE_URL.replace(/\/$/, "");
+    const response = await fetch(`${baseUrl}/db.json`);
+    let db = await response.json();
+
+    if (!db) {
+      db = { settings: structuredClone(defaultSettings), appointments: [] };
+      await writeDb(db);
+    }
+    db.settings = normalizeSettings(db.settings);
+    db.appointments = Array.isArray(db.appointments) ? db.appointments : [];
+    return db;
+  } catch (error) {
+    console.error("Veritabanı okuma hatası:", error);
+    return { settings: normalizeSettings({}), appointments: [] };
+  }
 }
 
 async function writeDb(db) {
-  await mkdir(dirname(dbPath), { recursive: true });
-  await writeFile(dbPath, `${JSON.stringify(db, null, 2)}\n`, "utf8");
+  try {
+    if (FIREBASE_URL === "LİNKİ_BURAYA_YAPIŞTIR") return;
+    const baseUrl = FIREBASE_URL.replace(/\/$/, "");
+    await fetch(`${baseUrl}/db.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(db)
+    });
+  } catch (error) {
+    console.error("Veritabanı yazma hatası:", error);
+  }
 }
 
 function normalizeSettings(settings = {}) {
   const salonName = settings.salonName || defaultSettings.salonName;
+  const salonPhone = settings.salonPhone || defaultSettings.salonPhone;
+  const salonAddress = settings.salonAddress || defaultSettings.salonAddress;
   const adminPinHash = settings.adminPinHash || defaultSettings.adminPinHash;
   const barbers = Array.isArray(settings.barbers) && settings.barbers.length ? settings.barbers : structuredClone(defaultSettings.barbers);
   const services = Array.isArray(settings.services) && settings.services.length ? settings.services : structuredClone(defaultSettings.services);
-  return { salonName, adminPinHash, barbers, services };
+  return { salonName, salonPhone, salonAddress, adminPinHash, barbers, services };
 }
 
 function sendJson(res, status, payload) {
@@ -101,7 +122,7 @@ async function handlePublicState(req, res, url) {
   const date = url.searchParams.get("date") || todayISO();
   const barberId = url.searchParams.get("barberId") || db.settings.barbers[0]?.id || "";
   sendJson(res, 200, {
-    settings: { salonName: db.settings.salonName, barbers: db.settings.barbers, services: db.settings.services },
+    settings: { salonName: db.settings.salonName, salonPhone: db.settings.salonPhone, salonAddress: db.settings.salonAddress, barbers: db.settings.barbers, services: db.settings.services },
     timeSlots,
     availableSlots: getAvailableSlots(db, barberId, date),
     todayCount: db.appointments.filter(a => a.date === todayISO()).length,
@@ -154,6 +175,8 @@ async function handleUpdateSettings(req, res) {
     db.settings.barbers = payload.barbers;
   }
   db.settings.salonName = payload.salonName || db.settings.salonName;
+  db.settings.salonPhone = payload.salonPhone || db.settings.salonPhone;
+  db.settings.salonAddress = payload.salonAddress || db.settings.salonAddress;
   
   await writeDb(db);
   sendJson(res, 200, { settings: db.settings });

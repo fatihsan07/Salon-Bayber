@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="styles.css" />
     <style>
       :root {
+        color-scheme: dark !important; 
         --primary: #FFD700 !important;
         --bg: #0a0a0a !important; 
         --surface: #141414 !important; 
@@ -18,6 +19,7 @@
       body { 
         background-color: var(--bg) !important; 
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; 
+        margin: 0;
       }
 
       .panel, .sidebar, .topbar, .admin-row-box { 
@@ -25,7 +27,7 @@
         border: 1px solid var(--border) !important; 
       }
 
-      body, h1, h2, h3, h4, p, label, span, div, input, select, button { 
+      body, h1, h2, h3, h4, p, label, span, div, input, select, button, textarea { 
         color: var(--text) !important; 
         font-weight: 800 !important; 
       }
@@ -38,7 +40,8 @@
       }
 
       input, select, textarea { 
-        background-color: #111111 !important; 
+        background-color: #000000 !important; 
+        color: #ffffff !important;
         border: 1px solid #444 !important; 
         padding: 10px !important; 
         border-radius: 6px !important;
@@ -46,11 +49,13 @@
         box-sizing: border-box !important; 
         width: 100% !important;
       }
-      input:focus, select:focus { border-color: var(--primary) !important; outline: none !important; }
+      input:focus, select:focus, textarea:focus { border-color: var(--primary) !important; outline: none !important; }
+      
+      option { background-color: #000000 !important; color: #ffffff !important; }
 
       .checkbox-label { 
         display: flex; align-items: center; gap: 12px; 
-        background-color: #111111 !important; padding: 12px !important; 
+        background-color: #000000 !important; padding: 12px !important; 
         border: 1px solid var(--border) !important; margin-bottom: 8px !important;
         border-radius: 8px !important; cursor: pointer;
       }
@@ -59,7 +64,7 @@
       .service-price-tag { color: var(--primary) !important; margin-left: auto; }
 
       .barber-card {
-        background-color: #111111 !important; border: 1px solid var(--border) !important;
+        background-color: #000000 !important; border: 1px solid var(--border) !important;
         padding: 15px !important; border-radius: 8px !important;
         display: flex; align-items: center; gap: 15px;
       }
@@ -85,7 +90,6 @@
       .status-grid article span, #totalPriceDisplay { color: var(--primary) !important; font-size: 1.6em; }
       .brand-mark { background: var(--primary) !important; color: #000 !important; padding: 10px; border-radius: 6px; font-size: 1.2rem;}
 
-      /* YENİ EKLENEN KISIM: SAATLERİN DÜZELTİLMESİ */
       .slot-board {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -93,14 +97,13 @@
         margin-top: 15px;
       }
       .slot-button {
-        background-color: #111111 !important;
+        background-color: #000000 !important;
         color: #ffffff !important;
         border: 1px solid #444 !important;
         padding: 12px !important;
         border-radius: 6px !important;
         cursor: pointer;
         font-weight: 800 !important;
-        font-family: inherit !important;
         transition: all 0.2s;
         width: 100%;
       }
@@ -126,15 +129,38 @@
           <div class="brand-mark" id="brandMark">SB</div>
           <div>
             <p class="eyebrow">Berber randevu sistemi</p>
-            <h1 style="font-size: 2.2rem; margin-top: 5px; font-weight: normal !important; font-family: 'Courier New', Courier, monospace !important;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1>
+            <h1 id="salonNameDisplay" style="font-size: 2.2rem; margin-top: 5px; font-weight: normal !important; font-family: 'Courier New', Courier, monospace !important;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1>
           </div>
         </div>
         <figure class="shop-photo" style="border: 2px solid var(--primary); margin: 20px 0; border-radius: 8px; overflow: hidden;">
           <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" alt="Berber" />
         </figure>
+        
         <div class="status-grid">
           <article><span id="todayCount">0</span><p>Bugün randevu</p></article>
           <article><span id="openSlots">0</span><p>Müsait saat</p></article>
+        </div>
+
+        <div style="margin-top: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background-color: #111111;">
+          <p class="eyebrow" style="margin-bottom: 15px;">İletişim & Konum</p>
+          
+          <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px;">
+            <span style="font-size: 1.3rem;">📍</span>
+            <div>
+              <p style="margin: 0; color: #aaaaaa !important; font-size: 0.85rem; font-weight: normal !important;">Adres</p>
+              <p id="displayAddress" style="margin: 2px 0 0 0; font-size: 0.95rem;">Reyhanlı, Hatay</p>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <span style="font-size: 1.3rem;">📞</span>
+            <div>
+              <p style="margin: 0; color: #aaaaaa !important; font-size: 0.85rem; font-weight: normal !important;">Telefon</p>
+              <p id="displayPhone" style="margin: 2px 0 0 0; font-size: 0.95rem;">05xx xxx xx xx</p>
+            </div>
+          </div>
+          
+          <a id="displayMapLink" href="#" target="_blank" style="display: block; text-align: center; margin-top: 15px; padding: 10px; background: transparent; border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; transition: 0.2s;">Haritada Göster</a>
         </div>
       </aside>
 
@@ -161,9 +187,20 @@
           </form>
           
           <form id="settingsForm" class="settings-form" hidden>
+            <div class="section-title" style="margin-top:10px;"><p class="eyebrow">Genel Ayarlar</p></div>
+            <div class="field-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <div class="field-group" style="flex: 1;">
+                <label>Sistem Adı</label>
+                <input id="salonNameInput" name="salonName" type="text" required />
+              </div>
+              <div class="field-group" style="flex: 1;">
+                <label>İletişim Numarası</label>
+                <input id="salonPhoneInput" name="salonPhone" type="text" required />
+              </div>
+            </div>
             <div class="field-group">
-              <label>Sistem Adı</label>
-              <input id="salonNameInput" name="salonName" type="text" required />
+              <label>Açık Adres (Harita konumu bu yazıya göre bulunur)</label>
+              <textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea>
             </div>
             
             <div class="section-title" style="margin-top:30px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
@@ -182,7 +219,6 @@
           </form>
         </section>
 
-        <!-- YENİ EKLENEN ID: customerWorkspace -->
         <section class="workspace-grid" id="customerWorkspace">
           <section class="panel booking-panel" id="bookingPanel">
             <div class="section-title"><p class="eyebrow">Randevu Al</p><h2>Bilgilerinizi Girin</h2></div>
@@ -232,7 +268,6 @@
           </aside>
         </section>
 
-        <!-- YENİ EKLENEN ID: customerSchedule -->
         <section class="panel schedule-panel" id="customerSchedule">
           <div class="section-title"><p class="eyebrow">Müsaitlik</p><h2>Saat Seçimi</h2></div>
           <div class="slot-board" id="slotBoard"></div>
