@@ -99,7 +99,7 @@ function setMessage(element, message, type = "success") {
 
 function renderBrand() {
   const salonName = state.settings?.salonName || "Salon Bayber";
-  const salonPhone = state.settings?.salonPhone || "05xx xxx xx xx";
+  const salonPhone = state.settings?.salonPhone || "0539 577 2999";
   const salonAddress = state.settings?.salonAddress || "Reyhanlı, Hatay";
   const salonImage = state.settings?.salonImage || "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80";
 
@@ -131,10 +131,10 @@ function renderServicesAndBarbers() {
 
   if(elements.serviceCheckboxes) {
     elements.serviceCheckboxes.innerHTML = state.settings.services.map(s => `
-      <label class="checkbox-label">
+      <label class="checkbox-label" style="background-color: #0a0a0a !important; color: #fff !important; border: 1px solid #333 !important;">
         <input type="checkbox" name="serviceItem" value="${s.id}">
-        <span>${escapeHtml(s.name)}</span>
-        <span class="service-price-tag">${formatPrice(s.price)}</span>
+        <span style="color:#fff !important;">${escapeHtml(s.name)}</span>
+        <span class="service-price-tag" style="color:var(--primary) !important;">${formatPrice(s.price)}</span>
       </label>
     `).join("");
     document.querySelectorAll('input[name="serviceItem"]').forEach(cb => cb.addEventListener('change', calculateTotal));
@@ -142,7 +142,7 @@ function renderServicesAndBarbers() {
   }
 
   if(elements.barberSelect) {
-    elements.barberSelect.innerHTML = state.settings.barbers.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
+    elements.barberSelect.innerHTML = state.settings.barbers.map(b => `<option value="${b.id}" style="background-color:#0a0a0a; color:#fff;">${escapeHtml(b.name)}</option>`).join("");
     if (selectedBarber && state.settings.barbers.some(b => b.id === selectedBarber)) elements.barberSelect.value = selectedBarber;
     state.selectedBarberId = elements.barberSelect.value;
   }
@@ -151,21 +151,22 @@ function renderServicesAndBarbers() {
 function renderTimeSelect() {
   if(!elements.timeSelect) return;
   const currentValue = state.selectedTime || elements.timeSelect.value;
-  elements.timeSelect.innerHTML = state.availableSlots.map(t => `<option value="${t}">${t}</option>`).join("");
+  elements.timeSelect.innerHTML = state.availableSlots.map(t => `<option value="${t}" style="background-color:#0a0a0a; color:#fff;">${t}</option>`).join("");
   if (currentValue && state.availableSlots.includes(currentValue)) elements.timeSelect.value = currentValue;
   else if (state.availableSlots.length) elements.timeSelect.value = state.availableSlots[0];
-  else elements.timeSelect.innerHTML = `<option value="">Müsait yok</option>`;
+  else elements.timeSelect.innerHTML = `<option value="" style="background-color:#0a0a0a; color:#fff;">Müsait yok</option>`;
   state.selectedTime = elements.timeSelect.value;
 }
 
+// BEYAZ KUTU SORUNU BURADA KÖKTEN ENGELLENDİ
 function renderBarbersList() {
   if(!elements.barberList) return;
   elements.barberList.innerHTML = state.settings.barbers.map(b => {
     const initials = b.initials || "BL";
     const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
-    return `<article class="barber-card${selectedClass}">
-              <div style="background:var(--primary); color:#000; padding:10px 14px; border-radius:8px; font-weight:800; font-size:1.1rem;">${escapeHtml(initials)}</div>
-              <div><h3>${escapeHtml(b.name)}</h3><p>${escapeHtml(b.title)}</p></div>
+    return `<article class="barber-card${selectedClass}" style="background-color:#0a0a0a !important; color:#ffffff !important; border:1px solid #333 !important;">
+              <div style="background:var(--primary) !important; color:#000 !important; padding:10px 14px; border-radius:8px; font-weight:800; font-size:1.1rem;">${escapeHtml(initials)}</div>
+              <div><h3 style="color:#ffffff !important; margin:0 0 3px 0 !important;">${escapeHtml(b.name)}</h3><p style="color:#aaaaaa !important; margin:0 !important;">${escapeHtml(b.title)}</p></div>
             </article>`;
   }).join("");
 }
@@ -176,7 +177,7 @@ function renderSlotBoard() {
     const isAvailable = state.availableSlots.includes(t);
     const selectedClass = state.selectedTime === t ? " is-selected" : "";
     const disabled = isAvailable ? "" : "disabled";
-    return `<button class="slot-button${selectedClass}" type="button" data-time="${t}" ${disabled}>${t}</button>`;
+    return `<button class="slot-button${selectedClass}" type="button" data-time="${t}" ${disabled} style="background-color:#0a0a0a !important; color:#fff !important;">${t}</button>`;
   }).join("");
 }
 
@@ -338,7 +339,7 @@ async function createAppointment(event) {
     setMessage(elements.formMessage, "Randevu oluşturuldu! Yöneticiye bilgi veriliyor...");
     await refreshAll();
 
-    // DİKKAT: MESAJ ARTIK DİREKT BERBERİN (0539 577 2999) WHATSAPP'INA GİDECEK
+    // MESAJ ARTIK DİREKT BERBERİN KENDİ WHATSAPP'INA GİDİYOR
     const barberPhone = "905395772999"; 
     
     let totalPrice = 0;
@@ -348,7 +349,7 @@ async function createAppointment(event) {
       return s ? s.name : "";
     }).join(", ");
 
-    const waText = encodeURIComponent(`Merhaba, sistem üzerinden yeni bir randevu aldım!\n\n👤 Adım: ${customerName}\n📞 Telefonum: ${customerPhone}\n📅 Tarih: ${formatDate(dateSelect)}\n⏰ Saat: ${timeSelect}\n✂️ Hizmetler: ${serviceNames}\n💰 Toplam Tutar: ₺${totalPrice}`);
+    const waText = encodeURIComponent(`🚨 YENİ RANDEVU ALINDI 🚨\n\n👤 Müşteri: ${customerName}\n📞 Telefon: ${customerPhone}\n📅 Tarih: ${formatDate(dateSelect)}\n⏰ Saat: ${timeSelect}\n✂️ Hizmetler: ${serviceNames}\n💰 Toplam Tutar: ₺${totalPrice}`);
     
     window.open(`https://wa.me/${barberPhone}?text=${waText}`, '_blank');
 
