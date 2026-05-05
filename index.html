@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1f2723" />
     <title>Salon Bayber Randevu</title>
-    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -18,36 +17,13 @@
             <h1 id="salonNameDisplay">Salon Bayber</h1>
           </div>
         </div>
-
         <figure class="shop-photo">
-          <img
-            src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80"
-            alt="Profesyonel berber koltukları ve aynalar"
-          />
+          <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" alt="Profesyonel berber" />
         </figure>
-
         <div class="status-grid" aria-label="Günlük durum">
-          <article>
-            <span id="todayCount">0</span>
-            <p>Bugün randevu</p>
-          </article>
-          <article>
-            <span id="openSlots">0</span>
-            <p>Müsait saat</p>
-          </article>
+          <article><span id="todayCount">0</span><p>Bugün randevu</p></article>
+          <article><span id="openSlots">0</span><p>Müsait saat</p></article>
         </div>
-
-        <section class="panel compact-panel">
-          <div class="section-title">
-            <p class="eyebrow">Çalışma saatleri</p>
-            <h2>09:00 - 20:00</h2>
-          </div>
-          <ul class="mini-list">
-            <li><span>Pazartesi - Cumartesi</span><strong>Açık</strong></li>
-            <li><span>Pazar</span><strong>Kapalı</strong></li>
-            <li><span>Ortalama hizmet</span><strong>30 dk</strong></li>
-          </ul>
-        </section>
       </aside>
 
       <main class="main-content">
@@ -57,36 +33,21 @@
             <h2>Berberini seç, saatini ayarla</h2>
           </div>
           <div class="top-actions">
-            <button class="ghost-button" id="clearDemo" type="button" title="Yönetici panelini yenile">
-              Paneli yenile
-            </button>
             <button class="ghost-button" id="openSettings" type="button">Yönetici</button>
             <button class="primary-button" id="scrollBooking" type="button">Randevu al</button>
           </div>
         </header>
 
         <section class="panel settings-panel" id="settingsPanel" hidden>
-          <div class="section-title">
-            <p class="eyebrow">Salon ayarları</p>
-            <h2>Yetkili yönetim</h2>
-          </div>
-
+          <div class="section-title"><p class="eyebrow">Salon ayarları</p><h2>Yetkili yönetim</h2></div>
           <form id="adminLoginForm" class="admin-login-form">
             <div class="field-group">
               <label for="adminPinInput">Yönetici şifresi</label>
-              <input
-                id="adminPinInput"
-                name="adminPin"
-                type="password"
-                inputmode="numeric"
-                autocomplete="current-password"
-                required
-              />
+              <input id="adminPinInput" name="adminPin" type="password" required />
             </div>
-            <button class="primary-button" type="submit">Ayarları aç</button>
-            <p class="form-message" id="adminMessage" role="status" aria-live="polite"></p>
+            <button class="primary-button" type="submit">Giriş Yap</button>
+            <p class="form-message" id="adminMessage"></p>
           </form>
-
           <form id="settingsForm" class="settings-form">
             <div class="field-group">
               <label for="salonNameInput">Berber salonu adı</label>
@@ -94,61 +55,34 @@
             </div>
             <div class="barber-settings" id="barberSettings"></div>
             <button class="ghost-button add-barber-button" id="addBarber" type="button">Berber ekle</button>
-            <div class="field-row">
-              <div class="field-group">
-                <label for="adminPinNewInput">Yeni yönetici şifresi</label>
-                <input id="adminPinNewInput" name="adminPinNew" type="password" inputmode="numeric" />
-              </div>
-              <div class="field-group">
-                <label for="adminPinConfirmInput">Şifre tekrarı</label>
-                <input id="adminPinConfirmInput" name="adminPinConfirm" type="password" inputmode="numeric" />
-              </div>
-            </div>
             <div class="settings-actions">
               <button class="ghost-button" id="lockSettings" type="button">Kilitle</button>
-              <button class="ghost-button" id="resetSettings" type="button">Varsayılana dön</button>
-              <button class="primary-button" type="submit">Ayarları kaydet</button>
+              <button class="primary-button" type="submit">Kaydet</button>
             </div>
-            <p class="form-message" id="settingsMessage" role="status" aria-live="polite"></p>
+            <p class="form-message" id="settingsMessage"></p>
           </form>
         </section>
 
         <section class="workspace-grid">
           <section class="panel booking-panel" id="bookingPanel">
-            <div class="section-title">
-              <p class="eyebrow">Yeni randevu</p>
-              <h2>Randevu bilgileri</h2>
-            </div>
-
+            <div class="section-title"><p class="eyebrow">Yeni randevu</p><h2>Randevu bilgileri</h2></div>
             <form id="bookingForm" class="booking-form">
               <div class="field-group">
                 <label for="customerName">Ad soyad</label>
-                <input id="customerName" name="customerName" type="text" autocomplete="name" required />
+                <input id="customerName" name="customerName" type="text" required />
               </div>
-
               <div class="field-group">
                 <label for="customerPhone">Telefon</label>
-                <input
-                  id="customerPhone"
-                  name="customerPhone"
-                  type="tel"
-                  inputmode="tel"
-                  autocomplete="tel"
-                  placeholder="05xx xxx xx xx"
-                  required
-                />
+                <input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required />
               </div>
-
               <div class="field-group">
                 <label for="serviceSelect">Hizmet</label>
                 <select id="serviceSelect" name="serviceSelect" required></select>
               </div>
-
               <div class="field-group">
                 <label for="barberSelect">Berber</label>
                 <select id="barberSelect" name="barberSelect" required></select>
               </div>
-
               <div class="field-row">
                 <div class="field-group">
                   <label for="dateSelect">Tarih</label>
@@ -159,53 +93,43 @@
                   <select id="timeSelect" name="timeSelect" required></select>
                 </div>
               </div>
-
-              <div class="field-group span-all">
-                <label for="noteInput">Not</label>
-                <textarea id="noteInput" name="noteInput" rows="3" placeholder="Opsiyonel"></textarea>
-              </div>
-
-              <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
-
+              <p class="form-message" id="formMessage"></p>
               <button class="primary-button submit-button" type="submit">Randevuyu onayla</button>
             </form>
           </section>
 
-          <section class="panel team-panel">
-            <div class="section-title">
-              <p class="eyebrow">Ekip</p>
-              <h2>Uygun berberler</h2>
-            </div>
-            <div class="barber-list" id="barberList"></div>
-          </section>
+          <div>
+            <section class="panel team-panel">
+              <div class="section-title"><p class="eyebrow">Ekip</p><h2>Uygun berberler</h2></div>
+              <div class="barber-list" id="barberList"></div>
+            </section>
+            
+            <!-- YENİ İPTAL BÖLÜMÜ -->
+            <section class="panel" style="margin-top: 20px;">
+              <div class="section-title"><p class="eyebrow">Fikriniz mi değişti?</p><h2>Randevu İptali</h2></div>
+              <form id="cancelForm" class="booking-form">
+                <div class="field-group">
+                  <label for="cancelCodeInput">İptal Kodunuz</label>
+                  <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Örn: A7B2X9" required />
+                </div>
+                <button class="danger-button submit-button" type="submit" style="margin-top: 10px;">Randevuyu İptal Et</button>
+                <p class="form-message" id="cancelMessage"></p>
+              </form>
+            </section>
+          </div>
         </section>
 
         <section class="panel schedule-panel">
-          <div class="section-title">
-            <p class="eyebrow">Takvim</p>
-            <h2>Seçili günün saatleri</h2>
-          </div>
+          <div class="section-title"><p class="eyebrow">Takvim</p><h2>Saatler</h2></div>
           <div class="slot-board" id="slotBoard"></div>
         </section>
 
         <section class="panel appointments-panel" id="appointmentsPanel" hidden>
-          <div class="section-title">
-            <p class="eyebrow">Randevular</p>
-            <h2>Aktif kayıtlar</h2>
-          </div>
+          <div class="section-title"><p class="eyebrow">Randevular</p><h2>Aktif kayıtlar</h2></div>
           <div class="appointments-list" id="appointmentsList"></div>
-        </section>
-
-        <section class="panel notification-panel" id="notificationPanel">
-          <div class="section-title">
-            <p class="eyebrow">WhatsApp Bildirimleri</p>
-            <h2>Müşteri İletişimi</h2>
-          </div>
-          <div class="notification-list" id="notificationList"></div>
         </section>
       </main>
     </div>
-
     <script src="app.js"></script>
   </body>
 </html>
