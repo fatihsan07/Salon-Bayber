@@ -1,13 +1,10 @@
 const state = {
-  settings: null,
-  services: [],
-  barbers: [],
+  settings: { services: [], barbers: [], salonName: "" },
   timeSlots: [],
   selectedDate: todayISO(),
   selectedBarberId: "",
   selectedTime: "",
   availableSlots: [],
-  barberCounts: {},
   todayCount: 0,
   adminToken: sessionStorage.getItem("barberline-admin-token") || "",
   adminUnlocked: Boolean(sessionStorage.getItem("barberline-admin-token")),
@@ -19,7 +16,8 @@ const elements = {
   bookingForm: document.querySelector("#bookingForm"),
   customerName: document.querySelector("#customerName"),
   customerPhone: document.querySelector("#customerPhone"),
-  serviceSelect: document.querySelector("#serviceSelect"),
+  serviceCheckboxes: document.querySelector("#serviceCheckboxes"),
+  totalPriceDisplay: document.querySelector("#totalPriceDisplay"),
   barberSelect: document.querySelector("#barberSelect"),
   dateSelect: document.querySelector("#dateSelect"),
   timeSelect: document.querySelector("#timeSelect"),
@@ -32,18 +30,19 @@ const elements = {
   salonNameInput: document.querySelector("#salonNameInput"),
   settingsMessage: document.querySelector("#settingsMessage"),
   barberSettings: document.querySelector("#barberSettings"),
+  serviceSettings: document.querySelector("#serviceSettings"),
   salonNameDisplay: document.querySelector("#salonNameDisplay"),
   brandMark: document.querySelector("#brandMark"),
   lockSettings: document.querySelector("#lockSettings"),
   openSettings: document.querySelector("#openSettings"),
   addBarber: document.querySelector("#addBarber"),
+  addService: document.querySelector("#addService"),
   barberList: document.querySelector("#barberList"),
   slotBoard: document.querySelector("#slotBoard"),
   appointmentsPanel: document.querySelector("#appointmentsPanel"),
   appointmentsList: document.querySelector("#appointmentsList"),
   todayCount: document.querySelector("#todayCount"),
   openSlots: document.querySelector("#openSlots"),
-  scrollBooking: document.querySelector("#scrollBooking"),
   cancelForm: document.querySelector("#cancelForm"),
   cancelCodeInput: document.querySelector("#cancelCodeInput"),
   cancelMessage: document.querySelector("#cancelMessage"),
@@ -85,7 +84,7 @@ async function api(path, options = {}) {
 function setMessage(element, message, type = "success") {
   if(element) {
     element.textContent = message;
-    element.classList.toggle("error", type === "error");
+    element.style.color = type === "error" ? "#ff4d4d" : "var(--primary)";
   }
 }
 
@@ -97,18 +96,39 @@ function renderBrand() {
   document.title = `${salonName} Randevu`;
 }
 
-function renderSelects() {
-  const selectedService = elements.serviceSelect?.value;
+// ÇOKLU HİZMET VE FİYAT HESAPLAMA
+function calculateTotal() {
+  const checkboxes = document.querySelectorAll('input[name="serviceItem"]:checked');
+  let total = 0;
+  checkboxes.forEach(cb => {
+    const service = state.settings.services.find(s => s.id === cb.value);
+    if(service) total += Number(service.price);
+  });
+  if(elements.totalPriceDisplay) elements.totalPriceDisplay.textContent = formatPrice(total);
+}
+
+function renderServicesAndBarbers() {
   const selectedBarber = state.selectedBarberId || elements.barberSelect?.value;
 
-  if(elements.serviceSelect) {
-    elements.serviceSelect.innerHTML = state.services.map(s => `<option value="${s.id}">${escapeHtml(s.name)} - ${formatPrice(s.price)}</option>`).join("");
-    if (selectedService && state.services.some(s => s.id === selectedService)) elements.serviceSelect.value = selectedService;
+  if(elements.serviceCheckboxes) {
+    elements.serviceCheckboxes.innerHTML = state.settings.services.map(s => `
+      <label class="checkbox-label">
+        <input type="checkbox" name="serviceItem" value="${s.id}">
+        <span>${escapeHtml(s.name)}</span>
+        <span class="service-price-tag">${formatPrice(s.price)}</span>
+      </label>
+    `).join("");
+    
+    // Checkboxlara dinleyici ekle
+    document.querySelectorAll('input[name="serviceItem"]').forEach(cb => {
+      cb.addEventListener('change', calculateTotal);
+    });
+    calculateTotal(); // Sıfırla
   }
 
   if(elements.barberSelect) {
-    elements.barberSelect.innerHTML = state.barbers.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
-    if (selectedBarber && state.barbers.some(b => b.id === selectedBarber)) elements.barberSelect.value = selectedBarber;
+    elements.barberSelect.innerHTML = state.settings.barbers.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
+    if (selectedBarber && state.settings.barbers.some(b => b.id === selectedBarber)) elements.barberSelect.value = selectedBarber;
     state.selectedBarberId = elements.barberSelect.value;
   }
 }
@@ -117,21 +137,19 @@ function renderTimeSelect() {
   if(!elements.timeSelect) return;
   const currentValue = state.selectedTime || elements.timeSelect.value;
   elements.timeSelect.innerHTML = state.availableSlots.map(t => `<option value="${t}">${t}</option>`).join("");
-  
   if (currentValue && state.availableSlots.includes(currentValue)) elements.timeSelect.value = currentValue;
   else if (state.availableSlots.length) elements.timeSelect.value = state.availableSlots[0];
   else elements.timeSelect.innerHTML = `<option value="">Müsait yok</option>`;
-  
   state.selectedTime = elements.timeSelect.value;
 }
 
-function renderBarbers() {
+function renderBarbersList() {
   if(!elements.barberList) return;
-  elements.barberList.innerHTML = state.barbers.map(b => {
+  elements.barberList.innerHTML = state.settings.barbers.map(b => {
     const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
-    return `<article class="barber-card${selectedClass}">
-              <div class="barber-avatar">${escapeHtml(b.initials)}</div>
-              <div><h3>${escapeHtml(b.name)}</h3><p>${escapeHtml(b.title)}</p></div>
+    return `<article class="barber-card${selectedClass}" style="border-color: var(--border);">
+              <div class="barber-avatar" style="background:var(--primary); color:#000;">${escapeHtml(b.initials)}</div>
+              <div><h3>${escapeHtml(b.name)}</h3><p style="color:var(--text-muted);">${escapeHtml(b.title)}</p></div>
             </article>`;
   }).join("");
 }
@@ -142,7 +160,7 @@ function renderSlotBoard() {
     const isAvailable = state.availableSlots.includes(t);
     const selectedClass = state.selectedTime === t ? " is-selected" : "";
     const disabled = isAvailable ? "" : "disabled";
-    return `<button class="slot-button${selectedClass}" type="button" data-time="${t}" ${disabled}>${t}</button>`;
+    return `<button class="slot-button${selectedClass}" type="button" data-time="${t}" ${disabled} style="${isAvailable ? 'border-color:var(--border); color:var(--text);' : 'opacity:0.3;'}">${t}</button>`;
   }).join("");
 }
 
@@ -158,6 +176,49 @@ function renderSettingsVisibility() {
   if(elements.appointmentsPanel) elements.appointmentsPanel.hidden = !state.adminUnlocked;
 }
 
+// YÖNETİCİ PANELİ İÇERİĞİ (FİYAT VE BERBER DÜZENLEME)
+function renderSettingsForm() {
+  if(!elements.serviceSettings || !elements.barberSettings) return;
+
+  elements.serviceSettings.innerHTML = state.settings.services.map((s, index) => `
+    <div class="admin-row-box">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:var(--primary); font-weight:bold;">Hizmet ${index + 1}</span>
+        <button class="danger-button mini-danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d;">Sil</button>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Hizmet Adı</label>
+          <input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required />
+        </div>
+        <div class="field-group">
+          <label>Fiyat (₺)</label>
+          <input name="servicePrice-${s.id}" type="number" value="${s.price}" required />
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  elements.barberSettings.innerHTML = state.settings.barbers.map((b, index) => `
+    <div class="admin-row-box">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:var(--primary); font-weight:bold;">Berber ${index + 1}</span>
+        <button class="danger-button mini-danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d;">Sil</button>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Berber Adı</label>
+          <input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required />
+        </div>
+        <div class="field-group">
+          <label>Uzmanlık</label>
+          <input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required />
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
 function renderAppointments() {
   if(!elements.appointmentsList) return;
   if (!state.appointments.length) {
@@ -165,32 +226,42 @@ function renderAppointments() {
     return;
   }
   elements.appointmentsList.innerHTML = state.appointments.map(app => {
-    const barber = state.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
-    return `<article class="appointment-card" style="display: flex; justify-content: space-between;">
+    const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
+    // Hizmet isimlerini bul
+    const serviceNames = app.serviceIds.map(id => {
+       const s = state.settings.services.find(serv => serv.id === id);
+       return s ? s.name : "Hizmet";
+    }).join(", ");
+
+    return `<article class="appointment-card" style="display: flex; justify-content: space-between; background:var(--bg); border-color:var(--border);">
               <div>
-                <h3>${escapeHtml(app.customerName)}</h3>
+                <h3 style="color:var(--primary);">${escapeHtml(app.customerName)}</h3>
                 <p>${escapeHtml(app.customerPhone)}</p>
-                <div class="appointment-meta">
-                  <span class="meta-chip">${formatDate(app.date)} ${app.time}</span>
-                  <span class="meta-chip">${escapeHtml(barber.name)}</span>
-                  <span class="meta-chip">İptal Kodu: ${escapeHtml(app.cancelCode || '-')}</span>
+                <div class="appointment-meta" style="margin-top:10px;">
+                  <span class="meta-chip" style="border-color:var(--border);">${formatDate(app.date)} ${app.time}</span>
+                  <span class="meta-chip" style="border-color:var(--border);">${escapeHtml(barber.name)}</span>
+                  <span class="meta-chip" style="border-color:var(--border); color:var(--primary);">${escapeHtml(serviceNames)}</span>
+                  <span class="meta-chip" style="border-color:#ff4d4d; color:#ff4d4d;">İptal Kodu: ${escapeHtml(app.cancelCode || '-')}</span>
                 </div>
               </div>
-              <button class="danger-button" type="button" data-cancel="${app.id}">Sistemi İptal Et</button>
+              <button class="danger-button" type="button" data-cancel="${app.id}" style="background-color: #ff4d4d; color:white; border:none; height:fit-content;">İptal Et</button>
             </article>`;
   }).join("");
 }
 
 function renderAll() {
-  renderBrand(); renderSelects(); renderTimeSelect(); renderBarbers(); 
-  renderSlotBoard(); renderStats(); renderSettingsVisibility(); renderAppointments();
+  renderBrand(); renderServicesAndBarbers(); renderTimeSelect(); renderBarbersList(); 
+  renderSlotBoard(); renderStats(); renderSettingsVisibility(); renderSettingsForm(); renderAppointments();
 }
 
 async function loadPublicState() {
   const query = new URLSearchParams({ date: state.selectedDate, barberId: state.selectedBarberId });
   const payload = await api(`/api/public-state?${query.toString()}`);
-  Object.assign(state, payload);
-  if (!state.selectedBarberId && state.barbers.length) state.selectedBarberId = state.barbers[0].id;
+  state.settings = payload.settings;
+  state.timeSlots = payload.timeSlots;
+  state.availableSlots = payload.availableSlots;
+  state.todayCount = payload.todayCount;
+  if (!state.selectedBarberId && state.settings.barbers.length) state.selectedBarberId = state.settings.barbers[0].id;
 }
 
 async function loadAdminDashboard() {
@@ -199,7 +270,6 @@ async function loadAdminDashboard() {
     const payload = await api("/api/admin/dashboard");
     state.appointments = payload.appointments;
     state.settings = payload.settings;
-    state.barbers = payload.settings.barbers;
   } catch {
     state.adminToken = ""; state.adminUnlocked = false; state.adminPanelOpen = false;
     sessionStorage.removeItem("barberline-admin-token");
@@ -212,10 +282,9 @@ async function refreshAll() {
   renderAll();
 }
 
-// RANDEVU OLUŞTURMA VE WHATSAPP BİLDİRİMİ
 async function createAppointment(event) {
   event.preventDefault();
-  setMessage(elements.formMessage, "Randevu kaydediliyor...");
+  setMessage(elements.formMessage, "Randevu kaydediliyor...", "success");
 
   const formData = new FormData(elements.bookingForm);
   const customerPhone = formData.get("customerPhone").trim();
@@ -223,13 +292,20 @@ async function createAppointment(event) {
   const dateSelect = formData.get("dateSelect");
   const timeSelect = formData.get("timeSelect");
 
+  // İşaretlenen hizmetleri topla
+  const checkedServices = Array.from(document.querySelectorAll('input[name="serviceItem"]:checked')).map(cb => cb.value);
+  if(checkedServices.length === 0) {
+    setMessage(elements.formMessage, "Lütfen en az bir hizmet seçin.", "error");
+    return;
+  }
+
   try {
     const payload = await api("/api/appointments", {
       method: "POST",
       body: JSON.stringify({
         customerName: customerName,
         customerPhone: customerPhone,
-        serviceId: formData.get("serviceSelect"),
+        serviceIds: checkedServices,
         barberId: formData.get("barberSelect"),
         date: dateSelect,
         time: timeSelect
@@ -237,6 +313,7 @@ async function createAppointment(event) {
     });
 
     elements.bookingForm.reset();
+    calculateTotal();
     elements.dateSelect.value = state.selectedDate;
     setMessage(elements.formMessage, "Randevu oluşturuldu! WhatsApp fişiniz açılıyor...");
     await refreshAll();
@@ -245,8 +322,15 @@ async function createAppointment(event) {
     if (phone.startsWith('0')) phone = '90' + phone.substring(1);
     if (phone.length === 10) phone = '90' + phone; 
 
-    // İptal Kodu WhatsApp Fişine Ekleniyor
-    const waText = encodeURIComponent(`Merhaba ${customerName}! Salon Bayber randevunuz başarıyla oluşturulmuştur.\nTarih: ${formatDate(dateSelect)}\nSaat: ${timeSelect}\n\nİPTAL KODUNUZ: ${payload.cancelCode}\nFikriniz değişirse bu kodla randevunuzu sitemizden iptal edebilirsiniz.`);
+    // WhatsApp'ta gösterilecek hizmet isimleri ve toplam fiyat hesabı
+    let totalPrice = 0;
+    const serviceNames = checkedServices.map(id => {
+      const s = state.settings.services.find(serv => serv.id === id);
+      if(s) totalPrice += Number(s.price);
+      return s ? s.name : "";
+    }).join(", ");
+
+    const waText = encodeURIComponent(`Merhaba ${customerName}! Salon Bayber randevunuz başarıyla oluşturulmuştur.\n\n📅 Tarih: ${formatDate(dateSelect)}\n⏰ Saat: ${timeSelect}\n✂️ Hizmetler: ${serviceNames}\n💰 Toplam Tutar: ₺${totalPrice}\n\nİPTAL KODUNUZ: ${payload.cancelCode}\nFikriniz değişirse sitemizden bu kod ile randevunuzu iptal edebilirsiniz.`);
     window.open(`https://wa.me/${phone}?text=${waText}`, '_blank');
 
   } catch (error) {
@@ -254,16 +338,13 @@ async function createAppointment(event) {
   }
 }
 
-// MÜŞTERİ KENDİ RANDEVUSUNU İPTAL ETME
 async function customerCancelAppointment(event) {
   event.preventDefault();
   setMessage(elements.cancelMessage, "Kontrol ediliyor...");
-  const code = elements.cancelCodeInput.value.trim();
-
   try {
     const payload = await api("/api/appointments/cancel", {
       method: "POST",
-      body: JSON.stringify({ code: code }),
+      body: JSON.stringify({ code: elements.cancelCodeInput.value.trim() }),
     });
     setMessage(elements.cancelMessage, payload.message);
     elements.cancelForm.reset();
@@ -273,10 +354,9 @@ async function customerCancelAppointment(event) {
   }
 }
 
-// YÖNETİCİ GİRİŞİ
 async function unlockSettings(event) {
   event.preventDefault();
-  setMessage(elements.adminMessage, "Kontrol ediliyor...");
+  setMessage(elements.adminMessage, "Giriş yapılıyor...");
   try {
     const payload = await api("/api/admin/login", {
       method: "POST",
@@ -302,12 +382,79 @@ function lockSettingsPanel() {
   renderAll();
 }
 
+async function saveSettings(event) {
+  event.preventDefault();
+  const formData = new FormData(elements.settingsForm);
+  
+  // Hizmetleri Güncelle
+  const newServices = state.settings.services.map(s => ({
+    id: s.id,
+    name: formData.get(`serviceName-${s.id}`)?.trim() || "",
+    price: Number(formData.get(`servicePrice-${s.id}`)) || 0
+  }));
+
+  // Berberleri Güncelle
+  const newBarbers = state.settings.barbers.map(b => ({
+    id: b.id,
+    name: formData.get(`barberName-${b.id}`)?.trim() || "",
+    title: formData.get(`barberTitle-${b.id}`)?.trim() || "",
+    initials: makeInitials(formData.get(`barberName-${b.id}`)?.trim() || "")
+  }));
+
+  try {
+    await api("/api/admin/settings", {
+      method: "PUT",
+      body: JSON.stringify({
+        salonName: formData.get("salonName").trim(),
+        services: newServices,
+        barbers: newBarbers
+      }),
+    });
+    setMessage(elements.settingsMessage, "Ayarlar başarıyla kaydedildi.");
+    await refreshAll();
+  } catch (error) {
+    setMessage(elements.settingsMessage, error.message, "error");
+  }
+}
+
 function bindEvents() {
   if(elements.bookingForm) elements.bookingForm.addEventListener("submit", createAppointment);
   if(elements.cancelForm) elements.cancelForm.addEventListener("submit", customerCancelAppointment);
   if(elements.adminLoginForm) elements.adminLoginForm.addEventListener("submit", unlockSettings);
+  if(elements.settingsForm) elements.settingsForm.addEventListener("submit", saveSettings);
   if(elements.openSettings) elements.openSettings.addEventListener("click", openSettingsPanel);
   if(elements.lockSettings) elements.lockSettings.addEventListener("click", lockSettingsPanel);
+
+  if(elements.addService) elements.addService.addEventListener("click", () => {
+    state.settings.services.push({ id: `srv-${Date.now()}`, name: "Yeni Hizmet", price: 100 });
+    renderSettingsForm();
+  });
+
+  if(elements.addBarber) elements.addBarber.addEventListener("click", () => {
+    state.settings.barbers.push({ id: `berber-${Date.now()}`, name: "Yeni Berber", title: "Uzman", initials: "YB" });
+    renderSettingsForm();
+  });
+
+  // Silme butonları dinleyicisi
+  document.addEventListener("click", async (event) => {
+    const btnCancel = event.target.closest("[data-cancel]");
+    if (btnCancel) {
+      try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } 
+      catch (e) { alert("Hata: " + e.message); }
+    }
+    
+    const btnDelSrv = event.target.closest("[data-delete-service]");
+    if(btnDelSrv) {
+      state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService);
+      renderSettingsForm();
+    }
+
+    const btnDelBrb = event.target.closest("[data-delete-barber]");
+    if(btnDelBrb) {
+      state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBarber.dataset.deleteBarber);
+      renderSettingsForm();
+    }
+  });
 
   if(elements.barberSelect) elements.barberSelect.addEventListener("change", async () => {
     state.selectedBarberId = elements.barberSelect.value; state.selectedTime = "";
@@ -328,15 +475,6 @@ function bindEvents() {
     if (!button || button.disabled) return;
     state.selectedTime = button.dataset.time; elements.timeSelect.value = button.dataset.time;
     renderSlotBoard();
-  });
-
-  if(elements.appointmentsList) elements.appointmentsList.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-cancel]");
-    if (!button) return;
-    try {
-      await api(`/api/admin/appointments/${encodeURIComponent(button.dataset.cancel)}`, { method: "DELETE" });
-      await refreshAll();
-    } catch (e) { alert("Hata: " + e.message); }
   });
 }
 

@@ -9,133 +9,52 @@ const root = process.cwd();
 const dbPath = join(root, "data", "db.json");
 const adminSessions = new Map();
 
-const services = [
-  { id: "haircut", name: "Saç kesimi", duration: 30, price: 350 },
-  { id: "beard", name: "Sakal düzeltme", duration: 20, price: 200 },
-  { id: "combo", name: "Saç + sakal", duration: 45, price: 500 },
-  { id: "care", name: "Bakım paketi", duration: 60, price: 750 },
-];
-
 const defaultSettings = {
   salonName: "Salon Bayber",
   adminPinHash: hashPin(process.env.ADMIN_PIN || "1234"),
   barbers: [
     { id: "mehmet-ali-sanverdi", name: "Mehmet Ali Şanverdi", title: "Usta berber", initials: "MA" },
   ],
+  services: [
+    { id: "haircut", name: "Saç kesimi", price: 350 },
+    { id: "beard", name: "Sakal düzeltme", price: 200 },
+    { id: "combo", name: "Saç + sakal", price: 500 },
+    { id: "care", name: "Bakım paketi", price: 750 },
+  ]
 };
 
+// YENİ SAATLER 09:00 - 21:00 ARASI YAPILDI
 const timeSlots = [
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
   "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-  "17:00", "17:30", "18:00", "18:30", "19:00", "19:30",
+  "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
 ];
 
 const types = {
-  ".css": "text/css; charset=utf-8",
-  ".html": "text/html; charset=utf-8",
-  ".js": "text/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8",
-  ".png": "image/png",
-  ".svg": "image/svg+xml",
-  ".webmanifest": "application/manifest+json; charset=utf-8",
+  ".css": "text/css; charset=utf-8", ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8",
 };
 
-function hashPin(pin) {
-  return createHash("sha256").update(String(pin)).digest("hex");
-}
+function hashPin(pin) { return createHash("sha256").update(String(pin)).digest("hex"); }
+function todayISO() { const offset = new Date().getTimezoneOffset() * 60000; return new Date(Date.now() - offset).toISOString().slice(0, 10); }
 
-function todayISO() {
-  const now = new Date();
-  const offset = now.getTimezoneOffset() * 60000;
-  return new Date(now.getTime() - offset).toISOString().slice(0, 10);
-}
-
-function makeInitials(name) {
-  const words = String(name).trim().split(/\s+/).filter(Boolean);
-  if (!words.length) return "BL";
-  return words.slice(0, 2).map((word) => word[0].toLocaleUpperCase("tr-TR")).join("");
-}
-
-function createBarberId(name) {
-  const normalized = String(name)
-    .trim()
-    .toLocaleLowerCase("tr-TR")
-    .replaceAll("ı", "i")
-    .replaceAll("ğ", "g")
-    .replaceAll("ü", "u")
-    .replaceAll("ş", "s")
-    .replaceAll("ö", "o")
-    .replaceAll("ç", "c")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return normalized || `berber-${randomUUID().slice(0, 8)}`;
-}
-
-function uniqueBarberId(baseId, usedIds) {
-  let id = baseId;
-  let counter = 2;
-  while (usedIds.has(id)) {
-    id = `${baseId}-${counter}`;
-    counter += 1;
-  }
-  usedIds.add(id);
-  return id;
-}
-
-function publicSettings(settings) {
-  return {
-    salonName: settings.salonName,
-    barbers: settings.barbers,
-  };
-}
-
-function sortAppointments(appointments) {
-  return [...appointments].sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
-}
-
-function isClosedDate(dateValue) {
-  return new Date(`${dateValue}T12:00:00`).getDay() === 0;
-}
-
+function isClosedDate(dateValue) { return new Date(`${dateValue}T12:00:00`).getDay() === 0; }
 function isPastSlot(dateValue, time) {
   if (dateValue !== todayISO()) return false;
   const [hours, minutes] = time.split(":").map(Number);
-  const slotDate = new Date();
-  slotDate.setHours(hours, minutes, 0, 0);
+  const slotDate = new Date(); slotDate.setHours(hours, minutes, 0, 0);
   return slotDate.getTime() <= Date.now();
 }
 
 function getAvailableSlots(db, barberId, date) {
   if (isClosedDate(date)) return [];
-  const bookedTimes = db.appointments
-    .filter((appointment) => appointment.barberId === barberId && appointment.date === date)
-    .map((appointment) => appointment.time);
-  return timeSlots.filter((time) => !bookedTimes.includes(time) && !isPastSlot(date, time));
-}
-
-function getBarberCounts(db, date) {
-  return Object.fromEntries(
-    db.settings.barbers.map((barber) => [
-      barber.id,
-      db.appointments.filter((appointment) => appointment.barberId === barber.id && appointment.date === date).length,
-    ]),
-  );
-}
-
-function seededAppointments() {
-  return [];
+  const bookedTimes = db.appointments.filter(a => a.barberId === barberId && a.date === date).map(a => a.time);
+  return timeSlots.filter(t => !bookedTimes.includes(t) && !isPastSlot(date, t));
 }
 
 async function ensureDb() {
-  try {
-    await readFile(dbPath, "utf8");
-  } catch {
-    await writeDb({
-      settings: structuredClone(defaultSettings),
-      appointments: seededAppointments(),
-      notifications: [],
-    });
-  }
+  try { await readFile(dbPath, "utf8"); } 
+  catch { await writeDb({ settings: structuredClone(defaultSettings), appointments: [] }); }
 }
 
 async function readDb() {
@@ -144,12 +63,6 @@ async function readDb() {
   const db = JSON.parse(raw);
   db.settings = normalizeSettings(db.settings);
   db.appointments = Array.isArray(db.appointments) ? db.appointments : [];
-  db.notifications = Array.isArray(db.notifications) ? db.notifications : [];
-  db.appointments = db.appointments.filter(
-    (appointment) =>
-      services.some((service) => service.id === appointment.serviceId) &&
-      db.settings.barbers.some((barber) => barber.id === appointment.barberId),
-  );
   return db;
 }
 
@@ -159,276 +72,129 @@ async function writeDb(db) {
 }
 
 function normalizeSettings(settings = {}) {
-  const savedSalonName = typeof settings.salonName === "string" ? settings.salonName.trim() : "";
-  const salonName = savedSalonName && savedSalonName !== "BarberLine" ? savedSalonName : defaultSettings.salonName;
+  const salonName = settings.salonName || defaultSettings.salonName;
   const adminPinHash = settings.adminPinHash || defaultSettings.adminPinHash;
-  const savedBarbers = Array.isArray(settings.barbers) ? settings.barbers : [];
-  const sourceBarbers = savedBarbers.length ? savedBarbers : defaultSettings.barbers;
-  const usedIds = new Set();
-
-  const barbers = sourceBarbers
-    .map((barber) => {
-      const name = typeof barber.name === "string" && barber.name.trim() ? barber.name.trim() : "";
-      const title = typeof barber.title === "string" && barber.title.trim() ? barber.title.trim() : "Berber";
-      if (!name) return null;
-      const rawId = typeof barber.id === "string" && barber.id.trim() ? barber.id.trim() : createBarberId(name);
-      return {
-        id: uniqueBarberId(rawId, usedIds),
-        name,
-        title,
-        initials: makeInitials(name),
-      };
-    })
-    .filter(Boolean);
-
-  return {
-    salonName,
-    adminPinHash,
-    barbers: barbers.length ? barbers : structuredClone(defaultSettings.barbers),
-  };
+  const barbers = Array.isArray(settings.barbers) && settings.barbers.length ? settings.barbers : structuredClone(defaultSettings.barbers);
+  const services = Array.isArray(settings.services) && settings.services.length ? settings.services : structuredClone(defaultSettings.services);
+  return { salonName, adminPinHash, barbers, services };
 }
 
-function sendJson(response, statusCode, payload) {
-  response.writeHead(statusCode, {
-    "Content-Type": "application/json; charset=utf-8",
-    "Cache-Control": "no-store",
-  });
-  response.end(JSON.stringify(payload));
-}
-
-function readRequestBody(request) {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    request.on("data", (chunk) => {
-      body += chunk;
-      if (body.length > 32_000) {
-        reject(new Error("İstek çok büyük."));
-        request.destroy();
-      }
-    });
-    request.on("end", () => resolve(body));
-    request.on("error", reject);
-  });
+function sendJson(res, status, payload) {
+  res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  res.end(JSON.stringify(payload));
 }
 
 async function readJson(request) {
-  const body = await readRequestBody(request);
+  let body = "";
+  for await (const chunk of request) body += chunk;
   return body ? JSON.parse(body) : {};
 }
 
-function authToken(request) {
-  const header = request.headers.authorization || "";
-  return header.startsWith("Bearer ") ? header.slice(7) : "";
-}
-
-function requireAdmin(request, response) {
-  const token = authToken(request);
-  const session = adminSessions.get(token);
-  if (!session || Date.now() - session.createdAt > 1000 * 60 * 60 * 8) {
-    sendJson(response, 401, { message: "Yönetici oturumu gerekli." });
-    return false;
-  }
+function requireAdmin(req, res) {
+  const token = (req.headers.authorization || "").replace("Bearer ", "");
+  if (!adminSessions.has(token)) { sendJson(res, 401, { message: "Yetkisiz işlem." }); return false; }
   return true;
 }
 
-async function handlePublicState(request, response, url) {
+async function handlePublicState(req, res, url) {
   const db = await readDb();
   const date = url.searchParams.get("date") || todayISO();
   const barberId = url.searchParams.get("barberId") || db.settings.barbers[0]?.id || "";
-
-  sendJson(response, 200, {
-    settings: publicSettings(db.settings),
-    services,
-    barbers: db.settings.barbers,
+  sendJson(res, 200, {
+    settings: { salonName: db.settings.salonName, barbers: db.settings.barbers, services: db.settings.services },
     timeSlots,
     availableSlots: getAvailableSlots(db, barberId, date),
-    barberCounts: getBarberCounts(db, date),
-    todayCount: db.appointments.filter((appointment) => appointment.date === todayISO()).length,
+    todayCount: db.appointments.filter(a => a.date === todayISO()).length,
   });
 }
 
-async function handleCreateAppointment(request, response) {
+async function handleCreateAppointment(req, res) {
   const db = await readDb();
-  const payload = await readJson(request);
+  const payload = await readJson(req);
+  const serviceIds = Array.isArray(payload.serviceIds) ? payload.serviceIds : [];
   
-  // 6 Haneli İptal Kodu Oluşturma
-  const cancelCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  if (!payload.customerName || !payload.customerPhone || serviceIds.length === 0 || !payload.barberId || !payload.date || !payload.time) {
+    return sendJson(res, 400, { message: "Tüm alanları doldurun ve en az 1 hizmet seçin." });
+  }
 
+  const cancelCode = Math.random().toString(36).substring(2, 8).toUpperCase();
   const appointment = {
-    id: randomUUID(),
-    cancelCode: cancelCode,
-    customerName: String(payload.customerName || "").trim(),
-    customerPhone: String(payload.customerPhone || "").trim(),
-    serviceId: String(payload.serviceId || ""),
-    barberId: String(payload.barberId || ""),
-    date: String(payload.date || ""),
-    time: String(payload.time || ""),
-    note: String(payload.note || "").trim(),
-    createdAt: new Date().toISOString(),
+    id: randomUUID(), cancelCode, customerName: String(payload.customerName).trim(),
+    customerPhone: String(payload.customerPhone).trim(), serviceIds,
+    barberId: String(payload.barberId), date: String(payload.date), time: String(payload.time)
   };
 
-  if (!appointment.customerName || !appointment.customerPhone || !appointment.serviceId || !appointment.barberId || !appointment.date || !appointment.time) {
-    sendJson(response, 400, { message: "Tüm zorunlu alanları doldur." });
-    return;
-  }
-  if (appointment.date < todayISO()) {
-    sendJson(response, 400, { message: "Geçmiş tarihe randevu alınamaz." });
-    return;
-  }
   const availableSlots = getAvailableSlots(db, appointment.barberId, appointment.date);
-  if (!availableSlots.includes(appointment.time)) {
-    sendJson(response, 409, { message: "Bu saat artık müsait değil. Lütfen başka saat seç." });
-    return;
-  }
+  if (!availableSlots.includes(appointment.time)) return sendJson(res, 409, { message: "Bu saat artık dolu." });
 
   db.appointments.push(appointment);
   await writeDb(db);
-
-  sendJson(response, 201, {
-    message: "Randevu başarıyla oluşturuldu.",
-    appointmentId: appointment.id,
-    cancelCode: appointment.cancelCode
-  });
+  sendJson(res, 201, { message: "Başarılı", cancelCode: appointment.cancelCode });
 }
 
-// MÜŞTERİ İPTAL SİSTEMİ
-async function handleCustomerCancel(request, response) {
+async function handleCustomerCancel(req, res) {
   const db = await readDb();
-  const payload = await readJson(request);
-  const code = String(payload.code || "").trim().toUpperCase();
-
-  if (!code) {
-    sendJson(response, 400, { message: "Lütfen iptal kodunu girin." });
-    return;
-  }
-
+  const code = String((await readJson(req)).code || "").trim().toUpperCase();
   const initialLength = db.appointments.length;
   db.appointments = db.appointments.filter(a => a.cancelCode !== code);
-
-  if (db.appointments.length === initialLength) {
-    sendJson(response, 404, { message: "Bu koda ait aktif randevu bulunamadı. Kod yanlış olabilir." });
-    return;
-  }
-
+  if (db.appointments.length === initialLength) return sendJson(res, 404, { message: "Kod hatalı." });
   await writeDb(db);
-  sendJson(response, 200, { message: "Randevunuz başarıyla iptal edildi." });
+  sendJson(res, 200, { message: "Randevunuz iptal edildi." });
 }
 
-async function handleAdminLogin(request, response) {
+async function handleUpdateSettings(req, res) {
+  if (!requireAdmin(req, res)) return;
   const db = await readDb();
-  const payload = await readJson(request);
-  if (hashPin(payload.pin || "") !== db.settings.adminPinHash) {
-    sendJson(response, 401, { message: "Şifre hatalı." });
-    return;
+  const payload = await readJson(req);
+  
+  if (payload.services && Array.isArray(payload.services) && payload.services.length > 0) {
+    db.settings.services = payload.services;
   }
-  const token = randomUUID();
-  adminSessions.set(token, { createdAt: Date.now() });
-  sendJson(response, 200, { token });
-}
-
-async function handleAdminDashboard(request, response) {
-  if (!requireAdmin(request, response)) return;
-  const db = await readDb();
-  sendJson(response, 200, {
-    settings: publicSettings(db.settings),
-    appointments: sortAppointments(db.appointments),
-    notifications: db.notifications,
-  });
-}
-
-async function handleUpdateSettings(request, response) {
-  if (!requireAdmin(request, response)) return;
-  const db = await readDb();
-  const payload = await readJson(request);
-  const salonName = String(payload.salonName || "").trim();
-  const adminPinNew = String(payload.adminPinNew || "").trim();
-
-  const usedIds = new Set();
-  const barbers = (Array.isArray(payload.barbers) ? payload.barbers : []).map((incoming) => {
-    const existing = db.settings.barbers.find((barber) => barber.id === incoming.id);
-    const name = String(incoming.name || "").trim();
-    const title = String(incoming.title || "").trim();
-    const rawId = String(incoming.id || existing?.id || createBarberId(name)).trim();
-    if (!name || !title) return null;
-    return { id: uniqueBarberId(rawId, usedIds), name, title, initials: makeInitials(name) };
-  }).filter(Boolean);
-
-  db.settings = {
-    salonName: salonName || db.settings.salonName,
-    barbers: barbers.length ? barbers : db.settings.barbers,
-    adminPinHash: adminPinNew ? hashPin(adminPinNew) : db.settings.adminPinHash,
-  };
-
-  await writeDb(db);
-  sendJson(response, 200, { settings: publicSettings(db.settings) });
-}
-
-async function handleDeleteAppointment(request, response, id) {
-  if (!requireAdmin(request, response)) return;
-  const db = await readDb();
-  db.appointments = db.appointments.filter((appointment) => appointment.id !== id);
-  await writeDb(db);
-  sendJson(response, 200, { message: "Randevu iptal edildi." });
-}
-
-async function handleStaticFile(response, url) {
-  const pathname = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
-  if (pathname.startsWith("/data/") || pathname === "/server.mjs") {
-    response.writeHead(404);
-    response.end("Not found");
-    return;
+  if (payload.barbers && Array.isArray(payload.barbers) && payload.barbers.length > 0) {
+    db.settings.barbers = payload.barbers;
   }
-  const filePath = normalize(join(root, pathname));
+  db.settings.salonName = payload.salonName || db.settings.salonName;
+  
+  await writeDb(db);
+  sendJson(res, 200, { settings: db.settings });
+}
+
+const server = createServer(async (req, res) => {
+  const url = new URL(req.url, `http://${req.headers.host}`);
   try {
-    const file = await readFile(filePath);
-    response.writeHead(200, {
-      "Content-Type": types[extname(filePath)] || "application/octet-stream",
-      "Cache-Control": "no-store",
-    });
-    response.end(file);
-  } catch {
-    response.writeHead(404);
-    response.end("Not found");
-  }
-}
-
-const server = createServer(async (request, response) => {
-  const url = new URL(request.url, `http://${request.headers.host}`);
-  try {
-    if (request.method === "GET" && url.pathname === "/api/public-state") {
-      await handlePublicState(request, response, url);
-      return;
+    if (req.method === "GET" && url.pathname === "/api/public-state") return await handlePublicState(req, res, url);
+    if (req.method === "POST" && url.pathname === "/api/appointments") return await handleCreateAppointment(req, res);
+    if (req.method === "POST" && url.pathname === "/api/appointments/cancel") return await handleCustomerCancel(req, res);
+    if (req.method === "POST" && url.pathname === "/api/admin/login") {
+      const db = await readDb();
+      if (hashPin((await readJson(req)).pin) !== db.settings.adminPinHash) return sendJson(res, 401, { message: "Şifre hatalı." });
+      const token = randomUUID(); adminSessions.set(token, true);
+      return sendJson(res, 200, { token });
     }
-    if (request.method === "POST" && url.pathname === "/api/appointments") {
-      await handleCreateAppointment(request, response);
-      return;
+    if (req.method === "GET" && url.pathname === "/api/admin/dashboard") {
+      if (!requireAdmin(req, res)) return;
+      const db = await readDb();
+      return sendJson(res, 200, { settings: db.settings, appointments: db.appointments });
     }
-    if (request.method === "POST" && url.pathname === "/api/appointments/cancel") {
-      await handleCustomerCancel(request, response);
-      return;
+    if (req.method === "PUT" && url.pathname === "/api/admin/settings") return await handleUpdateSettings(req, res);
+    if (req.method === "DELETE" && url.pathname.startsWith("/api/admin/appointments/")) {
+      if (!requireAdmin(req, res)) return;
+      const db = await readDb();
+      db.appointments = db.appointments.filter(a => a.id !== decodeURIComponent(url.pathname.split("/").at(-1)));
+      await writeDb(db);
+      return sendJson(res, 200, { message: "İptal edildi." });
     }
-    if (request.method === "POST" && url.pathname === "/api/admin/login") {
-      await handleAdminLogin(request, response);
-      return;
-    }
-    if (request.method === "GET" && url.pathname === "/api/admin/dashboard") {
-      await handleAdminDashboard(request, response);
-      return;
-    }
-    if (request.method === "PUT" && url.pathname === "/api/admin/settings") {
-      await handleUpdateSettings(request, response);
-      return;
-    }
-    if (request.method === "DELETE" && url.pathname.startsWith("/api/admin/appointments/")) {
-      await handleDeleteAppointment(request, response, decodeURIComponent(url.pathname.split("/").at(-1)));
-      return;
-    }
-    await handleStaticFile(response, url);
-  } catch (error) {
-    sendJson(response, 500, { message: "Sunucu hatası." });
-  }
+    
+    // Statik Dosyalar
+    const pathname = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
+    if (pathname.startsWith("/data/") || pathname === "/server.mjs") { res.writeHead(404); return res.end("Not found"); }
+    const filePath = normalize(join(root, pathname));
+    try {
+      const file = await readFile(filePath);
+      res.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream" });
+      res.end(file);
+    } catch { res.writeHead(404); res.end("Not found"); }
+  } catch { sendJson(res, 500, { message: "Sunucu hatası." }); }
 });
 
-server.listen(port, host, () => {
-  console.log(`BarberLine running at http://localhost:${port}`);
-});
+server.listen(port, host, () => console.log(`Çalışıyor: http://localhost:${port}`));
