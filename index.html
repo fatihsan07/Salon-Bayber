@@ -7,34 +7,29 @@
     <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 Randevu</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
-      /* RENK VE TASARIM DÜZELTMELERİ */
       :root {
-        --primary: #FFD700 !important; /* Altın Sarı */
-        --bg: #0a0a0a !important; /* Gerçek Siyah */
-        --surface: #141414 !important; /* Koyu Gri (Kutular için) */
-        --text: #ffffff !important; /* Bembeyaz Yazılar */
+        --primary: #FFD700 !important;
+        --bg: #0a0a0a !important; 
+        --surface: #141414 !important; 
+        --text: #ffffff !important; 
         --border: #333333 !important;
       }
 
-      /* Tüm site için modern, temiz ve okunaklı yazı tipi */
       body { 
         background-color: var(--bg) !important; 
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; 
       }
 
-      /* Tüm kutular ve arka planlar Koyu Gri/Siyah */
       .panel, .sidebar, .topbar, .admin-row-box { 
         background-color: var(--surface) !important; 
         border: 1px solid var(--border) !important; 
       }
 
-      /* BÜTÜN YAZILARI ZORLA BEYAZ VE KALIN (BOLD) YAPIYORUZ */
       body, h1, h2, h3, h4, p, label, span, div, input, select, button { 
         color: var(--text) !important; 
-        font-weight: 800 !important; /* YAZILAR BURADAN KALINLAŞTIRILDI */
+        font-weight: 800 !important; 
       }
 
-      /* Üst başlıklar (Eyebrow) Sarı */
       .eyebrow { 
         color: var(--primary) !important; 
         letter-spacing: 1px; 
@@ -42,81 +37,86 @@
         font-size: 0.8rem;
       }
 
-      /* Form Elemanları (Kutu Boyutları ve Berber Seçeneği Düzeltildi) */
       input, select, textarea { 
         background-color: #111111 !important; 
         border: 1px solid #444 !important; 
-        padding: 10px !important; /* Boyut makul seviyeye çekildi */
+        padding: 10px !important; 
         border-radius: 6px !important;
         font-family: inherit !important;
-        box-sizing: border-box !important; /* Kutunun kontrolsüz büyümesini engeller */
+        box-sizing: border-box !important; 
         width: 100% !important;
       }
-      input:focus, select:focus { 
-        border-color: var(--primary) !important; 
-        outline: none !important; 
-      }
+      input:focus, select:focus { border-color: var(--primary) !important; outline: none !important; }
 
-      /* HİZMETLER KUTULARI */
       .checkbox-label { 
-        display: flex; 
-        align-items: center; 
-        gap: 12px; 
-        background-color: #111111 !important; 
-        padding: 12px !important; 
-        border: 1px solid var(--border) !important; 
-        margin-bottom: 8px !important;
-        border-radius: 8px !important;
-        cursor: pointer;
+        display: flex; align-items: center; gap: 12px; 
+        background-color: #111111 !important; padding: 12px !important; 
+        border: 1px solid var(--border) !important; margin-bottom: 8px !important;
+        border-radius: 8px !important; cursor: pointer;
       }
       .checkbox-label:hover { border-color: var(--primary) !important; }
       .checkbox-label span { color: #ffffff !important; font-size: 1.1rem; }
       .service-price-tag { color: var(--primary) !important; margin-left: auto; }
 
-      /* BERBER KARTI */
       .barber-card {
-        background-color: #111111 !important;
-        border: 1px solid var(--border) !important;
-        padding: 15px !important;
-        border-radius: 8px !important;
-        display: flex;
-        align-items: center;
-        gap: 15px;
+        background-color: #111111 !important; border: 1px solid var(--border) !important;
+        padding: 15px !important; border-radius: 8px !important;
+        display: flex; align-items: center; gap: 15px;
       }
       .barber-card h3 { margin: 0 0 5px 0 !important; font-size: 1.2rem; }
       .barber-card p { margin: 0 !important; color: #aaaaaa !important; }
 
-      /* Butonlar */
       .primary-button { 
-        background-color: var(--primary) !important; 
-        color: #000000 !important; 
-        border: none !important;
-        padding: 12px 20px !important;
-        border-radius: 6px !important;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        background-color: var(--primary) !important; color: #000000 !important; 
+        border: none !important; padding: 12px 20px !important;
+        border-radius: 6px !important; cursor: pointer;
+        text-transform: uppercase; letter-spacing: 1px;
       }
       .primary-button:hover { background-color: #e6c200 !important; }
 
       .ghost-button { 
-        color: var(--primary) !important; 
-        border: 1px solid var(--primary) !important; 
-        background: transparent !important;
-        padding: 10px 15px !important;
-        border-radius: 6px !important;
-        cursor: pointer;
+        color: var(--primary) !important; border: 1px solid var(--primary) !important; 
+        background: transparent !important; padding: 10px 15px !important;
+        border-radius: 6px !important; cursor: pointer;
       }
 
-      .danger-button {
-         background-color: #ff4d4d !important; 
-         color: white !important; 
-         border: none !important;
-      }
+      .danger-button { background-color: #ff4d4d !important; color: white !important; border: none !important; }
 
-      /* Vurgular */
       .status-grid article span, #totalPriceDisplay { color: var(--primary) !important; font-size: 1.6em; }
       .brand-mark { background: var(--primary) !important; color: #000 !important; padding: 10px; border-radius: 6px; font-size: 1.2rem;}
+
+      /* YENİ EKLENEN KISIM: SAATLERİN DÜZELTİLMESİ */
+      .slot-board {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+      .slot-button {
+        background-color: #111111 !important;
+        color: #ffffff !important;
+        border: 1px solid #444 !important;
+        padding: 12px !important;
+        border-radius: 6px !important;
+        cursor: pointer;
+        font-weight: 800 !important;
+        font-family: inherit !important;
+        transition: all 0.2s;
+        width: 100%;
+      }
+      .slot-button:hover:not(:disabled) {
+        border-color: var(--primary) !important;
+        color: var(--primary) !important;
+      }
+      .slot-button.is-selected {
+        background-color: var(--primary) !important;
+        color: #000000 !important;
+        border-color: var(--primary) !important;
+      }
+      .slot-button:disabled {
+        opacity: 0.3 !important;
+        cursor: not-allowed !important;
+      }
     </style>
   </head>
   <body>
@@ -126,7 +126,6 @@
           <div class="brand-mark" id="brandMark">SB</div>
           <div>
             <p class="eyebrow">Berber randevu sistemi</p>
-            <!-- ANA LOGO -->
             <h1 style="font-size: 2.2rem; margin-top: 5px; font-weight: normal !important; font-family: 'Courier New', Courier, monospace !important;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1>
           </div>
         </div>
@@ -150,7 +149,6 @@
           </div>
         </header>
 
-        <!-- YÖNETİCİ PANELİ -->
         <section class="panel settings-panel" id="settingsPanel" hidden>
           <div class="section-title"><p class="eyebrow">Yönetim</p><h2>Yetkili Girişi</h2></div>
           <form id="adminLoginForm" class="admin-login-form">
@@ -164,7 +162,7 @@
           
           <form id="settingsForm" class="settings-form" hidden>
             <div class="field-group">
-              <label>Sistem Adı (Arka plan kayıtları için)</label>
+              <label>Sistem Adı</label>
               <input id="salonNameInput" name="salonName" type="text" required />
             </div>
             
@@ -177,14 +175,15 @@
             <button class="ghost-button" id="addBarber" type="button">+ Berber Ekle</button>
             
             <div class="settings-actions" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 20px;">
-              <button class="ghost-button" id="lockSettings" type="button">Paneli Kilitle</button>
+              <button class="ghost-button" id="lockSettings" type="button">Paneli Kilitle (Çıkış Yap)</button>
               <button class="primary-button" type="submit">Kaydet</button>
             </div>
             <p id="settingsMessage"></p>
           </form>
         </section>
 
-        <section class="workspace-grid">
+        <!-- YENİ EKLENEN ID: customerWorkspace -->
+        <section class="workspace-grid" id="customerWorkspace">
           <section class="panel booking-panel" id="bookingPanel">
             <div class="section-title"><p class="eyebrow">Randevu Al</p><h2>Bilgilerinizi Girin</h2></div>
             <form id="bookingForm" class="booking-form">
@@ -233,7 +232,8 @@
           </aside>
         </section>
 
-        <section class="panel schedule-panel">
+        <!-- YENİ EKLENEN ID: customerSchedule -->
+        <section class="panel schedule-panel" id="customerSchedule">
           <div class="section-title"><p class="eyebrow">Müsaitlik</p><h2>Saat Seçimi</h2></div>
           <div class="slot-board" id="slotBoard"></div>
         </section>
