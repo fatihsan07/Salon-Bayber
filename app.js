@@ -312,9 +312,17 @@ function renderAppointments() {
       const service = getService(appointment.serviceId) || { name: appointment.serviceName || "Hizmet", price: 0 };
       const note = appointment.note ? `<span class="meta-chip">${escapeHtml(appointment.note)}</span>` : "";
 
+      // WhatsApp Telefon ve Link Ayarlamaları
+      let phone = appointment.customerPhone.replace(/[^0-9]/g, '');
+      if (phone.startsWith('0')) phone = '90' + phone.substring(1);
+      if (phone.length === 10) phone = '90' + phone; 
+      
+      const waText = encodeURIComponent(`Merhaba ${appointment.customerName}, ${formatDate(appointment.date)} saat ${appointment.time} tarihindeki ${barber.name} randevunuz başarıyla oluşturulmuştur. Görüşmek üzere!`);
+      const waLink = `https://wa.me/${phone}?text=${waText}`;
+
       return `
-        <article class="appointment-card">
-          <div>
+        <article class="appointment-card" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+          <div style="flex: 1;">
             <h3>${escapeHtml(appointment.customerName)}</h3>
             <p>${escapeHtml(appointment.customerPhone)}</p>
             <div class="appointment-meta">
@@ -325,7 +333,10 @@ function renderAppointments() {
               ${note}
             </div>
           </div>
-          <button class="danger-button" type="button" data-cancel="${appointment.id}">İptal et</button>
+          <div style="display: flex; flex-direction: column; gap: 8px; min-width: 150px;">
+            <a href="${waLink}" target="_blank" style="background-color: #25D366; color: white; padding: 10px 15px; text-decoration: none; border-radius: 6px; font-weight: bold; text-align: center; font-size: 14px; display: block; border: none; cursor: pointer;">WhatsApp'tan Yaz</a>
+            <button class="danger-button" type="button" data-cancel="${appointment.id}" style="width: 100%;">İptal et</button>
+          </div>
         </article>
       `;
     })
@@ -334,7 +345,7 @@ function renderAppointments() {
 
 function renderNotifications() {
   if (!state.notifications.length) {
-    elements.notificationList.innerHTML = `<p class="empty-state">Henüz SMS bildirimi oluşmadı.</p>`;
+    elements.notificationList.innerHTML = `<p class="empty-state">WhatsApp yönlendirmesi devrede. Aktif randevularınızın yanındaki butondan müşterilerinize mesaj atabilirsiniz.</p>`;
     return;
   }
 
