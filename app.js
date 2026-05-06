@@ -128,6 +128,8 @@ function calculateTotal() {
 
 function renderServicesAndBarbers() {
   const selectedBarber = state.selectedBarberId || elements.barberSelect?.value;
+  state.settings.services = state.settings.services || [];
+  state.settings.barbers = state.settings.barbers || [];
 
   if(elements.serviceCheckboxes) {
     elements.serviceCheckboxes.innerHTML = state.settings.services.map(s => `
@@ -158,9 +160,9 @@ function renderTimeSelect() {
   state.selectedTime = elements.timeSelect.value;
 }
 
-// BEYAZ KUTU SORUNU BURADA KÖKTEN ENGELLENDİ
 function renderBarbersList() {
   if(!elements.barberList) return;
+  state.settings.barbers = state.settings.barbers || [];
   elements.barberList.innerHTML = state.settings.barbers.map(b => {
     const initials = b.initials || "BL";
     const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
@@ -209,6 +211,8 @@ function renderSettingsVisibility() {
 
 function renderSettingsForm() {
   if(!elements.serviceSettings || !elements.barberSettings) return;
+  state.settings.services = state.settings.services || [];
+  state.settings.barbers = state.settings.barbers || [];
 
   elements.serviceSettings.innerHTML = state.settings.services.map((s, index) => `
     <div class="admin-row-box" style="padding: 20px; margin-bottom: 15px; border-radius: 10px;">
@@ -339,7 +343,6 @@ async function createAppointment(event) {
     setMessage(elements.formMessage, "Randevu oluşturuldu! Yöneticiye bilgi veriliyor...");
     await refreshAll();
 
-    // MESAJ ARTIK DİREKT BERBERİN KENDİ WHATSAPP'INA GİDİYOR
     const barberPhone = "905395772999"; 
     
     let totalPrice = 0;
@@ -394,37 +397,42 @@ async function unlockSettings(event) {
   }
 }
 
+// ZIRHLI VE HATA FIRLATAN YENİ KAYDETME SİSTEMİ
 async function saveSettings(event) {
   event.preventDefault();
-  
-  const newServices = state.settings.services.map(s => {
-    const nameInput = document.querySelector(`input[name="serviceName-${s.id}"]`);
-    const priceInput = document.querySelector(`input[name="servicePrice-${s.id}"]`);
-    return {
-      id: s.id,
-      name: nameInput ? nameInput.value.trim() : s.name,
-      price: priceInput ? Number(priceInput.value) : s.price
-    };
-  });
-
-  const newBarbers = state.settings.barbers.map(b => {
-    const nameInput = document.querySelector(`input[name="barberName-${b.id}"]`);
-    const titleInput = document.querySelector(`input[name="barberTitle-${b.id}"]`);
-    const newName = nameInput ? nameInput.value.trim() : b.name;
-    return {
-      id: b.id,
-      name: newName,
-      title: titleInput ? titleInput.value.trim() : b.title,
-      initials: makeInitials(newName)
-    };
-  });
+  setMessage(elements.settingsMessage, "İşleniyor...", "success");
 
   try {
+    state.settings.services = state.settings.services || [];
+    state.settings.barbers = state.settings.barbers || [];
+
+    const newServices = state.settings.services.map(s => {
+      const nameInput = document.querySelector(`input[name="serviceName-${s.id}"]`);
+      const priceInput = document.querySelector(`input[name="servicePrice-${s.id}"]`);
+      return {
+        id: s.id,
+        name: nameInput ? nameInput.value.trim() : s.name,
+        price: priceInput ? Number(priceInput.value) : s.price
+      };
+    });
+
+    const newBarbers = state.settings.barbers.map(b => {
+      const nameInput = document.querySelector(`input[name="barberName-${b.id}"]`);
+      const titleInput = document.querySelector(`input[name="barberTitle-${b.id}"]`);
+      const newName = nameInput ? nameInput.value.trim() : b.name;
+      return {
+        id: b.id,
+        name: newName,
+        title: titleInput ? titleInput.value.trim() : b.title,
+        initials: makeInitials(newName)
+      };
+    });
+
     const payload = {
-      salonName: elements.salonNameInput.value.trim(),
-      salonPhone: elements.salonPhoneInput.value.trim(),
-      salonAddress: elements.salonAddressInput.value.trim(),
-      salonImage: elements.salonImageInput.value.trim(),
+      salonName: elements.salonNameInput ? elements.salonNameInput.value.trim() : state.settings.salonName,
+      salonPhone: elements.salonPhoneInput ? elements.salonPhoneInput.value.trim() : state.settings.salonPhone,
+      salonAddress: elements.salonAddressInput ? elements.salonAddressInput.value.trim() : state.settings.salonAddress,
+      salonImage: elements.salonImageInput ? elements.salonImageInput.value.trim() : state.settings.salonImage,
       services: newServices,
       barbers: newBarbers
     };
@@ -433,10 +441,14 @@ async function saveSettings(event) {
       method: "PUT",
       body: JSON.stringify(payload),
     });
-    setMessage(elements.settingsMessage, "Ayarlar başarıyla kaydedildi!");
+    
+    setMessage(elements.settingsMessage, "Ayarlar başarıyla kaydedildi! ✅");
     await refreshAll();
+
   } catch (error) {
-    setMessage(elements.settingsMessage, "Hata oluştu: " + error.message, "error");
+    // EN UFAK BİR HATADA BİLE BURASI KIRMIZI RENKLE EKRANA BASACAK
+    console.error(error);
+    setMessage(elements.settingsMessage, "HATA OLUŞTU: " + error.message, "error");
   }
 }
 
