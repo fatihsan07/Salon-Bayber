@@ -73,7 +73,6 @@ function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-// YANLIŞLIKLA SİLDİĞİM KOD BURADA!
 function makeInitials(name) {
   const words = String(name).trim().split(/\s+/).filter(Boolean);
   if (!words.length) return "BL";
@@ -113,11 +112,11 @@ function renderBrand() {
   if(elements.salonNameInput) elements.salonNameInput.value = salonName;
   if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone;
   if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
-  if(elements.salonImageInput) elements.salonImageInput.value = salonImage;
   
   if(elements.displayPhone) elements.displayPhone.textContent = salonPhone;
   if(elements.displayAddress) elements.displayAddress.textContent = salonAddress;
   if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
+  
   if(elements.mainShopImage) elements.mainShopImage.src = salonImage;
 
   document.title = `${salonName} Randevu`;
@@ -351,7 +350,6 @@ async function createAppointment(event) {
     await refreshAll();
 
     const barberPhone = "905395772999"; 
-    
     let totalPrice = 0;
     const serviceNames = checkedServices.map(id => {
       const s = state.settings.services.find(serv => serv.id === id);
@@ -360,7 +358,6 @@ async function createAppointment(event) {
     }).join(", ");
 
     const waText = encodeURIComponent(`🚨 YENİ RANDEVU ALINDI 🚨\n\n👤 Müşteri: ${customerName}\n📞 Telefon: ${customerPhone}\n📅 Tarih: ${formatDate(dateSelect)}\n⏰ Saat: ${timeSelect}\n✂️ Hizmetler: ${serviceNames}\n💰 Toplam Tutar: ₺${totalPrice}`);
-    
     window.open(`https://wa.me/${barberPhone}?text=${waText}`, '_blank');
 
   } catch (error) {
@@ -404,9 +401,10 @@ async function unlockSettings(event) {
   }
 }
 
+// FOTOĞRAFI SIKIŞTIRIP BİLGİSAYARDAN ALAN ZEKİ MOTOR BURADA ÇALIŞIYOR
 async function saveSettings(event) {
   event.preventDefault();
-  setMessage(elements.settingsMessage, "İşleniyor...", "success");
+  setMessage(elements.settingsMessage, "İşleniyor (Fotoğraf varsa sıkıştırılıyor)...", "success");
 
   try {
     state.settings.services = state.settings.services || [];
@@ -415,40 +413,57 @@ async function saveSettings(event) {
     const newServices = state.settings.services.map(s => {
       const nameInput = document.querySelector(`input[name="serviceName-${s.id}"]`);
       const priceInput = document.querySelector(`input[name="servicePrice-${s.id}"]`);
-      return {
-        id: s.id,
-        name: nameInput ? nameInput.value.trim() : s.name,
-        price: priceInput ? Number(priceInput.value) : s.price
-      };
+      return { id: s.id, name: nameInput ? nameInput.value.trim() : s.name, price: priceInput ? Number(priceInput.value) : s.price };
     });
 
     const newBarbers = state.settings.barbers.map(b => {
       const nameInput = document.querySelector(`input[name="barberName-${b.id}"]`);
       const titleInput = document.querySelector(`input[name="barberTitle-${b.id}"]`);
       const newName = nameInput ? nameInput.value.trim() : b.name;
-      return {
-        id: b.id,
-        name: newName,
-        title: titleInput ? titleInput.value.trim() : b.title,
-        initials: makeInitials(newName)
-      };
+      return { id: b.id, name: newName, title: titleInput ? titleInput.value.trim() : b.title, initials: makeInitials(newName) };
     });
+
+    let finalImage = state.settings.salonImage; 
+    const imageInput = document.querySelector("#salonImageInput");
+
+    if (imageInput && imageInput.files && imageInput.files[0]) {
+      const file = imageInput.files[0];
+      finalImage = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
+            let width = img.width; let height = img.height;
+
+            if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+            else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+            
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", 0.7)); 
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
     const payload = {
       salonName: elements.salonNameInput ? elements.salonNameInput.value.trim() : state.settings.salonName,
       salonPhone: elements.salonPhoneInput ? elements.salonPhoneInput.value.trim() : state.settings.salonPhone,
       salonAddress: elements.salonAddressInput ? elements.salonAddressInput.value.trim() : state.settings.salonAddress,
-      salonImage: elements.salonImageInput ? elements.salonImageInput.value.trim() : state.settings.salonImage,
+      salonImage: finalImage,
       services: newServices,
       barbers: newBarbers
     };
 
-    await api("/api/admin/settings", {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    });
+    await api("/api/admin/settings", { method: "PUT", body: JSON.stringify(payload) });
     
     setMessage(elements.settingsMessage, "Ayarlar başarıyla kaydedildi! ✅");
+    if (imageInput) imageInput.value = ""; 
     await refreshAll();
 
   } catch (error) {
@@ -463,77 +478,27 @@ function bindEvents() {
   if(elements.adminLoginForm) elements.adminLoginForm.addEventListener("submit", unlockSettings);
   if(elements.settingsForm) elements.settingsForm.addEventListener("submit", saveSettings);
   
-  if(elements.btnShowLogin) elements.btnShowLogin.addEventListener("click", (e) => {
-    e.preventDefault();
-    state.showLoginScreen = true;
-    renderAll();
-  });
+  if(elements.btnShowLogin) elements.btnShowLogin.addEventListener("click", (e) => { e.preventDefault(); state.showLoginScreen = true; renderAll(); });
+  if(elements.btnCancelLogin) elements.btnCancelLogin.addEventListener("click", (e) => { e.preventDefault(); state.showLoginScreen = false; elements.adminPinInput.value = ""; setMessage(elements.adminMessage, ""); renderAll(); });
+  if(elements.lockSettings) elements.lockSettings.addEventListener("click", () => { state.adminToken = ""; state.adminUnlocked = false; state.showLoginScreen = false; sessionStorage.removeItem("barberline-admin-token"); renderAll(); });
 
-  if(elements.btnCancelLogin) elements.btnCancelLogin.addEventListener("click", (e) => {
-    e.preventDefault();
-    state.showLoginScreen = false;
-    elements.adminPinInput.value = "";
-    setMessage(elements.adminMessage, "");
-    renderAll();
-  });
-
-  if(elements.lockSettings) elements.lockSettings.addEventListener("click", () => {
-    state.adminToken = ""; 
-    state.adminUnlocked = false; 
-    state.showLoginScreen = false;
-    sessionStorage.removeItem("barberline-admin-token");
-    renderAll();
-  });
-
-  if(elements.addService) elements.addService.addEventListener("click", () => {
-    state.settings.services.push({ id: `srv-${Date.now()}`, name: "Yeni Hizmet", price: 100 });
-    renderSettingsForm();
-  });
-
-  if(elements.addBarber) elements.addBarber.addEventListener("click", () => {
-    state.settings.barbers.push({ id: `berber-${Date.now()}`, name: "Yeni Berber", title: "Uzman", initials: "YB" });
-    renderSettingsForm();
-  });
+  if(elements.addService) elements.addService.addEventListener("click", () => { state.settings.services.push({ id: `srv-${Date.now()}`, name: "Yeni Hizmet", price: 100 }); renderSettingsForm(); });
+  if(elements.addBarber) elements.addBarber.addEventListener("click", () => { state.settings.barbers.push({ id: `berber-${Date.now()}`, name: "Yeni Berber", title: "Uzman", initials: "YB" }); renderSettingsForm(); });
 
   document.addEventListener("click", async (event) => {
     const btnCancel = event.target.closest("[data-cancel]");
-    if (btnCancel) {
-      if(confirm("Bu randevuyu silmek istediğinize emin misiniz?")) {
-        try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } 
-        catch (e) { alert("Hata: " + e.message); }
-      }
-    }
+    if (btnCancel) { if(confirm("Bu randevuyu silmek istediğinize emin misiniz?")) { try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } catch (e) { alert("Hata: " + e.message); } } }
     
     const btnDelSrv = event.target.closest("[data-delete-service]");
-    if(btnDelSrv) {
-      if(confirm("Bu hizmeti silmek istiyor musunuz?")) {
-        state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService);
-        renderSettingsForm();
-      }
-    }
+    if(btnDelSrv) { if(confirm("Bu hizmeti silmek istiyor musunuz?")) { state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService); renderSettingsForm(); } }
 
     const btnDelBrb = event.target.closest("[data-delete-barber]");
-    if(btnDelBrb) {
-      if(confirm("Bu berberi silmek istiyor musunuz?")) {
-        state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBrb.dataset.deleteBarber);
-        renderSettingsForm();
-      }
-    }
+    if(btnDelBrb) { if(confirm("Bu berberi silmek istiyor musunuz?")) { state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBrb.dataset.deleteBarber); renderSettingsForm(); } }
   });
 
-  if(elements.barberSelect) elements.barberSelect.addEventListener("change", async () => {
-    state.selectedBarberId = elements.barberSelect.value; state.selectedTime = "";
-    await refreshAll();
-  });
-
-  if(elements.dateSelect) elements.dateSelect.addEventListener("change", async () => {
-    state.selectedDate = elements.dateSelect.value; state.selectedTime = "";
-    await refreshAll();
-  });
-
-  if(elements.timeSelect) elements.timeSelect.addEventListener("change", () => {
-    state.selectedTime = elements.timeSelect.value; renderSlotBoard();
-  });
+  if(elements.barberSelect) elements.barberSelect.addEventListener("change", async () => { state.selectedBarberId = elements.barberSelect.value; state.selectedTime = ""; await refreshAll(); });
+  if(elements.dateSelect) elements.dateSelect.addEventListener("change", async () => { state.selectedDate = elements.dateSelect.value; state.selectedTime = ""; await refreshAll(); });
+  if(elements.timeSelect) elements.timeSelect.addEventListener("change", () => { state.selectedTime = elements.timeSelect.value; renderSlotBoard(); });
 
   if(elements.slotBoard) elements.slotBoard.addEventListener("click", (event) => {
     const button = event.target.closest("[data-time]");
@@ -544,10 +509,7 @@ function bindEvents() {
 }
 
 async function init() {
-  if(elements.dateSelect) {
-    elements.dateSelect.min = todayISO();
-    elements.dateSelect.value = state.selectedDate;
-  }
+  if(elements.dateSelect) { elements.dateSelect.min = todayISO(); elements.dateSelect.value = state.selectedDate; }
   bindEvents();
   try { await refreshAll(); } catch (error) { console.error(error); }
 }
