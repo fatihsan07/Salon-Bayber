@@ -66,7 +66,16 @@
       .slot-button { background-color: #000000 !important; color: #ffffff !important; border: 1px solid #444 !important; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%; font-size: 0.95rem; }
       .slot-button:hover:not(:disabled) { border-color: var(--primary) !important; color: var(--primary) !important; }
       .slot-button.is-selected { background-color: var(--primary) !important; color: #000 !important; border-color: var(--primary) !important; }
-      .slot-button:disabled { opacity: 0.2 !important; cursor: not-allowed; }
+      
+      /* YENİ: KİLİTLİ SAATLERİN TASARIMI (ÜSTÜ ÇİZİLİ VE SOLUK) */
+      .slot-button:disabled { 
+        opacity: 0.3 !important; 
+        cursor: not-allowed !important; 
+        text-decoration: line-through !important; 
+        background-color: #0a0a0a !important; 
+        border-color: #222 !important; 
+        color: #666 !important; 
+      }
 
       .appointment-card { display: flex; justify-content: space-between; align-items: flex-start; background-color: #000000 !important; border: 1px solid var(--border) !important; padding: 20px; border-radius: 12px; margin-bottom: 15px; }
       .appointment-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
@@ -74,7 +83,6 @@
       .meta-chip.highlight { border-color: var(--primary) !important; color: var(--primary) !important; background: rgba(255, 215, 0, 0.05) !important; }
       .meta-chip.danger { border-color: #ff4d4d !important; color: #ff4d4d !important; background: rgba(255, 77, 77, 0.05) !important; }
 
-      /* FTH MEDYA İMZASI GÜNCELLENDİ */
       .fth-media-badge { position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.9); border: 1px solid #333; padding: 8px 15px; border-radius: 30px; display: flex; align-items: center; gap: 10px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); transition: 0.3s all; text-decoration: none; }
       .fth-media-badge:hover { border-color: var(--primary); transform: translateY(-2px); }
       .fth-icon { background: #fff; color: #000; font-weight: 900; padding: 4px 6px; border-radius: 50%; font-size: 0.7rem; }
@@ -87,12 +95,11 @@
     </style>
   </head>
   <body>
-    <!-- LİNK DİREKT INSTAGRAM UYGULAMASINA GİDECEK ŞEKİLDE AYARLANDI VE "MEDYA" YAPILDI -->
     <a href="https://www.instagram.com/fth_media1?igsh=MWs5dm84OGRiaDFlMg==" target="_blank" rel="noopener noreferrer" class="fth-media-badge">
-      <div class="fth-icon">FM</div>
-      <div class="fth-text">Powered by <strong>FTH MEDYA</strong></div>
+      <div class="fth-icon">FM</div><div class="fth-text">Powered by <strong>FTH MEDYA</strong></div>
     </a>
 
+    <!-- YENİ WHATSAPP NUMARASI -->
     <a href="https://wa.me/905395960584?text=Merhaba,%20randevu%20sistemi%20hakk%C4%B1nda%20bir%20sorum%20olacakt%C4%B1." target="_blank" class="whatsapp-float-btn" title="WhatsApp Canlı Destek">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.05-.084-.182-.133-.38-.232"/></svg>
     </a>
@@ -110,7 +117,7 @@
         <div style="margin-top: 25px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background-color: #0a0a0a;">
           <p class="eyebrow" style="margin-bottom: 20px;">İletişim & Konum</p>
           <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;"><span style="font-size: 1.1rem; opacity: 0.8;">📍</span><div><p style="margin: 0; color: #888; font-size: 0.8rem;">Adres</p><p id="displayAddress" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">Reyhanlı, Hatay</p></div></div>
-          <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;"><span style="font-size: 1.1rem; opacity: 0.8;">📞</span><div><p style="margin: 0; color: #888; font-size: 0.8rem;">Telefon</p><p id="displayPhone" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">0539 596 0584</p></div></div>
+          <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;"><span style="font-size: 1.1rem; opacity: 0.8;">📞</span><div><p style="margin: 0; color: #888; font-size: 0.8rem;">Telefon</p><p id="displayPhone" style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">0 (539) 596 05 84</p></div></div>
           <div style="display: flex; align-items: flex-start; gap: 15px;"><span style="font-size: 1.1rem; opacity: 0.8;">🕒</span><div><p style="margin: 0; color: #888; font-size: 0.8rem;">Çalışma Saatleri</p><p style="margin: 3px 0 0 0; font-size: 0.95rem; color: #ddd;">09:00 - 21:00</p></div></div>
           <a id="displayMapLink" href="#" target="_blank" style="display: block; text-align: center; margin-top: 25px; padding: 12px; background: rgba(255, 215, 0, 0.05); border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: 0.2s;">Haritada Göster</a>
         </div>
@@ -187,7 +194,6 @@
             <div class="section-title" style="margin-bottom: 25px;"><p class="eyebrow">Sistem</p><h2 style="font-size: 1.3rem;">Genel Ayarlar</h2></div>
             <form id="settingsForm">
               
-              <!-- DOSYA YÜKLEME ALANI (LİNK YERİNE ARTIK BU VAR) -->
               <div class="field-group" style="margin-bottom: 20px; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
                 <label style="font-size: 0.9rem; color: var(--primary); margin-bottom:8px; display:block;">Salon Ana Görseli (Dosyadan Seç)</label>
                 <input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="padding: 10px; background: #111 !important;" />
