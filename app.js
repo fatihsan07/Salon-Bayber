@@ -73,6 +73,13 @@ function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
+// YANLIŞLIKLA SİLDİĞİM KOD BURADA!
+function makeInitials(name) {
+  const words = String(name).trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "BL";
+  return words.slice(0, 2).map((word) => word[0].toLocaleUpperCase("tr-TR")).join("");
+}
+
 function formatPrice(price) {
   return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 }).format(price);
 }
@@ -397,7 +404,6 @@ async function unlockSettings(event) {
   }
 }
 
-// ZIRHLI VE HATA FIRLATAN YENİ KAYDETME SİSTEMİ
 async function saveSettings(event) {
   event.preventDefault();
   setMessage(elements.settingsMessage, "İşleniyor...", "success");
@@ -446,7 +452,6 @@ async function saveSettings(event) {
     await refreshAll();
 
   } catch (error) {
-    // EN UFAK BİR HATADA BİLE BURASI KIRMIZI RENKLE EKRANA BASACAK
     console.error(error);
     setMessage(elements.settingsMessage, "HATA OLUŞTU: " + error.message, "error");
   }
