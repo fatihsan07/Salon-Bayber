@@ -16,10 +16,11 @@ const elements = {
   addBarber: document.querySelector("#addBarber"), addService: document.querySelector("#addService"), barberList: document.querySelector("#barberList"), slotBoard: document.querySelector("#slotBoard"),
   appointmentsList: document.querySelector("#appointmentsList"), todayCount: document.querySelector("#todayCount"), openSlots: document.querySelector("#openSlots"),
   cancelForm: document.querySelector("#cancelForm"), cancelCodeInput: document.querySelector("#cancelCodeInput"), cancelMessage: document.querySelector("#cancelMessage"),
-  blockDateInput: document.querySelector("#blockDateInput"), blockTimeInput: document.querySelector("#blockTimeInput"), btnBlockSlot: document.querySelector("#btnBlockSlot"), blockMessage: document.querySelector("#blockMessage")
+  blockDateStart: document.querySelector("#blockDateStart"), blockDateEnd: document.querySelector("#blockDateEnd"), blockTimeStart: document.querySelector("#blockTimeStart"), blockTimeEnd: document.querySelector("#blockTimeEnd"), blockBarberInput: document.querySelector("#blockBarberInput"), btnBlockSlot: document.querySelector("#btnBlockSlot"), blockMessage: document.querySelector("#blockMessage")
 };
 
-function todayISO() { const offset = new Date().getTimezoneOffset() * 60000; return new Date(Date.now() - offset).toISOString().slice(0, 10); }
+function getTurkeyTime() { return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Istanbul" })); }
+function todayISO() { const d = getTurkeyTime(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function escapeHtml(value) { return String(value).replaceAll("&", "&").replaceAll("<", "<").replaceAll(">", ">"); }
 function makeInitials(name) { const words = String(name).trim().split(/\s+/).filter(Boolean); if (!words.length) return "BL"; return words.slice(0, 2).map((word) => word[0].toLocaleUpperCase("tr-TR")).join(""); }
 function formatPrice(price) { return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 }).format(price); }
@@ -55,13 +56,13 @@ function renderServicesAndBarbers() {
   state.settings.services = state.settings.services || []; state.settings.barbers = state.settings.barbers || [];
 
   if(elements.serviceCheckboxes) {
-    // YENİ: Noktalar yerine düzgün hizalanan CSS Flex Çizgisi eklendi. Artık mobil ekranda alt satıra taşma yapmaz.
     elements.serviceCheckboxes.innerHTML = state.settings.services.map(s => `
-      <label class="checkbox-label" style="display: flex; align-items: center; padding: 12px; background-color: #0a0a0a !important; border: 1px solid #222 !important; border-radius: 8px; margin-bottom: 8px; cursor: pointer;">
-        <input type="checkbox" name="serviceItem" value="${s.id}" style="width: auto; margin-right: 12px;">
-        <span style="color:#fff !important; font-size:0.9rem; white-space: nowrap;">${escapeHtml(s.name)}</span>
-        <div style="flex-grow: 1; border-bottom: 2px dotted #444; margin: 0 10px; position: relative; top: 3px; opacity: 0.5;"></div>
-        <span class="service-price-tag" style="color:var(--primary) !important; font-weight:700; font-size:1rem;">${formatPrice(s.price)}</span>
+      <label class="checkbox-label">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input type="checkbox" name="serviceItem" value="${s.id}">
+          <span style="color:#fff !important; font-size:1.05rem;">${escapeHtml(s.name)} <span style="color:#666; font-size:0.8rem; margin-left:5px;">.......................</span></span>
+        </div>
+        <span class="service-price-tag" style="font-size:1.1rem;">${formatPrice(s.price)}</span>
       </label>
     `).join("");
     document.querySelectorAll('input[name="serviceItem"]').forEach(cb => { cb.addEventListener('change', () => { calculateTotal(); renderTimeSelect(); renderSlotBoard(); }); });
@@ -102,7 +103,7 @@ function renderBarbersList() {
   state.settings.barbers = state.settings.barbers || [];
   elements.barberList.innerHTML = state.settings.barbers.map(b => {
     const initials = b.initials || "BL"; const selectedClass = b.id === state.selectedBarberId ? " is-selected" : "";
-    return `<article class="barber-card${selectedClass}"><div style="background:var(--primary) !important; color:#000 !important; padding:8px 12px; border-radius:6px; font-weight:800; font-size:1rem;">${escapeHtml(initials)}</div><div><h3 style="color:#ffffff !important; margin:0 0 2px 0 !important; font-size:0.95rem;">${escapeHtml(b.name)}</h3><p style="color:#aaaaaa !important; margin:0 !important; font-size:0.8rem;">${escapeHtml(b.title)}</p></div></article>`;
+    return `<article class="barber-card${selectedClass}"><div style="background:var(--primary) !important; color:#000 !important; padding:10px 14px; border-radius:8px; font-weight:800; font-size:1.1rem;">${escapeHtml(initials)}</div><div><h3 style="color:#ffffff !important; margin:0 0 3px 0 !important;">${escapeHtml(b.name)}</h3><p style="color:#aaaaaa !important; margin:0 !important;">${escapeHtml(b.title)}</p></div></article>`;
   }).join("");
 }
 
@@ -117,21 +118,30 @@ function renderSettingsVisibility() {
 function renderSettingsForm() {
   if(!elements.serviceSettings || !elements.barberSettings) return;
   state.settings.services = state.settings.services || []; state.settings.barbers = state.settings.barbers || [];
-  elements.serviceSettings.innerHTML = state.settings.services.map((s, index) => `<div class="admin-row-box" style="padding: 15px; margin-bottom: 12px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:8px;"><span style="color:var(--primary); font-size:1rem;">Hizmet ${index + 1} (1 Seans)</span><button class="danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="padding:4px 10px; font-size:0.75rem;">Sil</button></div><div class="field-row" style="display:flex; gap:10px;"><div class="field-group" style="flex:2;"><label style="font-size:0.8rem; color:#aaa; margin-bottom:4px; display:block;">Hizmet Adı</label><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required /></div><div class="field-group" style="flex:1;"><label style="font-size:0.8rem; color:#aaa; margin-bottom:4px; display:block;">Fiyat (₺)</label><input name="servicePrice-${s.id}" type="number" value="${s.price}" required /></div></div></div>`).join("");
-  elements.barberSettings.innerHTML = state.settings.barbers.map((b, index) => `<div class="admin-row-box" style="padding: 15px; margin-bottom: 12px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:8px;"><span style="color:var(--primary); font-size:1rem;">Berber ${index + 1}</span><button class="danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="padding:4px 10px; font-size:0.75rem;">Sil</button></div><div class="field-row" style="display:flex; gap:10px;"><div class="field-group" style="flex:1;"><label style="font-size:0.8rem; color:#aaa; margin-bottom:4px; display:block;">Berber Adı</label><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required /></div><div class="field-group" style="flex:1;"><label style="font-size:0.8rem; color:#aaa; margin-bottom:4px; display:block;">Uzmanlık</label><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required /></div></div></div>`).join("");
   
-  if (elements.blockTimeInput) {
-    elements.blockTimeInput.innerHTML = state.timeSlots.map(t => `<option value="${t}">${t}</option>`).join("");
-    if(!elements.blockDateInput.value) elements.blockDateInput.value = todayISO();
+  elements.serviceSettings.innerHTML = state.settings.services.map((s, index) => `<div class="admin-row-box" style="padding: 20px; margin-bottom: 15px;"><div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><span style="color:var(--primary); font-size:1.1rem;">Hizmet ${index + 1} (1 Seans)</span><button class="danger-button" type="button" data-delete-service="${escapeHtml(s.id)}" style="padding:4px 10px; font-size:0.8rem;">Sil</button></div><div class="field-row" style="display:flex; gap:15px;"><div class="field-group" style="flex:2;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Hizmet Adı</label><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" required /></div><div class="field-group" style="flex:1;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Fiyat (₺)</label><input name="servicePrice-${s.id}" type="number" value="${s.price}" required /></div></div></div>`).join("");
+  elements.barberSettings.innerHTML = state.settings.barbers.map((b, index) => `<div class="admin-row-box" style="padding: 20px; margin-bottom: 15px;"><div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><span style="color:var(--primary); font-size:1.1rem;">Berber ${index + 1}</span><button class="danger-button" type="button" data-delete-barber="${escapeHtml(b.id)}" style="padding:4px 10px; font-size:0.8rem;">Sil</button></div><div class="field-row" style="display:flex; gap:15px;"><div class="field-group" style="flex:1;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Berber Adı</label><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" required /></div><div class="field-group" style="flex:1;"><label style="font-size:0.85rem; color:#aaa; margin-bottom:5px; display:block;">Uzmanlık</label><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" required /></div></div></div>`).join("");
+  
+  // Doldurulan Berber ve Saat Kapatma Bilgileri
+  if (elements.blockBarberInput) elements.blockBarberInput.innerHTML = state.settings.barbers.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
+  if (elements.blockTimeStart) {
+      elements.blockTimeStart.innerHTML = state.timeSlots.map(t => `<option value="${t}">${t}</option>`).join("");
+      elements.blockTimeEnd.innerHTML = state.timeSlots.map(t => `<option value="${t}">${t}</option>`).join("");
+      if(!elements.blockDateStart.value) {
+          elements.blockDateStart.value = todayISO();
+          elements.blockDateEnd.value = todayISO();
+      }
   }
 }
 
+// TAKVİM GÖRÜNÜMÜ VE GEÇMİŞİ GİZLEYEN MOTOR
 function renderAppointments() {
   if(!elements.appointmentsList) return;
   const todayStr = todayISO();
-  const now = new Date();
+  const now = getTurkeyTime();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
+  // ADIM 1: Geçmiş olanları sil
   let validApps = state.appointments.filter(app => {
     if (app.date < todayStr) return false;
     if (app.date === todayStr) {
@@ -142,50 +152,66 @@ function renderAppointments() {
   });
 
   if (!validApps.length) { 
-    elements.appointmentsList.innerHTML = `<div style="text-align:center; padding:25px; background:#0a0a0a; border-radius:8px; border:1px dashed #333;"><p style="color:#888; font-weight:normal; margin:0; font-size:0.9rem;">Şu an bekleyen aktif bir randevu bulunmuyor.</p></div>`; 
+    elements.appointmentsList.innerHTML = `<div style="text-align:center; padding:30px; background:#0a0a0a; border-radius:10px; border:1px dashed #333;"><p style="color:#888; font-weight:normal; margin:0;">Şu an bekleyen aktif bir randevu bulunmuyor.</p></div>`; 
     return; 
   }
   
-  validApps.sort((a, b) => {
-    if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return a.time.localeCompare(b.time);
+  // ADIM 2: Tarihleri Gün Gün Grupla
+  const grouped = {};
+  validApps.forEach(app => {
+    if(!grouped[app.date]) grouped[app.date] = [];
+    grouped[app.date].push(app);
   });
 
+  const sortedDates = Object.keys(grouped).sort();
   let html = "";
-  let currentDate = "";
 
-  validApps.forEach(app => {
-    if (app.date !== currentDate) {
-      currentDate = app.date;
-      html += `<div style="margin: 20px 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid var(--primary); color: var(--primary); font-weight: 800; font-size: 1rem; text-transform: uppercase;">📅 ${formatDate(currentDate)}</div>`;
-    }
+  // ADIM 3: Akordeon Klasörleri Çiz
+  sortedDates.forEach(date => {
+    const apps = grouped[date];
+    apps.sort((a,b) => a.time.localeCompare(b.time)); // İçeride saate göre sırala
 
-    if (app.customerName === "KAPALI_SAAT") {
-        html += `<article style="background:#111; border:1px solid #333; padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:#888; font-weight:600; font-size:0.85rem;">🚫 ${app.time} - (Mola/Kapalı)</span>
-            <button class="ghost-button" type="button" data-cancel="${app.id}" style="padding:6px 12px; font-size:0.75rem; border-color:#aaa; color:#aaa;">Kilidi Aç</button>
-        </article>`;
-        return;
-    }
+    let dayLabel = date === todayStr ? `BUGÜN (${formatDate(date)})` : formatDate(date);
 
-    const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
-    const serviceNames = app.serviceIds.map(id => { const s = state.settings.services.find(serv => serv.id === id); return s ? s.name : "Hizmet"; }).join(", ");
+    html += `<button class="accordion-btn" onclick="this.nextElementSibling.classList.toggle('show')">
+                <span style="text-transform: uppercase;">📅 ${dayLabel}</span>
+                <span style="font-size:0.8rem; background:var(--primary); color:#000; padding:3px 8px; border-radius:10px;">${apps.length} Kayıt ▼</span>
+             </button>`;
+    
+    html += `<div class="accordion-content">`;
+    
+    apps.forEach(app => {
+      // KAPATILAN SAAT KUTUSU
+      if (app.customerName === "KAPALI_SAAT") {
+          const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
+          html += `<article style="background:#111; border:1px dashed #444; padding:15px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px;">
+              <span style="color:#888; font-weight:600; font-size:0.9rem;">🚫 ${app.time} - ${escapeHtml(barber.name)} (Mola / Kapalı)</span>
+              <button class="ghost-button" type="button" data-cancel="${app.id}" style="padding:6px 15px; font-size:0.85rem; border-color:#888; color:#888;">Kilidi Aç</button>
+          </article>`;
+          return;
+      }
 
-    html += `
-      <article class="appointment-card" style="background:#0a0a0a; border:1px solid #222; padding:15px; border-radius:10px; margin-bottom:12px; display:flex; flex-direction:column; gap:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
-          <div>
-            <h3 style="color:var(--text); font-size:1.1rem; margin:0 0 3px 0;">${escapeHtml(app.customerName)}</h3>
-            <p style="margin:0; color:#aaa; font-weight:normal; font-size:0.85rem;">📞 ${escapeHtml(app.customerPhone)}</p>
+      // NORMAL MÜŞTERİ KUTUSU
+      const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
+      const serviceNames = app.serviceIds.map(id => { const s = state.settings.services.find(serv => serv.id === id); return s ? s.name : "Hizmet"; }).join(", ");
+
+      html += `
+        <article class="appointment-card" style="background:#0a0a0a; border:1px solid #222; padding:20px; border-radius:12px; margin-bottom:15px; display:flex; flex-direction:column; gap:15px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+            <div>
+              <h3 style="color:var(--text); font-size:1.3rem; margin:0 0 5px 0;">${escapeHtml(app.customerName)}</h3>
+              <p style="margin:0; color:#aaa; font-weight:normal; font-size:0.9rem;">📞 ${escapeHtml(app.customerPhone)}</p>
+            </div>
+            <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:8px 15px; font-size:0.85rem;">İptal Et</button>
           </div>
-          <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:6px 12px; font-size:0.75rem;">İptal Et</button>
-        </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid #222; padding-top:12px; width:100%;">
-          <span class="meta-chip highlight" style="font-size:0.8rem; padding:4px 8px;">⏰ ${app.time} <span style="font-size:0.7rem; opacity:0.7;">(${app.serviceIds.length} Seans)</span></span>
-          <span class="meta-chip" style="font-size:0.8rem; padding:4px 8px;">✂️ ${escapeHtml(barber.name)}</span>
-          <span class="meta-chip" style="font-size:0.8rem; padding:4px 8px;">${escapeHtml(serviceNames)}</span>
-        </div>
-      </article>`;
+          <div style="display:flex; gap:10px; flex-wrap:wrap; border-top:1px solid #222; padding-top:15px; width:100%;">
+            <span class="meta-chip highlight">⏰ ${app.time} <span style="font-size:0.75rem; opacity:0.7;">(${app.serviceIds.length} Seans)</span></span>
+            <span class="meta-chip">✂️ ${escapeHtml(barber.name)}</span>
+            <span class="meta-chip">${escapeHtml(serviceNames)}</span>
+          </div>
+        </article>`;
+    });
+    html += `</div>`;
   });
 
   elements.appointmentsList.innerHTML = html;
@@ -283,26 +309,51 @@ function bindEvents() {
   if(elements.addService) elements.addService.addEventListener("click", () => { state.settings.services.push({ id: `srv-${Date.now()}`, name: "Yeni Hizmet", price: 100 }); renderSettingsForm(); });
   if(elements.addBarber) elements.addBarber.addEventListener("click", () => { state.settings.barbers.push({ id: `berber-${Date.now()}`, name: "Yeni Berber", title: "Uzman", initials: "YB" }); renderSettingsForm(); });
 
+  // ÇOKLU SAAT/GÜN KAPATMA MOTORU
   if(elements.btnBlockSlot) {
     elements.btnBlockSlot.addEventListener("click", async () => {
-       const bDate = elements.blockDateInput.value;
-       const bTime = elements.blockTimeInput.value;
-       if(!bDate || !bTime) return setMessage(elements.blockMessage, "Tarih ve saat seçin.", "error");
+       const bBarber = elements.blockBarberInput.value;
+       const dStart = elements.blockDateStart.value;
+       const dEnd = elements.blockDateEnd.value;
+       const tStart = elements.blockTimeStart.value;
+       const tEnd = elements.blockTimeEnd.value;
+
+       if(!dStart || !dEnd || !tStart || !tEnd) return setMessage(elements.blockMessage, "Tarih ve saat aralıklarını tam seçin.", "error");
+       if(dEnd < dStart) return setMessage(elements.blockMessage, "Bitiş tarihi hatalı.", "error");
+
+       const startIndex = state.timeSlots.indexOf(tStart);
+       const endIndex = state.timeSlots.indexOf(tEnd);
+       if(endIndex < startIndex) return setMessage(elements.blockMessage, "Bitiş saati hatalı.", "error");
+
+       const timesToBlock = state.timeSlots.slice(startIndex, endIndex + 1);
        
+       let currentDate = new Date(dStart);
+       const endDate = new Date(dEnd);
+       const datesToBlock = [];
+       while(currentDate <= endDate) {
+           datesToBlock.push(currentDate.toISOString().slice(0,10));
+           currentDate.setDate(currentDate.getDate() + 1);
+       }
+
        try {
-         setMessage(elements.blockMessage, "Saat kapatılıyor...", "success");
-         await api("/api/appointments", { 
-           method: "POST", 
-           body: JSON.stringify({ 
-             customerName: "KAPALI_SAAT", customerPhone: "0000000000", 
-             serviceIds: [state.settings.services[0]?.id || "dummy"], 
-             barberId: state.settings.barbers[0]?.id || "dummy", 
-             date: bDate, time: bTime 
-           }) 
-         });
-         setMessage(elements.blockMessage, "Saat başarıyla kapatıldı! ✅", "success");
+         setMessage(elements.blockMessage, "Saatler kapatılıyor...", "success");
+         for(const d of datesToBlock) {
+            for(const t of timesToBlock) {
+               try {
+                 await api("/api/appointments", { 
+                   method: "POST", 
+                   body: JSON.stringify({ 
+                     customerName: "KAPALI_SAAT", customerPhone: "0000000000", 
+                     serviceIds: [state.settings.services[0]?.id || "mola"], 
+                     barberId: bBarber, date: d, time: t 
+                   }) 
+                 });
+               } catch(e) {} // Zaten kapalıysa atla
+            }
+         }
+         setMessage(elements.blockMessage, "Aralık başarıyla kapatıldı! ✅", "success");
          await refreshAll();
-       } catch(error) { setMessage(elements.blockMessage, error.message, "error"); }
+       } catch(error) { setMessage(elements.blockMessage, "Hata oluştu.", "error"); }
     });
   }
 

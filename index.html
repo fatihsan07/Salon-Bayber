@@ -4,16 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#050505" />
-    
-    <meta property="og:title" content="Salon Bayber | Online Randevu Sistemi" />
-    <meta property="og:description" content="Sıra beklemeden berber randevunuzu saniyeler içinde alın! Sistem Altyapısı: FTH MEDIA" />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80" />
-    
     <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 Randevu</title>
-    <link rel="stylesheet" href="styles.css" />
     <style>
       :root { color-scheme: dark !important; --primary: #FFD700; --bg: #050505; --surface: #111111; --surface-hover: #1a1a1a; --text: #ffffff; --text-muted: #888888; --border: #222222; }
-      html, body { overflow: hidden !important; height: 100vh !important; margin: 0; padding: 0; background-color: var(--bg) !important; color: var(--text) !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.4; }
+      html, body { overflow: hidden !important; height: 100vh !important; margin: 0; padding: 0; background-color: var(--bg) !important; color: var(--text) !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
       .app-shell { display: flex; flex-direction: row; height: 100vh !important; overflow: hidden !important; width: 100%; }
       .sidebar { overflow-y: auto !important; height: 100vh !important; padding-bottom: 50px !important; box-sizing: border-box; }
       .main-content { flex: 1; overflow-y: auto !important; height: 100vh !important; padding-bottom: 120px !important; box-sizing: border-box; scroll-behavior: smooth; position: relative; }
@@ -24,67 +18,64 @@
         .sidebar, .main-content { height: auto !important; overflow-y: visible !important; padding-bottom: 30px !important; }
       }
 
-      /* KOMPAKT BOŞLUKLAR (PADDING KÜÇÜLTÜLDÜ) */
-      .panel, .admin-row-box { background-color: var(--surface) !important; border: 1px solid var(--border) !important; border-radius: 10px; }
-      .panel { padding: 20px; margin-bottom: 15px; }
-      h1, h2, h3, h4 { color: #ffffff !important; margin-top: 0; font-weight: 600; margin-bottom: 8px; }
+      .panel, .admin-row-box { background-color: var(--surface) !important; border: 1px solid var(--border) !important; border-radius: 12px; }
+      .panel { padding: 25px; margin-bottom: 20px; }
+      h1, h2, h3, h4 { color: #ffffff !important; margin-top: 0; font-weight: 600; }
       p, label, span, div { color: var(--text); }
-      .eyebrow { color: var(--primary) !important; letter-spacing: 1px; text-transform: uppercase; font-size: 0.7rem; font-weight: 700; margin-bottom: 3px; }
+      .eyebrow { color: var(--primary) !important; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; }
 
-      /* FORM KUTULARI DAHA İNCE VE ZARİF */
-      input, select, textarea { background-color: #0a0a0a !important; color: #ffffff !important; border: 1px solid var(--border) !important; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; width: 100%; transition: 0.2s border-color; }
+      input, select, textarea { background-color: #0a0a0a !important; color: #ffffff !important; border: 1px solid var(--border) !important; padding: 12px 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; width: 100%; transition: 0.2s border-color; }
       input:focus, select:focus, textarea:focus { border-color: var(--primary) !important; outline: none; }
       option { background-color: #0a0a0a !important; color: #ffffff !important; }
-      select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 98%; background-position-y: center; }
+      select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 98%; background-position-y: center; }
       input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important; -webkit-text-fill-color: #ffffff !important; transition: background-color 5000s ease-in-out 0s; }
       ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
+      .checkbox-label { display: flex; align-items: center; justify-content: space-between; background-color: #0a0a0a !important; padding: 15px; border: 1px solid var(--border) !important; margin-bottom: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s all; }
+      .checkbox-label:hover { border-color: #444 !important; background-color: var(--surface-hover) !important; }
+      
       .team-panel { background-color: #050505 !important; border-color: #222 !important; }
-      .barber-card { background-color: #000000 !important; border: 1px solid #333 !important; padding: 12px !important; border-radius: 8px !important; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; color: #fff !important; }
-      .barber-card h3 { margin: 0 0 2px 0 !important; font-size: 1rem; color: #fff !important; }
+      .barber-card { background-color: #000000 !important; border: 1px solid #333 !important; padding: 15px !important; border-radius: 10px !important; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; color: #fff !important; }
 
-      /* BUTONLAR DAHA TOPLU */
-      .primary-button { background-color: var(--primary) !important; color: #000000 !important; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 0.85rem; }
+      .primary-button { background-color: var(--primary) !important; color: #000000 !important; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 0.9rem; }
       .primary-button:hover { background-color: #e6c200 !important; transform: translateY(-1px); }
-      .danger-button { background-color: transparent !important; border: 1px solid #ff4d4d !important; color: #ff4d4d !important; border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: 0.2s; font-weight:bold; font-size: 0.85rem;}
+      .danger-button { background-color: transparent !important; border: 1px solid #ff4d4d !important; color: #ff4d4d !important; border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: 0.2s; font-weight:bold;}
       .danger-button:hover { background-color: #ff4d4d !important; color: #fff !important; }
-      .ghost-button { color: var(--primary) !important; border: 1px solid var(--primary) !important; background: transparent !important; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s all; font-size: 0.85rem;}
+      .ghost-button { color: var(--primary) !important; border: 1px solid var(--primary) !important; background: transparent !important; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s all; }
       .ghost-button:hover { background-color: rgba(255, 215, 0, 0.1) !important; }
 
-      .status-grid { display: flex; gap: 10px; margin-top: 15px; }
-      .status-grid article { flex: 1; background: #0a0a0a !important; padding: 12px; border-radius: 8px; border: 1px solid var(--border) !important; text-align: center; }
-      .status-grid article span { color: var(--primary) !important; font-size: 1.5rem; font-weight: 700; display: block; }
-      .status-grid article p { margin: 2px 0 0 0; font-size: 0.75rem; color: #aaa !important; text-transform: uppercase; letter-spacing: 1px;}
-      .brand-mark { background: var(--primary) !important; color: #000 !important; padding: 6px 10px; border-radius: 6px; font-weight: 800; font-size: 1rem;}
+      .status-grid { display: flex; gap: 10px; margin-top: 20px; }
+      .status-grid article { flex: 1; background: #0a0a0a !important; padding: 15px; border-radius: 10px; border: 1px solid var(--border) !important; text-align: center; }
+      .status-grid article span { color: var(--primary) !important; font-size: 1.8rem; font-weight: 700; display: block; }
+      .status-grid article p { margin: 5px 0 0 0; font-size: 0.8rem; color: #aaa !important; text-transform: uppercase; letter-spacing: 1px;}
+      .brand-mark { background: var(--primary) !important; color: #000 !important; padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 1.1rem;}
 
-      /* SAAT KUTULARI DAHA KÜÇÜK */
-      .slot-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 15px; }
-      .slot-button { background-color: #000000 !important; color: #ffffff !important; border: 1px solid #444 !important; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%; font-size: 0.85rem; }
+      .slot-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; margin-top: 20px; }
+      .slot-button { background-color: #000000 !important; color: #ffffff !important; border: 1px solid #444 !important; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%; font-size: 0.95rem; }
       .slot-button:hover:not(:disabled) { border-color: var(--primary) !important; color: var(--primary) !important; }
       .slot-button.is-selected { background-color: var(--primary) !important; color: #000 !important; border-color: var(--primary) !important; }
       .slot-button:disabled { opacity: 0.3 !important; cursor: not-allowed !important; text-decoration: line-through !important; border-color: #222 !important; color: #666 !important; }
 
-      .site-footer { background-color: #050505; border-top: 1px solid #222; padding: 30px 20px; margin-top: 30px; text-align: center; }
-      .footer-content { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
-      .footer-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-      .footer-icon { font-size: 1.2rem; color: var(--primary); }
+      /* YENİ: AÇILIR KAPANIR KLASÖR TASARIMI */
+      .accordion-btn { width: 100%; text-align: left; background: #111; color: var(--text); padding: 18px 20px; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+      .accordion-btn:hover { background: #1a1a1a; border-color: var(--primary); color: var(--primary); }
+      .accordion-content { display: none; padding: 10px 0 20px 0; }
+      .accordion-content.show { display: block; }
 
-      /* SABİT İKONLARIN BOYUTLARI MOBİLE UYGUN AYARLANDI */
-      .fth-media-badge { position: fixed; bottom: 15px; right: 15px; background: rgba(10, 10, 10, 0.9); border: 1px solid #333; padding: 6px 12px; border-radius: 30px; display: flex; align-items: center; gap: 8px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); transition: 0.3s all; text-decoration: none; transform: scale(0.95); transform-origin: bottom right; }
-      .fth-media-badge:hover { border-color: var(--primary); transform: scale(1) translateY(-2px); }
-      .fth-icon { background: #fff; color: #000; font-weight: 900; padding: 3px 5px; border-radius: 50%; font-size: 0.65rem; }
-      .fth-text { color: #ccc; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.5px; }
+      .site-footer { background-color: #050505; border-top: 1px solid #222; padding: 40px 20px; margin-top: 40px; text-align: center; }
+      .footer-content { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
+      .footer-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .footer-icon { font-size: 1.5rem; color: var(--primary); }
+
+      .fth-media-badge { position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.9); border: 1px solid #333; padding: 8px 15px; border-radius: 30px; display: flex; align-items: center; gap: 10px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); transition: 0.3s all; text-decoration: none; }
+      .fth-media-badge:hover { border-color: var(--primary); transform: translateY(-2px); }
+      .fth-icon { background: #fff; color: #000; font-weight: 900; padding: 4px 6px; border-radius: 50%; font-size: 0.7rem; }
+      .fth-text { color: #ccc; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px; }
       .fth-text strong { color: #fff; font-weight: 800; letter-spacing: 1px; }
 
-      .whatsapp-float-btn { position: fixed; bottom: 15px; left: 15px; background-color: #25D366; color: #ffffff; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; z-index: 1000; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); transition: 0.3s all; }
+      .whatsapp-float-btn { position: fixed; bottom: 20px; left: 20px; background-color: #25D366; color: #ffffff; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; z-index: 1000; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); transition: 0.3s all; }
       .whatsapp-float-btn:hover { background-color: #1ebe57; transform: scale(1.1); }
-      .whatsapp-float-btn svg { width: 28px; height: 28px; fill: currentColor; }
-      
-      @media (max-width: 400px) {
-        .fth-media-badge { transform: scale(0.85); right: 10px; bottom: 10px; }
-        .whatsapp-float-btn { width: 45px; height: 45px; left: 10px; bottom: 10px; }
-        .whatsapp-float-btn svg { width: 24px; height: 24px; }
-      }
+      .whatsapp-float-btn svg { width: 32px; height: 32px; fill: currentColor; }
     </style>
   </head>
   <body>
@@ -92,139 +83,151 @@
     <a href="https://api.whatsapp.com/send/?phone=905395960584&text=Merhaba,%20randevu%20sistemi%20hakk%C4%B1nda%20bir%20sorum%20olacakt%C4%B1." class="whatsapp-float-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.05-.084-.182-.133-.38-.232"/></svg></a>
 
     <div class="app-shell">
-      
       <aside class="sidebar">
-        <div class="brand-row" style="display: flex; align-items: center; gap: 15px; padding: 20px 20px 0 20px;">
+        <div class="brand-row" style="display: flex; align-items: center; gap: 15px; padding: 25px 25px 0 25px;">
           <div class="brand-mark" id="brandMark">SB</div>
-          <div><p class="eyebrow">Berber Randevu Sistemi</p><h1 id="salonNameDisplay" style="font-size: 1.5rem; margin: 0; font-family: 'Courier New', Courier, monospace;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1></div>
+          <div><p class="eyebrow">Berber Randevu Sistemi</p><h1 id="salonNameDisplay" style="font-size: 1.8rem; margin: 0; font-family: 'Courier New', Courier, monospace;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1></div>
         </div>
-        <figure class="shop-photo" style="border: 1px solid var(--border); margin: 20px; border-radius: 10px; overflow: hidden; height: 160px;">
+        <figure class="shop-photo" style="border: 1px solid var(--border); margin: 25px; border-radius: 12px; overflow: hidden; height: 180px;">
           <img id="mainShopImage" src="" alt="Berber" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;" />
         </figure>
-        <div class="status-grid" style="padding: 0 20px;"><article><span id="todayCount">0</span><p>Bugün</p></article><article><span id="openSlots">0</span><p>Müsait</p></article></div>
+        <div class="status-grid" style="padding: 0 25px;"><article><span id="todayCount">0</span><p>Bugün</p></article><article><span id="openSlots">0</span><p>Müsait</p></article></div>
       </aside>
 
       <main class="main-content" id="customerMain">
-        <div style="padding: 20px;">
-          <header class="topbar panel" style="margin-bottom: 20px;"><div><p class="eyebrow">Randevu Paneli</p><h2 style="font-size: 1.3rem; margin:0;">Berberini seç, saatini ayarla</h2></div></header>
+        <div style="padding: 25px;">
+          <header class="topbar panel" style="margin-bottom: 30px;"><div><p class="eyebrow">Randevu Paneli</p><h2 style="font-size: 1.5rem; margin:0;">Berberini seç, saatini ayarla</h2></div></header>
           
-          <section class="workspace-grid" id="customerWorkspace" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            <section class="panel booking-panel" style="margin-bottom: 0;">
-              <div class="section-title" style="margin-bottom: 20px;"><p class="eyebrow">Randevu Al</p><h2 style="font-size: 1.2rem;">Bilgilerinizi Girin</h2></div>
+          <section class="workspace-grid" id="customerWorkspace">
+            <section class="panel booking-panel">
+              <div class="section-title" style="margin-bottom: 25px;"><p class="eyebrow">Randevu Al</p><h2 style="font-size: 1.3rem;">Bilgilerinizi Girin</h2></div>
               <form id="bookingForm" class="booking-form">
-                <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
-                  <div style="flex:1; min-width:140px;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Ad Soyad</label><input id="customerName" name="customerName" type="text" required /></div>
-                  <div style="flex:1; min-width:140px;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Telefon Numarası</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
-                </div>
-                <div class="field-group" style="margin-bottom: 15px;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Berber Seçimi</label><select id="barberSelect" name="barberSelect" required></select></div>
+                <div class="field-group" style="margin-bottom: 15px;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Ad Soyad</label><input id="customerName" name="customerName" type="text" required /></div>
+                <div class="field-group" style="margin-bottom: 15px;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Telefon Numarası</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
+                <div class="field-group" style="margin-bottom: 15px;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Berber Seçimi</label><select id="barberSelect" name="barberSelect" required></select></div>
                 <div class="field-group" style="margin-bottom: 20px;">
-                  <label style="font-size: 0.85rem; color: #aaa; margin-bottom:8px; display:block;">Hizmetler (Birden fazla seçebilirsiniz)</label>
+                  <label style="font-size: 0.9rem; color: #aaa; margin-bottom:10px; display:block;">Hizmetler (Birden fazla seçebilirsiniz)</label>
                   <div id="serviceCheckboxes"></div>
-                  <div style="text-align: right; padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--border);">
-                     <span style="color: #888; font-size: 0.85rem;">Toplam Tutar:</span> <span id="totalPriceDisplay" style="color: var(--primary); font-size: 1.2rem; font-weight: 700; margin-left: 8px;">₺0</span>
+                  <div style="text-align: right; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border);">
+                     <span style="color: #888; font-size: 0.9rem;">Toplam Tutar:</span> <span id="totalPriceDisplay" style="color: var(--primary); font-size: 1.4rem; font-weight: 700; margin-left: 10px;">₺0</span>
                   </div>
                 </div>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                  <div style="flex:1;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Tarih</label><input id="dateSelect" name="dateSelect" type="date" required /></div>
-                  <div style="flex:1;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Saat</label><select id="timeSelect" name="timeSelect" required></select></div>
+                <div class="field-row" style="display: flex; gap: 15px; margin-bottom: 25px;">
+                  <div class="field-group" style="flex:1;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Tarih</label><input id="dateSelect" name="dateSelect" type="date" required /></div>
+                  <div class="field-group" style="flex:1;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Saat</label><select id="timeSelect" name="timeSelect" required></select></div>
                 </div>
-                <p id="formMessage" style="font-size: 0.85rem; text-align: center; margin-bottom: 10px;"></p>
-                <button class="primary-button" type="submit" style="width: 100%;">RANDEVUYU ONAYLA</button>
+                <p id="formMessage" style="font-size: 0.9rem; text-align: center;"></p>
+                <button class="primary-button" type="submit" style="width: 100%; padding: 18px; font-size: 1rem;">RANDEVUYU ONAYLA</button>
               </form>
             </section>
 
-            <aside style="display: flex; flex-direction: column; gap: 20px;">
-              <section class="panel team-panel" style="margin-bottom: 0;">
-                <div class="section-title" style="margin-bottom: 15px;"><p class="eyebrow">Ekip</p><h2 style="font-size: 1.2rem;">Berberler</h2></div>
-                <div id="barberList"></div>
-              </section>
-              <section class="panel" style="margin-bottom: 0; border: 1px solid #3a1a1a; background-color: #120505;">
-                <div class="section-title" style="margin-bottom: 15px;"><p class="eyebrow" style="color: #ff4d4d !important;">Randevu İptali</p><h2 style="font-size: 1.1rem;">İptal Kodu</h2></div>
+            <aside>
+              <section class="panel team-panel"><div class="section-title" style="margin-bottom: 20px;"><p class="eyebrow">Ekip</p><h2>Berberler</h2></div><div id="barberList"></div></section>
+              <section class="panel" style="margin-top: 20px; border: 1px solid #3a1a1a; background-color: #120505;">
+                <div class="section-title" style="margin-bottom: 15px;"><p class="eyebrow" style="color: #ff4d4d;">Randevu İptali</p><h2 style="font-size: 1.1rem;">İptal Kodu</h2></div>
                 <form id="cancelForm">
-                  <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="margin-bottom: 10px; border-color: #331111; background-color: #0a0000 !important;" />
-                  <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%;">RANDEVUYU İPTAL ET</button>
-                  <p id="cancelMessage" style="margin-top: 10px; font-size: 0.8rem; text-align: center;"></p>
+                  <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="margin-bottom: 15px; border-color: #331111; background-color: #0a0000 !important;" />
+                  <button class="primary-button" type="submit" style="background: #ff4d4d !important; color: white !important; width: 100%; padding: 14px;">RANDEVUYU İPTAL ET</button>
+                  <p id="cancelMessage" style="margin-top: 10px; font-size: 0.85rem; text-align: center;"></p>
                 </form>
               </section>
             </aside>
           </section>
 
-          <section class="panel schedule-panel" id="customerSchedule" style="margin-top: 20px;"><div class="section-title"><p class="eyebrow">Müsaitlik</p><h2 style="font-size: 1.2rem;">Saat Seçimi</h2></div><div class="slot-board" id="slotBoard"></div></section>
+          <section class="panel schedule-panel" id="customerSchedule"><div class="section-title"><p class="eyebrow">Müsaitlik</p><h2>Saat Seçimi</h2></div><div class="slot-board" id="slotBoard"></div></section>
           
-          <div style="text-align: center; margin-top: 30px;"><a href="#" id="btnShowLogin" style="color: #444; text-decoration: none; font-size: 0.75rem; font-weight:700; letter-spacing: 1px;">SİSTEM YÖNETİMİ 🔒</a></div>
+          <div style="text-align: center; margin-top: 40px;"><a href="#" id="btnShowLogin" style="color: #444; text-decoration: none; font-size: 0.8rem; font-weight:700; letter-spacing: 1px;">SİSTEM YÖNETİMİ 🔒</a></div>
         </div>
 
         <footer class="site-footer">
-          <p class="eyebrow" style="margin-bottom: 15px;">İLETİŞİM & KONUM</p>
+          <p class="eyebrow" style="margin-bottom: 25px;">İLETİŞİM & KONUM</p>
           <div class="footer-content">
-            <div class="footer-item"><span class="footer-icon">📍</span><span style="color:#aaa; font-size:0.8rem;">Adres</span><span id="displayAddress" style="font-size:1rem; font-weight:600;">Reyhanlı, Hatay</span></div>
-            <div class="footer-item"><span class="footer-icon">📞</span><span style="color:#aaa; font-size:0.8rem;">Telefon</span><span id="displayPhone" style="font-size:1rem; font-weight:600;">0539 596 0584</span></div>
-            <div class="footer-item"><span class="footer-icon">🕒</span><span style="color:#aaa; font-size:0.8rem;">Çalışma Saatleri</span><span style="font-size:1rem; font-weight:600;">09:00 - 21:00</span></div>
+            <div class="footer-item"><span class="footer-icon">📍</span><span style="color:#aaa; font-size:0.85rem;">Adres</span><span id="displayAddress" style="font-size:1.1rem; font-weight:600;">Reyhanlı, Hatay</span></div>
+            <div class="footer-item"><span class="footer-icon">📞</span><span style="color:#aaa; font-size:0.85rem;">Telefon</span><span id="displayPhone" style="font-size:1.1rem; font-weight:600;">0539 596 0584</span></div>
+            <div class="footer-item"><span class="footer-icon">🕒</span><span style="color:#aaa; font-size:0.85rem;">Çalışma Saatleri</span><span style="font-size:1.1rem; font-weight:600;">09:00 - 21:00</span></div>
           </div>
-          <a id="displayMapLink" href="#" target="_blank" style="display: inline-block; margin-top: 20px; padding: 10px 20px; border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 0.85rem; transition: 0.2s;">🗺️ Haritada Yol Tarifi Al</a>
+          <a id="displayMapLink" href="#" target="_blank" style="display: inline-block; margin-top: 30px; padding: 12px 25px; border: 1px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 0.9rem; transition: 0.2s;">🗺️ Haritada Yol Tarifi Al</a>
         </footer>
       </main>
 
       <main class="main-content" id="adminMain" hidden>
-        <div style="padding: 20px; max-width: 1000px; margin: 0 auto;">
-          <header class="topbar panel" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div><p class="eyebrow">Yönetim Paneli</p><h2 id="adminGreeting" style="font-size: 1.3rem; margin:0;">Yetkili Girişi</h2></div>
+        <div style="padding: 25px; max-width: 1000px; margin: 0 auto;">
+          <header class="topbar panel" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div><p class="eyebrow">Yönetim Paneli</p><h2 id="adminGreeting" style="font-size: 1.5rem; margin:0;">Yetkili Girişi</h2></div>
             <button class="danger-button" id="lockSettings" type="button" hidden>Güvenli Çıkış</button>
           </header>
 
           <section class="panel" id="adminLoginSection" style="max-width: 400px; margin: 0 auto;">
-            <div class="section-title" style="text-align: center; margin-bottom: 20px;"><h2 style="font-size: 1.2rem;">Lütfen Şifrenizi Girin</h2></div>
+            <div class="section-title" style="text-align: center; margin-bottom: 25px;"><h2>Lütfen Şifrenizi Girin</h2></div>
             <form id="adminLoginForm">
-              <div class="field-group" style="margin-bottom: 15px;"><input id="adminPinInput" name="adminPin" type="password" placeholder="Yönetici Şifresi" required style="text-align: center; font-size: 1.1rem; padding: 12px;"/></div>
+              <div class="field-group" style="margin-bottom: 20px;"><input id="adminPinInput" name="adminPin" type="password" placeholder="Yönetici Şifresi" required style="text-align: center; font-size: 1.2rem; padding: 15px;"/></div>
               <button class="primary-button" type="submit" style="width: 100%;">Giriş Yap</button>
-              <p id="adminMessage" style="text-align: center; margin-top: 10px; font-size: 0.85rem;"></p>
+              <p id="adminMessage" style="text-align: center; margin-top: 15px; font-size: 0.9rem;"></p>
             </form>
-            <div style="text-align: center; margin-top: 20px;"><a href="#" id="btnCancelLogin" style="color: #666; text-decoration: none; font-size: 0.8rem; border-bottom: 1px solid #444; padding-bottom: 2px;">← Müşteri Ekranına Dön</a></div>
+            <div style="text-align: center; margin-top: 25px;"><a href="#" id="btnCancelLogin" style="color: #666; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #444; padding-bottom: 2px;">← Müşteri Ekranına Dön</a></div>
           </section>
 
           <div id="adminDashboardSection" hidden>
-            <section class="panel" style="margin-bottom: 20px; border-color: var(--primary);">
-              <div class="section-title" style="margin-bottom: 15px;"><p class="eyebrow">GÜNLÜK AKIŞ</p><h2 style="font-size: 1.2rem;">Bekleyen Randevular</h2></div>
+            <section class="panel" style="margin-bottom: 25px; border-color: var(--primary);">
+              <div class="section-title" style="margin-bottom: 20px;">
+                <p class="eyebrow">OTOMATİK TAKVİM SİSTEMİ</p>
+                <h2 style="font-size: 1.4rem;">Gelecek Randevular</h2>
+                <p style="font-size: 0.85rem; color: #888;">Randevuları görmek için tarihin üstüne tıklayın.</p>
+              </div>
               <div id="appointmentsList"></div>
             </section>
 
             <section class="panel">
-              <div class="section-title" style="margin-bottom: 20px;"><p class="eyebrow">Sistem</p><h2 style="font-size: 1.2rem;">Genel Ayarlar</h2></div>
+              <div class="section-title" style="margin-bottom: 25px;"><p class="eyebrow">Sistem</p><h2 style="font-size: 1.4rem;">Genel Ayarlar</h2></div>
               <form id="settingsForm">
                 
-                <div class="field-group" style="margin-bottom: 15px; background: #0a0a0a; padding: 15px; border-radius: 8px; border: 1px dashed var(--primary);">
-                  <label style="font-size: 0.85rem; color: var(--primary); margin-bottom:8px; display:block;">Salon Ana Görseli (Dosyadan Seç)</label>
-                  <input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="padding: 8px; background: #111 !important;" />
+                <div class="field-group" style="margin-bottom: 20px; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px dashed var(--primary);">
+                  <label style="font-size: 0.9rem; color: var(--primary); margin-bottom:8px; display:block;">Salon Ana Görseli (Dosyadan Seç)</label>
+                  <input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="padding: 10px; background: #111 !important;" />
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                  <div style="flex: 1; min-width: 200px;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Sistem Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div>
-                  <div style="flex: 1; min-width: 200px;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">İletişim Numarası</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div>
+                <div class="field-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                  <div class="field-group" style="flex: 1;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Sistem Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div>
+                  <div class="field-group" style="flex: 1;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">İletişim Numarası</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div>
                 </div>
-                <div class="field-group" style="margin-bottom: 25px;"><label style="font-size: 0.85rem; color: #aaa; margin-bottom:4px; display:block;">Açık Adres (Harita için)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
+                <div class="field-group" style="margin-bottom: 30px;"><label style="font-size: 0.9rem; color: #aaa; margin-bottom:5px; display:block;">Açık Adres (Harita için)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
                 
-                <div style="margin-bottom: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
-                  <p class="eyebrow" style="color: #ff4d4d !important;">Mola / İzin</p>
-                  <h2 style="font-size: 1.1rem; margin-bottom: 12px;">Belirli Bir Saati Kapat</h2>
-                  <div style="display:flex; gap:10px; align-items:flex-end; background: #0a0a0a; padding: 12px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap;">
-                    <div style="flex:1; min-width: 100px;"><label style="font-size: 0.8rem; color:#aaa; margin-bottom:4px; display:block;">Tarih</label><input type="date" id="blockDateInput" /></div>
-                    <div style="flex:1; min-width: 100px;"><label style="font-size: 0.8rem; color:#aaa; margin-bottom:4px; display:block;">Saat</label><select id="blockTimeInput"></select></div>
-                    <button class="danger-button" type="button" id="btnBlockSlot" style="height: 40px; padding: 0 15px; background: #ff4d4d !important; color:#fff !important;">KAPAT</button>
+                <div style="margin-bottom: 35px; border-top: 1px solid var(--border); padding-top: 25px;">
+                  <p class="eyebrow" style="color: #ff4d4d !important;">Mola / Kapalı Gün Ayarı</p>
+                  <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Çoklu Saat ve Gün Kapatma</h2>
+                  <div style="background: #0a0a0a; padding: 20px; border-radius: 10px; border: 1px solid #333;">
+
+                    <div style="margin-bottom: 15px;">
+                      <label style="font-size: 0.85rem; color:#aaa; margin-bottom:5px; display:block;">İşlemi Uygulayacağın Berber</label>
+                      <select id="blockBarberInput" style="width: 100%;"></select>
+                    </div>
+
+                    <div style="display:flex; gap:15px; margin-bottom: 15px;">
+                      <div style="flex:1;"><label style="font-size: 0.85rem; color:#aaa; margin-bottom:5px; display:block;">Başlangıç Tarihi</label><input type="date" id="blockDateStart" /></div>
+                      <div style="flex:1;"><label style="font-size: 0.85rem; color:#aaa; margin-bottom:5px; display:block;">Bitiş Tarihi (Tek günse aynı kalsın)</label><input type="date" id="blockDateEnd" /></div>
+                    </div>
+
+                    <div style="display:flex; gap:15px; margin-bottom: 20px;">
+                      <div style="flex:1;"><label style="font-size: 0.85rem; color:#aaa; margin-bottom:5px; display:block;">Başlangıç Saati</label><select id="blockTimeStart"></select></div>
+                      <div style="flex:1;"><label style="font-size: 0.85rem; color:#aaa; margin-bottom:5px; display:block;">Bitiş Saati</label><select id="blockTimeEnd"></select></div>
+                    </div>
+
+                    <button class="danger-button" type="button" id="btnBlockSlot" style="width: 100%; padding: 15px; background: #ff4d4d !important; color:#fff !important; font-size: 1rem;">SEÇİLİ ARALIĞI KAPAT</button>
+                    <p id="blockMessage" style="font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: bold;"></p>
                   </div>
-                  <p id="blockMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--primary);"></p>
                 </div>
 
-                <div class="section-title" style="margin-bottom: 15px; border-top: 1px solid var(--border); padding-top: 20px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
+                <div class="section-title" style="margin-bottom: 15px; border-top: 1px solid var(--border); padding-top: 25px;"><p class="eyebrow">Hizmetler & Fiyatlar</p></div>
                 <div id="serviceSettings"></div>
-                <button class="ghost-button" id="addService" type="button" style="margin-bottom: 25px; font-size: 0.8rem;">+ Yeni Hizmet Ekle</button>
+                <button class="ghost-button" id="addService" type="button" style="margin-bottom: 30px; font-size: 0.85rem;">+ Yeni Hizmet Ekle</button>
                 
-                <div class="section-title" style="margin-bottom: 15px; border-top: 1px solid var(--border); padding-top: 20px;"><p class="eyebrow">Ekip</p></div>
+                <div class="section-title" style="margin-bottom: 15px; border-top: 1px solid var(--border); padding-top: 25px;"><p class="eyebrow">Ekip</p></div>
                 <div id="barberSettings"></div>
-                <button class="ghost-button" id="addBarber" type="button" style="font-size: 0.8rem;">+ Berber Ekle</button>
+                <button class="ghost-button" id="addBarber" type="button" style="font-size: 0.85rem;">+ Berber Ekle</button>
                 
-                <div style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 20px;">
-                  <button class="primary-button" type="submit" style="width: 100%; padding: 15px; font-size: 1rem !important; background: var(--primary) !important; color: #000 !important;">TÜM AYARLARI KAYDET</button>
-                  <p id="settingsMessage" style="margin-top: 10px; text-align: center; font-size: 0.9rem; color: var(--primary); font-weight: bold;"></p>
+                <div style="margin-top:35px; border-top: 1px solid var(--border); padding-top: 25px;">
+                  <button class="primary-button" type="submit" style="width: 100%; padding: 18px; font-size: 1.2rem !important; background: var(--primary) !important; color: #000 !important;">TÜM AYARLARI KAYDET</button>
+                  <p id="settingsMessage" style="margin-top: 15px; text-align: center; font-size: 1rem; color: var(--primary); font-weight: bold;"></p>
                 </div>
               </form>
             </section>
