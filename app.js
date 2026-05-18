@@ -38,10 +38,7 @@ function renderBrand() {
   const salonName = state.settings?.salonName || "Salon Bayber"; const salonPhone = state.settings?.salonPhone || "0539 596 0584"; const salonAddress = state.settings?.salonAddress || "Reyhanlı, Hatay"; const salonImage = state.settings?.salonImage || "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80";
   if(elements.salonNameInput) elements.salonNameInput.value = salonName; if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone; if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
   if(elements.displayPhone) elements.displayPhone.textContent = salonPhone; if(elements.displayAddress) elements.displayAddress.textContent = salonAddress; 
-  
-  // DİREKT GOOGLE HARİTALAR LİNKİNE ÇEVRİLDİ
   if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
-  
   if(elements.mainShopImage) elements.mainShopImage.src = salonImage; document.title = `${salonName} Randevu`;
 }
 
@@ -139,36 +136,38 @@ window.toggleAdminDate = function(dateStr) {
   renderAppointments();
 }
 
-// AKORDEON TAKVİM VE HATIRLATMA BUTONU EKLENDİ
+// BOŞ GÜNLER DAHİL TAM TAKVİM SİSTEMİ (GEÇMİŞ RANDEVULAR SAKLANMIYOR)
 function renderAppointments() {
   if(!elements.appointmentsList) return;
-  const todayStr = todayISO(); const now = new Date(); const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-  let validApps = state.appointments.filter(app => {
-    if (app.date < todayStr) return false;
-    if (app.date === todayStr) {
-      const [h, m] = app.time.split(':').map(Number);
-      if (h * 60 + m < currentMinutes) return false;
-    }
-    return true;
-  });
-
-  if (!validApps.length) { 
-    elements.appointmentsList.innerHTML = `<div style="text-align:center; padding:30px; background:#0a0a0a; border-radius:10px; border:1px dashed #333;"><p style="color:#666; font-weight:normal; margin:0;">Bekleyen aktif bir randevu bulunmuyor.</p></div>`; 
-    return; 
-  }
+  const todayStr = todayISO(); 
   
+  // 1. ADIM: "Saati veya günü geçenleri gizle" filtresi tamamen kaldırıldı! 
+  let validApps = [...state.appointments];
+  
+  // 2. ADIM: Tarih ve saate göre kronolojik dizme
   validApps.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
     return a.time.localeCompare(b.time);
   });
 
+  // 3. ADIM: Randevuları günlere göre gruplama
   let datesMap = {};
   validApps.forEach(app => {
     if (!datesMap[app.date]) datesMap[app.date] = [];
     datesMap[app.date].push(app);
   });
 
+  // 4. ADIM: BOŞ GÜNLERİ TAKVİME YERLEŞTİR (Geçmiş 2 Gün + Gelecek 14 Gün)
+  const today = new Date();
+  for(let i = -2; i <= 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const offset = d.getTimezoneOffset() * 60000;
+    const dateStr = new Date(d.getTime() - offset).toISOString().slice(0, 10);
+    if (!datesMap[dateStr]) datesMap[dateStr] = [];
+  }
+
+  // 5. ADIM: Tüm tarihleri (boş veya dolu) sıraya sok
   let sortedDates = Object.keys(datesMap).sort();
   let html = "";
 
@@ -187,35 +186,40 @@ function renderAppointments() {
         </div>
         <div style="display: ${displayStyle}; padding: 20px; background-color: #050505;">`;
 
-    apps.forEach(app => {
-      if (app.customerName === "KAPALI_SAAT") {
-        html += `
-          <article style="background:#0a0a0a; border:1px dashed #444; padding:15px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-              <span style="color:#888; font-weight:600;">🚫 ${app.time} - (Bu saat randevuya kapatıldı)</span>
-              <button class="ghost-button" type="button" data-cancel="${app.id}" style="padding:6px 15px; font-size:0.8rem; border-color:#555; color:#aaa;">Kilidi Aç</button>
-          </article>`;
-      } else {
-        const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
-        const serviceNames = app.serviceIds.map(sid => { const s = state.settings.services.find(serv => serv.id === sid); return s ? s.name : "Hizmet"; }).join(", ");
-        
-        // YENİ: HATIRLATMA BUTONU EKLENDİ
-        html += `
-          <article style="background:#111; border:1px solid #222; padding:20px; border-radius:12px; margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px; margin-bottom: 15px;">
-              <div><h3 style="color:#fff; font-size:1.2rem; margin:0 0 5px 0;">${escapeHtml(app.customerName)}</h3><p style="margin:0; color:#888; font-weight:600; font-size:0.9rem;">📞 ${escapeHtml(app.customerPhone)}</p></div>
-              <div style="display:flex; gap:10px;">
-                <button class="ghost-button" type="button" data-remind="${app.id}" style="padding:8px 12px; font-size:0.85rem; border-color:#25D366; color:#25D366;">📲 Hatırlat</button>
-                <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:8px 12px; font-size:0.85rem;">İptal Et</button>
+    // EĞER O GÜN BOŞSA:
+    if (apps.length === 0) {
+      html += `<p style="text-align:center; color:#666; font-size:0.95rem; margin:0; font-weight:500;">Bu tarihte henüz randevu bulunmuyor.</p>`;
+    } else {
+      // EĞER DOLUYSA LİSTELE:
+      apps.forEach(app => {
+        if (app.customerName === "KAPALI_SAAT") {
+          html += `
+            <article style="background:#0a0a0a; border:1px dashed #444; padding:15px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#888; font-weight:600;">🚫 ${app.time} - (Bu saat randevuya kapatıldı)</span>
+                <button class="ghost-button" type="button" data-cancel="${app.id}" style="padding:6px 15px; font-size:0.8rem; border-color:#555; color:#aaa;">Kilidi Aç</button>
+            </article>`;
+        } else {
+          const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
+          const serviceNames = app.serviceIds.map(sid => { const s = state.settings.services.find(serv => serv.id === sid); return s ? s.name : "Hizmet"; }).join(", ");
+          
+          html += `
+            <article style="background:#111; border:1px solid #222; padding:20px; border-radius:12px; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px; margin-bottom: 15px;">
+                <div><h3 style="color:#fff; font-size:1.2rem; margin:0 0 5px 0;">${escapeHtml(app.customerName)}</h3><p style="margin:0; color:#888; font-weight:600; font-size:0.9rem;">📞 ${escapeHtml(app.customerPhone)}</p></div>
+                <div style="display:flex; gap:10px;">
+                  <button class="ghost-button" type="button" data-remind="${app.id}" style="padding:8px 12px; font-size:0.85rem; border-color:#25D366; color:#25D366;">📲 Hatırlat</button>
+                  <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:8px 12px; font-size:0.85rem;">İptal Et</button>
+                </div>
               </div>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid #1a1a1a; padding-top:15px;">
-              <span style="background: rgba(255,215,0,0.1); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:700;">⏰ ${app.time}</span>
-              <span style="background: #000; color: #ccc; border: 1px solid #222; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">✂️ ${escapeHtml(barber.name)}</span>
-              <span style="background: #000; color: #ccc; border: 1px solid #222; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">📋 ${escapeHtml(serviceNames)}</span>
-            </div>
-          </article>`;
-      }
-    });
+              <div style="display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid #1a1a1a; padding-top:15px;">
+                <span style="background: rgba(255,215,0,0.1); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:700;">⏰ ${app.time}</span>
+                <span style="background: #000; color: #ccc; border: 1px solid #222; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">✂️ ${escapeHtml(barber.name)}</span>
+                <span style="background: #000; color: #ccc; border: 1px solid #222; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">📋 ${escapeHtml(serviceNames)}</span>
+              </div>
+            </article>`;
+        }
+      });
+    }
 
     html += `</div></div>`;
   });
@@ -328,7 +332,6 @@ function bindEvents() {
   }
 
   document.addEventListener("click", async (event) => {
-    // YENİ: HASTA HATIRLATMA TETİKLEYİCİSİ
     const btnRemind = event.target.closest("[data-remind]");
     if (btnRemind) {
       const appId = btnRemind.dataset.remind;
