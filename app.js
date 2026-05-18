@@ -3,6 +3,7 @@ const state = {
   timeSlots: [], selectedDate: todayISO(), selectedBarberId: "", selectedTime: "", availableSlots: [], todayCount: 0,
   adminToken: sessionStorage.getItem("barberline-admin-token") || "", adminUnlocked: Boolean(sessionStorage.getItem("barberline-admin-token")),
   showLoginScreen: false, appointments: [],
+  openSections: {} 
 };
 
 const elements = {
@@ -36,7 +37,11 @@ function setMessage(element, message, type = "success") { if(element) { element.
 function renderBrand() {
   const salonName = state.settings?.salonName || "Salon Bayber"; const salonPhone = state.settings?.salonPhone || "0539 596 0584"; const salonAddress = state.settings?.salonAddress || "Reyhanlı, Hatay"; const salonImage = state.settings?.salonImage || "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80";
   if(elements.salonNameInput) elements.salonNameInput.value = salonName; if(elements.salonPhoneInput) elements.salonPhoneInput.value = salonPhone; if(elements.salonAddressInput) elements.salonAddressInput.value = salonAddress;
-  if(elements.displayPhone) elements.displayPhone.textContent = salonPhone; if(elements.displayAddress) elements.displayAddress.textContent = salonAddress; if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
+  if(elements.displayPhone) elements.displayPhone.textContent = salonPhone; if(elements.displayAddress) elements.displayAddress.textContent = salonAddress; 
+  
+  // DİREKT GOOGLE HARİTALAR LİNKİNE ÇEVRİLDİ
+  if(elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
+  
   if(elements.mainShopImage) elements.mainShopImage.src = salonImage; document.title = `${salonName} Randevu`;
 }
 
@@ -55,7 +60,6 @@ function renderServicesAndBarbers() {
   state.settings.services = state.settings.services || []; state.settings.barbers = state.settings.barbers || [];
 
   if(elements.serviceCheckboxes) {
-    // YENİ: TASARIMI PATLATMAYAN, MODERN APPLE TARZI SEÇİM KARTLARI
     elements.serviceCheckboxes.innerHTML = state.settings.services.map(s => `
       <label class="modern-service-card">
         <input type="checkbox" name="serviceItem" value="${s.id}">
@@ -113,7 +117,7 @@ function renderBarbersList() {
 function renderStats() { if(elements.todayCount) elements.todayCount.textContent = String(state.todayCount || 0); if(elements.openSlots) elements.openSlots.textContent = String(state.availableSlots.length); }
 
 function renderSettingsVisibility() {
-  if (state.adminUnlocked) { elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = true; elements.adminDashboardSection.hidden = false; elements.lockSettings.hidden = false; elements.adminGreeting.textContent = "Yönetim Paneli"; } 
+  if (state.adminUnlocked) { elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = true; elements.adminDashboardSection.hidden = false; elements.lockSettings.hidden = false; elements.adminGreeting.textContent = "Kontrol Paneli"; } 
   else if (state.showLoginScreen) { elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = false; elements.adminDashboardSection.hidden = true; elements.lockSettings.hidden = true; elements.adminGreeting.textContent = "Yetkili Girişi"; } 
   else { elements.customerMain.hidden = false; elements.adminMain.hidden = true; }
 }
@@ -130,84 +134,93 @@ function renderSettingsForm() {
   }
 }
 
-// ÜÇLÜ AKORDEON MANTIĞI VE GRUPLAMA BURADA ÇALIŞIYOR
-window.toggleSection = function(sectionId) {
-  const content = document.getElementById(sectionId);
-  const arrow = document.getElementById('arrow-' + sectionId);
-  if(content.style.display === "none") {
-    content.style.display = "block";
-    if(arrow) arrow.style.transform = "rotate(180deg)";
-  } else {
-    content.style.display = "none";
-    if(arrow) arrow.style.transform = "rotate(0deg)";
-  }
+window.toggleAdminDate = function(dateStr) {
+  state.openSections[dateStr] = !state.openSections[dateStr];
+  renderAppointments();
 }
 
+// AKORDEON TAKVİM VE HATIRLATMA BUTONU EKLENDİ
 function renderAppointments() {
   if(!elements.appointmentsList) return;
   const todayStr = todayISO(); const now = new Date(); const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  
-  let pastApps = []; let todayApps = []; let futureApps = [];
-  
-  state.appointments.forEach(app => {
-    if (app.date < todayStr) pastApps.push(app);
-    else if (app.date === todayStr) {
+
+  let validApps = state.appointments.filter(app => {
+    if (app.date < todayStr) return false;
+    if (app.date === todayStr) {
       const [h, m] = app.time.split(':').map(Number);
-      if (h * 60 + m < currentMinutes) pastApps.push(app); else todayApps.push(app);
-    } else futureApps.push(app);
+      if (h * 60 + m < currentMinutes) return false;
+    }
+    return true;
   });
 
-  const sortFn = (a, b) => { if (a.date !== b.date) return a.date.localeCompare(b.date); return a.time.localeCompare(b.time); };
-  pastApps.sort(sortFn); todayApps.sort(sortFn); futureApps.sort(sortFn);
+  if (!validApps.length) { 
+    elements.appointmentsList.innerHTML = `<div style="text-align:center; padding:30px; background:#0a0a0a; border-radius:10px; border:1px dashed #333;"><p style="color:#666; font-weight:normal; margin:0;">Bekleyen aktif bir randevu bulunmuyor.</p></div>`; 
+    return; 
+  }
+  
+  validApps.sort((a, b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return a.time.localeCompare(b.time);
+  });
 
-  const buildHtml = (apps, title, id, isOpen = false) => {
-    const icon = id === 'today' ? '🔥' : id === 'future' ? '📅' : '📁';
-    const color = id === 'today' ? 'var(--primary)' : '#888';
-    
-    let html = `<div style="background: #0a0a0a; border: 1px solid #333; border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
-      <div onclick="toggleSection('${id}')" style="background: #111; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #222;">
-        <span style="color: ${color}; font-size: 1.1rem; font-weight: 800;">${icon} ${title} (${apps.length})</span>
-        <span id="arrow-${id}" style="color: #666; transition: 0.3s; transform: rotate(${isOpen ? '180deg' : '0deg'});">▼</span>
-      </div>
-      <div id="${id}" style="display: ${isOpen ? 'block' : 'none'}; padding: 20px;">`;
-    
-    if(!apps.length) html += `<p style="text-align:center; color:#666; margin:0;">Kayıt bulunmuyor.</p>`;
-    
-    let currentDate = "";
+  let datesMap = {};
+  validApps.forEach(app => {
+    if (!datesMap[app.date]) datesMap[app.date] = [];
+    datesMap[app.date].push(app);
+  });
+
+  let sortedDates = Object.keys(datesMap).sort();
+  let html = "";
+
+  sortedDates.forEach(dateStr => {
+    const apps = datesMap[dateStr];
+    const isOpen = !!state.openSections[dateStr]; 
+    const displayStyle = isOpen ? "block" : "none";
+    const rotateDeg = isOpen ? "180" : "0";
+    const isToday = dateStr === todayStr;
+
+    html += `
+      <div style="background: #0a0a0a; border: 1px solid #333; border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
+        <div onclick="window.toggleAdminDate('${dateStr}')" style="background: #111; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #222;">
+          <span style="color: ${isToday ? 'var(--primary)' : '#fff'}; font-size: 1.1rem; font-weight: 800;">📅 ${formatDate(dateStr)} ${isToday ? '(BUGÜN)' : ''} (${apps.length} Randevu)</span>
+          <span style="color: #666; transition: 0.3s; transform: rotate(${rotateDeg}deg); font-size: 0.8rem;">▼</span>
+        </div>
+        <div style="display: ${displayStyle}; padding: 20px; background-color: #050505;">`;
+
     apps.forEach(app => {
-      if (app.date !== currentDate && id !== 'today') {
-        currentDate = app.date;
-        html += `<div style="margin: 20px 0 10px 0; color: #fff; font-weight: 800; font-size: 1.05rem; border-bottom: 1px solid #333; padding-bottom: 5px;">${formatDate(currentDate)}</div>`;
-      }
-      
       if (app.customerName === "KAPALI_SAAT") {
-        html += `<article style="background:#000; border:1px dashed #444; padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:#aaa; font-weight:600;">🚫 ${app.time} (Kapatıldı)</span>
-            <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:6px 12px; font-size:0.8rem; border-color:#555; color:#aaa;">Aç</button>
-        </article>`;
+        html += `
+          <article style="background:#0a0a0a; border:1px dashed #444; padding:15px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="color:#888; font-weight:600;">🚫 ${app.time} - (Bu saat randevuya kapatıldı)</span>
+              <button class="ghost-button" type="button" data-cancel="${app.id}" style="padding:6px 15px; font-size:0.8rem; border-color:#555; color:#aaa;">Kilidi Aç</button>
+          </article>`;
       } else {
         const barber = state.settings.barbers.find(b => b.id === app.barberId) || { name: "Berber" };
         const serviceNames = app.serviceIds.map(sid => { const s = state.settings.services.find(serv => serv.id === sid); return s ? s.name : "Hizmet"; }).join(", ");
         
-        html += `<article style="background:#050505; border:1px solid #222; padding:20px; border-radius:12px; margin-bottom:15px;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 15px;">
-            <div><h3 style="color:#fff; font-size:1.2rem; margin:0 0 5px 0;">${escapeHtml(app.customerName)}</h3><p style="margin:0; color:#888; font-weight:600; font-size:0.9rem;">📞 ${escapeHtml(app.customerPhone)}</p></div>
-            <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:8px 12px; font-size:0.8rem;">İptal Et</button>
-          </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid #1a1a1a; padding-top:15px;">
-            <span style="background: rgba(255,215,0,0.1); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:700;">⏰ ${app.time}</span>
-            <span style="background: #111; color: #ccc; border: 1px solid #333; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">✂️ ${escapeHtml(barber.name)}</span>
-            <span style="background: #111; color: #ccc; border: 1px solid #333; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">📋 ${escapeHtml(serviceNames)}</span>
-          </div>
-        </article>`;
+        // YENİ: HATIRLATMA BUTONU EKLENDİ
+        html += `
+          <article style="background:#111; border:1px solid #222; padding:20px; border-radius:12px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px; margin-bottom: 15px;">
+              <div><h3 style="color:#fff; font-size:1.2rem; margin:0 0 5px 0;">${escapeHtml(app.customerName)}</h3><p style="margin:0; color:#888; font-weight:600; font-size:0.9rem;">📞 ${escapeHtml(app.customerPhone)}</p></div>
+              <div style="display:flex; gap:10px;">
+                <button class="ghost-button" type="button" data-remind="${app.id}" style="padding:8px 12px; font-size:0.85rem; border-color:#25D366; color:#25D366;">📲 Hatırlat</button>
+                <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:8px 12px; font-size:0.85rem;">İptal Et</button>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid #1a1a1a; padding-top:15px;">
+              <span style="background: rgba(255,215,0,0.1); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:700;">⏰ ${app.time}</span>
+              <span style="background: #000; color: #ccc; border: 1px solid #222; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">✂️ ${escapeHtml(barber.name)}</span>
+              <span style="background: #000; color: #ccc; border: 1px solid #222; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight:600;">📋 ${escapeHtml(serviceNames)}</span>
+            </div>
+          </article>`;
       }
     });
-    
-    html += `</div></div>`;
-    return html;
-  };
 
-  elements.appointmentsList.innerHTML = buildHtml(todayApps, "Bugünün Randevuları", "today", true) + buildHtml(futureApps, "Gelecek Randevular", "future", false) + buildHtml(pastApps, "Geçmiş Randevular", "past", false);
+    html += `</div></div>`;
+  });
+
+  elements.appointmentsList.innerHTML = html;
 }
 
 function renderAll() { renderBrand(); renderServicesAndBarbers(); renderTimeSelect(); renderBarbersList(); renderSlotBoard(); renderStats(); renderSettingsVisibility(); renderSettingsForm(); renderAppointments(); }
@@ -315,24 +328,13 @@ function bindEvents() {
   }
 
   document.addEventListener("click", async (event) => {
-    const btnCancel = event.target.closest("[data-cancel]");
-    if (btnCancel) { if(confirm("Bunu silmek istediğinize emin misiniz?")) { try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } catch (e) { alert("Hata: " + e.message); } } }
-    const btnDelSrv = event.target.closest("[data-delete-service]");
-    if(btnDelSrv) { if(confirm("Bu hizmeti silmek istiyor musunuz?")) { state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService); renderSettingsForm(); } }
-    const btnDelBrb = event.target.closest("[data-delete-barber]");
-    if(btnDelBrb) { if(confirm("Bu berberi silmek istiyor musunuz?")) { state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBrb.dataset.deleteBarber); renderSettingsForm(); } }
-  });
-
-  if(elements.barberSelect) elements.barberSelect.addEventListener("change", async () => { state.selectedBarberId = elements.barberSelect.value; state.selectedTime = ""; await refreshAll(); });
-  if(elements.dateSelect) elements.dateSelect.addEventListener("change", async () => { state.selectedDate = elements.dateSelect.value; state.selectedTime = ""; await refreshAll(); });
-  if(elements.timeSelect) elements.timeSelect.addEventListener("change", () => { state.selectedTime = elements.timeSelect.value; renderSlotBoard(); });
-
-  if(elements.slotBoard) elements.slotBoard.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-time]");
-    if (!button || button.disabled) return;
-    state.selectedTime = button.dataset.time; elements.timeSelect.value = button.dataset.time; renderSlotBoard();
-  });
-}
-
-async function init() { if(elements.dateSelect) { elements.dateSelect.min = todayISO(); elements.dateSelect.value = state.selectedDate; } bindEvents(); try { await refreshAll(); } catch (error) { console.error(error); } }
-init();
+    // YENİ: HASTA HATIRLATMA TETİKLEYİCİSİ
+    const btnRemind = event.target.closest("[data-remind]");
+    if (btnRemind) {
+      const appId = btnRemind.dataset.remind;
+      const app = state.appointments.find(a => a.id === appId);
+      if (app) {
+        const salonName = state.settings.salonName || "Salon Bayber";
+        const customerPhone = app.customerPhone.replace(/\D/g,''); 
+        
+        const reminderText = encodeURIComponent(`Merhaba ${app.customerName},\n\nSizi harika bir görünüm için bekliyoruz! 😎\n\n(${formatDate(app.date)}) saat *${app.time}* itibariyle *${salonName}* salonumuzda randevunuz bulunmaktadır.\n\nLütfen rand
