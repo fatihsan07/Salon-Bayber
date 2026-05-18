@@ -337,4 +337,30 @@ function bindEvents() {
         const salonName = state.settings.salonName || "Salon Bayber";
         const customerPhone = app.customerPhone.replace(/\D/g,''); 
         
-        const reminderText = encodeURIComponent(`Merhaba ${app.customerName},\n\nSizi harika bir görünüm için bekliyoruz! 😎\n\n(${formatDate(app.date)}) saat *${app.time}* itibariyle *${salonName}* salonumuzda randevunuz bulunmaktadır.\n\nLütfen rand
+        const reminderText = encodeURIComponent(`Merhaba ${app.customerName},\n\nSizi harika bir görünüm için bekliyoruz! 😎\n\n(${formatDate(app.date)}) saat *${app.time}* itibariyle *${salonName}* salonumuzda randevunuz bulunmaktadır.\n\nLütfen randevu saatinizden 10 dakika önce salonumuzda olmaya özen gösteriniz. İptal veya erteleme durumunda lütfen bize bilgi veriniz.\n\nGörüşmek üzere! ✂️🔥`);
+        
+        window.open(`https://api.whatsapp.com/send/?phone=90${customerPhone.slice(-10)}&text=${reminderText}`, '_blank');
+      }
+    }
+
+    const btnCancel = event.target.closest("[data-cancel]");
+    if (btnCancel) { if(confirm("Bunu silmek istediğinize emin misiniz?")) { try { await api(`/api/admin/appointments/${encodeURIComponent(btnCancel.dataset.cancel)}`, { method: "DELETE" }); await refreshAll(); } catch (e) { alert("Hata: " + e.message); } } }
+    const btnDelSrv = event.target.closest("[data-delete-service]");
+    if(btnDelSrv) { if(confirm("Bu hizmeti silmek istiyor musunuz?")) { state.settings.services = state.settings.services.filter(s => s.id !== btnDelSrv.dataset.deleteService); renderSettingsForm(); } }
+    const btnDelBrb = event.target.closest("[data-delete-barber]");
+    if(btnDelBrb) { if(confirm("Bu berberi silmek istiyor musunuz?")) { state.settings.barbers = state.settings.barbers.filter(b => b.id !== btnDelBrb.dataset.deleteBarber); renderSettingsForm(); } }
+  });
+
+  if(elements.barberSelect) elements.barberSelect.addEventListener("change", async () => { state.selectedBarberId = elements.barberSelect.value; state.selectedTime = ""; await refreshAll(); });
+  if(elements.dateSelect) elements.dateSelect.addEventListener("change", async () => { state.selectedDate = elements.dateSelect.value; state.selectedTime = ""; await refreshAll(); });
+  if(elements.timeSelect) elements.timeSelect.addEventListener("change", () => { state.selectedTime = elements.timeSelect.value; renderSlotBoard(); });
+
+  if(elements.slotBoard) elements.slotBoard.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-time]");
+    if (!button || button.disabled) return;
+    state.selectedTime = button.dataset.time; elements.timeSelect.value = button.dataset.time; renderSlotBoard();
+  });
+}
+
+async function init() { if(elements.dateSelect) { elements.dateSelect.min = todayISO(); elements.dateSelect.value = state.selectedDate; } bindEvents(); try { await refreshAll(); } catch (error) { console.error(error); } }
+init();
