@@ -317,6 +317,11 @@ function renderCustomerDateTabs() {
     })
     .join("");
 
+  const activeDateTab = elements.customerDateTabs.querySelector(".date-tab.is-active");
+  if (activeDateTab) {
+    activeDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
+
   if (elements.dateSelect) {
     elements.dateSelect.value = state.selectedDate;
   }
@@ -345,6 +350,11 @@ function renderBarberTabs() {
     .join("");
 
   elements.barberSelect.value = state.selectedBarberId;
+
+  const activeBarberTab = elements.barberTabs.querySelector(".barber-tab.is-active");
+  if (activeBarberTab) {
+    activeBarberTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
 }
 
 function renderServices() {
@@ -413,6 +423,11 @@ function renderSlots() {
     })
     .join("");
 
+  const selectedSlotButton = elements.slotBoard.querySelector(".slot-button.is-selected");
+  if (selectedSlotButton) {
+    selectedSlotButton.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
+
   const hasSlot = fittingSlots.length > 0;
   elements.slotUnavailableAlert.hidden = hasSlot;
 
@@ -479,6 +494,11 @@ function renderAppointments() {
         return `<button type="button" class="admin-date-tab${activeClass}" data-admin-date="${dateStr}" title="${escapeHtml(dateLabel(dateStr))}">${escapeHtml(adminDateTabLabel(dateStr))}</button>`;
       })
       .join("");
+
+    const activeAdminDateTab = elements.adminDateTabs.querySelector(".admin-date-tab.is-active");
+    if (activeAdminDateTab) {
+      activeAdminDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
   }
 
   const daily = state.appointments

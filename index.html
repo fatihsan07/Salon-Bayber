@@ -42,6 +42,8 @@
         font-family: "Manrope", sans-serif;
         min-height: 100%;
         overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
       }
 
       h1,
@@ -73,6 +75,11 @@
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 18px;
+        max-width: 100%;
+      }
+
+      .panel * {
+        min-width: 0;
       }
 
       .sidebar {
@@ -130,16 +137,19 @@
       .main-content {
         min-width: 0;
         width: 100%;
+        max-width: 100%;
       }
 
       .layout-stack {
         display: grid;
         gap: 16px;
+        min-width: 0;
       }
 
       .booking-form {
         display: grid;
         gap: 16px;
+        min-width: 0;
       }
 
       .section-title {
@@ -219,6 +229,7 @@
         scroll-snap-type: x proximity;
         flex-wrap: nowrap;
         touch-action: pan-x;
+        overscroll-behavior-x: contain;
       }
 
       .date-tabs::-webkit-scrollbar {
@@ -255,6 +266,7 @@
         scroll-snap-type: x proximity;
         flex-wrap: nowrap;
         touch-action: pan-x;
+        overscroll-behavior-x: contain;
       }
 
       .barber-tabs::-webkit-scrollbar {
@@ -552,6 +564,7 @@
         padding: 2px 2px 10px;
         flex-wrap: nowrap;
         touch-action: pan-x;
+        overscroll-behavior-x: contain;
       }
 
       .admin-date-tabs::-webkit-scrollbar {
@@ -603,6 +616,7 @@
       .mini {
         font-size: 0.82rem;
         color: var(--muted);
+        overflow-wrap: anywhere;
       }
 
       .settings-row {
@@ -663,8 +677,55 @@
           position: static;
         }
 
+        .sidebar figure {
+          height: 160px;
+        }
+
         .date-row {
           grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 900px) {
+        html {
+          font-size: 14px;
+        }
+
+        .app-shell {
+          padding: 10px;
+          gap: 10px;
+        }
+
+        .sidebar {
+          gap: 10px;
+        }
+
+        .sidebar figure {
+          display: none;
+        }
+
+        .brand-badge {
+          width: 44px;
+          height: 44px;
+          font-size: 1rem;
+        }
+
+        .panel {
+          padding: 12px;
+          border-radius: 12px;
+        }
+
+        .section-title h2 {
+          font-size: 1.08rem;
+        }
+
+        h1 {
+          font-size: 1.1rem;
+          overflow-wrap: anywhere;
+        }
+
+        .service-name {
+          overflow-wrap: anywhere;
         }
       }
 
@@ -689,6 +750,7 @@
           -webkit-overflow-scrolling: touch;
           scroll-snap-type: x proximity;
           touch-action: pan-x;
+          overscroll-behavior-x: contain;
         }
 
         .slot-board::-webkit-scrollbar {
@@ -714,6 +776,7 @@
           min-width: 72px;
           padding: 10px 8px;
           scroll-snap-align: start;
+          font-size: 0.85rem;
         }
 
         .barber-tab {
