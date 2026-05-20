@@ -4,232 +4,158 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#050505" />
-    
-    <meta property="og:title" content="Salon Bayber | Online Randevu Sistemi" />
-    <meta property="og:description" content="Sıra beklemeden berber randevunuzu saniyeler içinde alın!" />
-    
-    <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 Randevu</title>
+    <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 VIP Otomasyon</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
       :root { color-scheme: dark !important; --primary: #FFD700; --bg: #050505; --surface: #111111; --text: #ffffff; --text-muted: #888888; --border: #222222; }
-      
-      /* EKRAN TAŞMALARINI ENGELLEYEN HAYAT KURTARICI KOD */
-      *, *::before, *::after { box-sizing: border-box; }
-      
-      html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; -webkit-tap-highlight-color: transparent; overflow-x: hidden; width: 100%; }
+      *, *::before, *::after { box-sizing: border-box; max-width: 100%; }
+      html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; width: 100%; }
       
       .app-shell { display: flex; flex-direction: row; height: 100vh; overflow: hidden; width: 100%; }
-      .sidebar { overflow-y: auto; height: 100vh; padding-bottom: 50px; }
+      .sidebar { overflow-y: auto; height: 100vh; padding-bottom: 50px; flex-shrink: 0; }
       .main-content { flex: 1; overflow-y: auto; height: 100vh; padding-bottom: 50px; scroll-behavior: smooth; position: relative; width: 100%; }
       
-      .booking-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
-
+      .booking-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px; width: 100%; }
       @media (max-width: 900px) {
-        html, body { overflow-y: auto; height: auto; }
         .app-shell { flex-direction: column; height: auto; overflow: visible; }
         .sidebar, .main-content { height: auto; overflow-y: visible; padding-bottom: 0; width: 100%; }
         .booking-grid { grid-template-columns: 1fr; gap: 15px; } 
       }
 
-      .panel { background-color: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; }
-      h1, h2, h3, h4 { color: #ffffff; margin-top: 0; font-weight: 700; letter-spacing: -0.5px; }
+      .panel { background-color: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; overflow: hidden; }
       .eyebrow { color: var(--primary); letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; display: block; }
 
-      input, select, textarea { background-color: #0a0a0a; color: #ffffff; border: 2px solid var(--border); padding: 14px 16px; border-radius: 10px; font-family: inherit; font-size: 1rem; width: 100%; transition: 0.2s border-color; font-weight: 500; }
+      input, select, textarea { background-color: #0a0a0a; color: #ffffff; border: 2px solid var(--border); padding: 14px 16px; border-radius: 10px; font-family: inherit; font-size: 1rem; width: 100%; font-weight: 500; display: block; }
       input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background-color: #000; }
-      select { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 96%; background-position-y: center; }
 
-      /* KUSURSUZ MOBİL HİZMET KARTI (YAZILAR ÜST ÜSTE BİNMEZ) */
-      .modern-service-card { display: flex; justify-content: space-between; align-items: center; background-color: #0a0a0a; padding: 15px 18px; border: 2px solid var(--border); margin-bottom: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s all; width: 100%; }
-      .modern-service-card:active { transform: scale(0.98); }
+      .modern-service-card { display: flex; justify-content: space-between; align-items: center; background-color: #0a0a0a; padding: 15px 18px; border: 2px solid var(--border); margin-bottom: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s all; width: 100%; gap: 10px; }
       .modern-service-card:has(input[type="checkbox"]:checked) { border-color: var(--primary); background-color: rgba(255, 215, 0, 0.05); }
       .modern-service-card input[type="checkbox"] { display: none; }
-      
-      .service-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
       .custom-checkbox { width: 22px; height: 22px; border: 2px solid #555; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
       .modern-service-card:has(input[type="checkbox"]:checked) .custom-checkbox { background-color: var(--primary); border-color: var(--primary); }
       .modern-service-card:has(input[type="checkbox"]:checked) .custom-checkbox::after { content: "✓"; color: #000; font-size: 14px; font-weight: 900; }
+      .service-name { color: #fff; font-size: 0.95rem; font-weight: 600; line-height: 1.4; word-break: break-word; }
+      .service-price { color: var(--primary); font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
 
-      .service-name { color: #fff; font-size: 0.95rem; font-weight: 600; white-space: normal; line-height: 1.3; display: block; word-break: break-word; }
-      .service-price { color: var(--primary); font-size: 1.1rem; font-weight: 800; margin-left: 10px; flex-shrink: 0; }
+      .primary-button { background-color: var(--primary); color: #000; border: none; padding: 16px 24px; border-radius: 10px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 1rem; width: 100%; display: block; text-align: center; text-decoration: none; }
+      .danger-button { background-color: transparent; border: 2px solid #ff4d4d; color: #ff4d4d; border-radius: 8px; padding: 10px 15px; cursor: pointer; font-weight: bold; display: inline-block; text-align: center; }
+      .ghost-button { color: var(--primary); border: 2px solid var(--primary); background: transparent; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; display: inline-block; text-decoration: none; text-align: center;}
 
-      .primary-button { background-color: var(--primary); color: #000; border: none; padding: 18px 24px; border-radius: 10px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 1.05rem; width: 100%; }
-      .primary-button:hover { background-color: #e6c200; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2); }
-      .danger-button { background-color: transparent; border: 2px solid #ff4d4d; color: #ff4d4d; border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: 0.2s; font-weight:bold;}
-      .danger-button:hover { background-color: #ff4d4d; color: #fff; }
-      .ghost-button { color: var(--primary); border: 2px solid var(--primary); background: transparent; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s all; }
-      .ghost-button:hover { background-color: rgba(255, 215, 0, 0.1); }
-
-      .slot-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 20px; }
-      .slot-button { background-color: #0a0a0a; color: #fff; border: 2px solid var(--border); padding: 12px 5px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: all 0.2s; width: 100%; font-size: 0.95rem; text-align: center; }
-      .slot-button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
-      .slot-button.is-selected { background-color: var(--primary) !important; color: #000 !important; border-color: var(--primary) !important; box-shadow: 0 4px 10px rgba(255,215,0,0.3); }
-      .slot-button:disabled { opacity: 0.3 !important; cursor: not-allowed; text-decoration: line-through; border-color: #111; color: #555; background: #000; }
-
-      /* YENİ: YÖNETİCİ PANELİ YATAY TAKVİM SEKMELERİ */
-      .admin-calendar-tabs { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 15px; margin-bottom: 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      /* AKILLI AJANDA VE SEKMELER */
+      .admin-calendar-tabs { display: flex; overflow-x: auto; gap: 10px; padding: 5px 0 15px 0; margin-bottom: 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; }
       .admin-calendar-tabs::-webkit-scrollbar { display: none; }
-      .cal-tab { background: #111; border: 1px solid #333; padding: 12px 20px; border-radius: 30px; color: #888; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.3s; font-size: 0.9rem; }
+      .cal-tab { background: #111; border: 1px solid #333; padding: 12px 20px; border-radius: 30px; color: #888; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.3s; font-size: 0.9rem; flex-shrink: 0; }
       .cal-tab.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 4px 10px rgba(255,215,0,0.2); }
+
+      /* MÜŞTERİ CANLI TAKVİM TASARIMI */
+      .live-barber-row { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+      .live-slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
 
       .site-footer { background-color: #050505; border-top: 1px solid #1a1a1a; padding: 40px 20px 80px 20px; text-align: center; margin-top: 30px; width: 100%; }
       .footer-content { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
-      .footer-link-box { display: flex; flex-direction: column; align-items: center; gap: 5px; text-decoration: none; transition: 0.2s; cursor: pointer; }
-      .footer-link-box:hover { transform: translateY(-2px); }
-      .footer-link-box:hover span { color: var(--primary) !important; }
-      .footer-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+      .footer-link-box { display: flex; flex-direction: column; align-items: center; gap: 5px; text-decoration: none; cursor: pointer; }
       
-      .fth-footer-badge { display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; background: #111; border: 1px solid #333; border-radius: 30px; text-decoration: none; transition: 0.3s; margin-top: 20px; max-width: 90%; }
-      .fth-footer-badge:hover { border-color: var(--primary); background: #1a1a1a;}
-      .fth-icon { background: #fff; color: #000; font-weight: 900; padding: 5px 8px; border-radius: 50%; font-size: 0.75rem; }
-      .fth-text { color: #aaa; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px; }
-      .fth-text strong { color: #fff; font-weight: 800; letter-spacing: 1px; }
-
-      .whatsapp-float-btn { position: fixed; bottom: 25px; right: 25px; background-color: #25D366; color: #ffffff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; z-index: 1000; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); transition: 0.3s all; border: 3px solid #050505; }
-      .whatsapp-float-btn:hover { transform: scale(1.1) rotate(-5deg); }
-      .whatsapp-float-btn svg { width: 35px; height: 35px; fill: currentColor; }
+      .whatsapp-float-btn { position: fixed; bottom: 25px; right: 25px; background-color: #25D366; color: #ffffff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; z-index: 1000; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); border: 3px solid #050505; }
     </style>
   </head>
   <body>
-    <a href="https://api.whatsapp.com/send/?phone=905395960584&text=Merhaba,%20randevu%20sistemi%20hakk%C4%B1nda%20bir%20sorum%20olacakt%C4%B1." class="whatsapp-float-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.05-.084-.182-.133-.38-.232"/></svg></a>
+    <a href="https://api.whatsapp.com/send/?phone=905395960584" class="whatsapp-float-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32" fill="#fff"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.05-.084-.182-.133-.38-.232"/></svg></a>
 
     <div class="app-shell">
       <aside class="sidebar">
         <div style="display: flex; align-items: center; gap: 15px; padding: 30px 25px 0 25px;">
           <div style="background: var(--primary); color: #000; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 1.2rem;">SB</div>
-          <div><span class="eyebrow">VIP Randevu Sistemi</span><h1 id="salonNameDisplay" style="font-size: 1.8rem; margin: 0; font-family: 'Courier New', Courier, monospace;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1></div>
+          <div><span class="eyebrow">VIP Randevu Sistemi</span><h1 id="salonNameDisplay" style="font-size: 1.6rem; margin: 0; font-family: 'Courier New', Courier, monospace;">𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛</h1></div>
         </div>
-        <figure style="border: 2px solid var(--border); margin: 25px; border-radius: 16px; overflow: hidden; height: 180px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
-          <img id="mainShopImage" src="" alt="Berber" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;" />
-        </figure>
+        <figure style="border: 2px solid var(--border); margin: 25px; border-radius: 16px; overflow: hidden; height: 160px;"><img id="mainShopImage" src="" alt="Berber" style="width: 100%; height: 100%; object-fit: cover;" /></figure>
       </aside>
 
       <main class="main-content" id="customerMain">
-        <div style="padding: 25px;">
-          <header class="panel" style="margin-bottom: 30px; border-bottom: 3px solid var(--primary);"><div><span class="eyebrow">HIZLI İŞLEM MERKEZİ</span><h2 style="font-size: 1.6rem; margin:0;">Berberini seç, saatini ayarla</h2></div></header>
-          
+        <div style="padding: 20px;">
+          <section class="panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+              <div><span class="eyebrow">CANLI AJANDA</span><h2>Berber Müsaitlik Durumları</h2></div>
+              <div style="width:160px;"><input id="customerDateView" type="date" style="padding:8px 12px; font-size:0.9rem;" /></div>
+            </div>
+            <div id="liveStatusContainer"></div>
+          </section>
+
           <div class="booking-grid">
             <section class="panel">
-              <div style="margin-bottom: 30px;"><span class="eyebrow">Adım 1</span><h2 style="font-size: 1.4rem;">Bilgilerinizi Girin</h2></div>
+              <div style="margin-bottom: 20px;"><span class="eyebrow">Kayıt Formu</span><h2>Randevunuzu Oluşturun</h2></div>
               <form id="bookingForm">
-                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Ad Soyad</label><input id="customerName" name="customerName" type="text" required /></div>
-                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Telefon Numarası</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
+                <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Ad Soyad</label><input id="customerName" name="customerName" type="text" required /></div>
+                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Telefon</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
                 </div>
-                <div style="margin-bottom: 30px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Berber Seçimi</label><select id="barberSelect" name="barberSelect" required></select></div>
-                
-                <div style="margin-bottom: 30px;">
-                  <label style="font-size: 0.95rem; color: #bbb; margin-bottom:12px; display:block; font-weight:600;">Hizmetler (Birden fazla seçebilirsiniz)</label>
-                  <div id="serviceCheckboxes"></div>
-                  <div style="text-align: right; padding-top: 20px; margin-top: 20px; border-top: 2px solid var(--border);">
-                     <span style="color: #aaa; font-size: 1rem; font-weight:600;">Toplam Tutar:</span> <span id="totalPriceDisplay" style="color: var(--primary); font-size: 1.6rem; font-weight: 800; margin-left: 10px;">₺0</span>
-                  </div>
+                <div style="margin-bottom: 20px;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Seçtiğiniz Berber</label><select id="barberSelect" name="barberSelect" required></select></div>
+                <div style="margin-bottom: 20px;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:8px; display:block;">Yapılacak İşlemler</label><div id="serviceCheckboxes"></div>
+                  <div style="text-align: right; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border);"><span style="color:#aaa;">Tutar:</span> <span id="totalPriceDisplay" style="color:var(--primary); font-size:1.4rem; font-weight:800; margin-left:10px;">₺0</span></div>
                 </div>
-                
-                <div style="display: flex; gap: 15px; margin-bottom: 35px; flex-wrap: wrap;">
-                  <div style="flex:1; min-width: 140px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Tarih Seçimi</label><input id="dateSelect" name="dateSelect" type="date" required /></div>
-                  <div style="flex:1; min-width: 140px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Saat Seçimi</label><select id="timeSelect" name="timeSelect" required></select></div>
-                </div>
-                <p id="formMessage" style="font-size: 1rem; font-weight:700; text-align: center; margin-bottom:15px;"></p>
+                <div style="display: flex; gap: 15px; margin-bottom: 25px;"><div style="flex:1;"><label style="font-size:0.9rem; color:#bbb; margin-bottom:6px; display:block;">Tarih</label><input id="dateSelect" name="dateSelect" type="date" required /></div><div style="flex:1;"><label style="font-size:0.9rem; color:#bbb; margin-bottom:6px; display:block;">Saat</label><select id="timeSelect" name="timeSelect" required></select></div></div>
+                <p id="formMessage" style="font-size: 0.95rem; font-weight:700; text-align: center; margin-bottom:15px;"></p>
                 <button class="primary-button" type="submit">RANDEVUYU ONAYLA</button>
               </form>
+              <div id="successCalendarArea" style="margin-top:20px; display:none; background:#000; border:1px dashed var(--primary); padding:15px; border-radius:10px; text-align:center;">
+                <p style="color:#fff; font-size:0.9rem; margin-top:0;">Unutmamak için randevuyu telefon takviminize alarmıyla ekleyebilirsiniz:</p>
+                <a href="#" id="btnAddToCalendar" class="ghost-button" style="width:100%; border-color:#fff; color:#fff;">📅 Telefon Takvime Ekle (Alarm Kur)</a>
+              </div>
             </section>
 
             <aside>
-              <section class="panel" style="margin-bottom: 25px;"><span class="eyebrow">Adım 2</span><h2 style="font-size: 1.4rem; margin-bottom: 15px;">Canlı Müsaitlik</h2><p style="font-size:0.85rem; color:#aaa; margin-bottom:15px;">Aşağıdaki tablodan uygun saatleri görebilirsiniz.</p><div class="slot-board" id="slotBoard"></div></section>
-              <section class="panel" style="border: 2px solid #7f1d1d; background: #2f0c0c;">
-                <span class="eyebrow" style="color: #f87171 !important;">İptal İşlemi</span><h2 style="font-size: 1.2rem; color: #fca5a5; margin-bottom: 15px;">Randevu İptali</h2>
-                <form id="cancelForm">
-                  <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Kodunuzu yazın" required style="margin-bottom: 15px; border-color: #991b1b; background-color: #000 !important;" />
-                  <button class="danger-button" type="submit" style="width: 100%;">İPTAL ET</button>
-                  <p id="cancelMessage" style="margin-top: 15px; font-size: 0.9rem; text-align: center; font-weight:600; color:#f87171;"></p>
-                </form>
+              <section class="panel" style="border: 2px solid #7f1d1d; background: #2f0c0c;"><span class="eyebrow" style="color:#f87171 !important;">İptal</span><h2>Randevu İptal</h2>
+                <form id="cancelForm"><input id="cancelCodeInput" name="cancelCode" type="text" placeholder="İptal Kodunuz" required style="margin-bottom: 12px; border-color:#991b1b; background:#000 !important;" /><button class="danger-button" type="submit" style="width:100%;">İPTAL ET</button><p id="cancelMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; color:#f87171; font-weight:600;"></p></form>
               </section>
             </aside>
           </div>
         </div>
 
         <footer class="site-footer">
-          <p class="eyebrow" style="margin-bottom: 25px;">SALON İLETİŞİM BİLGİLERİ</p>
           <div class="footer-content">
-            <a id="displayMapLink" href="#" target="_blank" class="footer-link-box">
-              <span style="font-size:1.8rem; margin-bottom:5px; transition: 0.2s;">📍</span>
-              <span style="color:#aaa; font-size:0.9rem;">Adres (Yol Tarifi Al)</span>
-              <span id="displayAddress" style="font-size:1.1rem; font-weight:700; color:#fff;">Reyhanlı, Hatay</span>
-            </a>
-            <div class="footer-item"><span style="font-size:1.8rem; margin-bottom:5px;">📞</span><span style="color:#aaa; font-size:0.9rem;">Telefon</span><span id="displayPhone" style="font-size:1.1rem; font-weight:700;">0539 596 0584</span></div>
-            <div class="footer-item"><span style="font-size:1.8rem; margin-bottom:5px;">🕒</span><span style="color:#aaa; font-size:0.9rem;">Çalışma Saatleri</span><span style="font-size:1.1rem; font-weight:700;">09:00 - 21:00</span></div>
+            <a id="displayMapLink" href="#" target="_blank" class="footer-link-box"><span style="font-size:1.6rem; margin-bottom:3px;">📍</span><span style="color:#aaa; font-size:0.85rem;">Konum (Yol Tarifi)</span><span id="displayAddress" style="font-size:1rem; font-weight:700; color:#fff;">Reyhanlı, Hatay</span></a>
+            <div class="footer-item"><span style="font-size:1.6rem; margin-bottom:3px;">📞</span><span style="color:#aaa; font-size:0.85rem;">Telefon</span><span id="displayPhone" style="font-size:1rem; font-weight:700;">0539 596 0584</span></div>
+            <div class="footer-item"><span style="font-size:1.6rem; margin-bottom:3px;">🕒</span><span style="color:#aaa; font-size:0.85rem;">Saatler</span><span style="font-size:1rem; font-weight:700;">09:00 - 21:00</span></div>
           </div>
-          <div style="border-top: 1px solid #1a1a1a; padding-top: 30px; margin-top: 30px;">
-            <a href="https://www.instagram.com/fth_media1?igsh=MWs5dm84OGRiaDFlMg==" target="_blank" class="fth-footer-badge">
-              <div class="fth-icon">FM</div><div class="fth-text">Powered by <strong>FTH MEDYA</strong></div>
-            </a>
-            <div style="margin-top: 25px;"><a href="#" id="btnShowLogin" style="color: #444; text-decoration: none; font-size: 0.8rem; font-weight:800; letter-spacing: 1px; padding: 10px; background: #111; border-radius: 8px;">YÖNETİM PANELİ 🔒</a></div>
-          </div>
+          <div style="border-top:1px solid #1a1a1a; padding-top:20px; margin-top:25px;"><a href="https://www.instagram.com/fth_media1" target="_blank" class="fth-footer-badge"><div class="fth-icon">FM</div><div class="fth-text">Powered by <strong>FTH MEDYA</strong></div></a><div style="margin-top:20px;"><a href="#" id="btnShowLogin" style="color:#444; text-decoration:none; font-size:0.8rem; font-weight:800; background:#111; padding:8px 12px; border-radius:6px;">YÖNETİM PANELİ 🔒</a></div></div>
         </footer>
       </main>
 
       <main class="main-content" id="adminMain" hidden>
-        <div style="padding: 25px; max-width: 1000px; margin: 0 auto;">
-          <header class="topbar panel" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-            <div><p class="eyebrow">Yönetim Paneli</p><h2 id="adminGreeting" style="font-size: 1.5rem; margin:0;">Yetkili Girişi</h2></div>
-            <button class="danger-button" id="lockSettings" type="button" hidden>Güvenli Çıkış 🔒</button>
-          </header>
+        <div style="padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%;">
+          <header class="panel" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;"><header><p class="eyebrow">Yetkili Ekranı</p><h2 id="adminGreeting" style="font-size:1.3rem; margin:0;">Giriş Yapıldı</h2></header><button class="danger-button" id="lockSettings" type="button" hidden>Güvenli Çıkış 🔒</button></header>
 
-          <section class="panel" id="adminLoginSection" style="max-width: 400px; margin: 50px auto;">
-            <div style="text-align: center; margin-bottom: 25px;"><h2 style="font-size:1.5rem;">Yönetici Şifresi</h2></div>
-            <form id="adminLoginForm">
-              <div style="margin-bottom: 20px;"><input id="adminPinInput" name="adminPin" type="password" placeholder="****" required style="text-align: center; font-size: 1.5rem; letter-spacing:5px; padding: 15px;"/></div>
-              <button class="primary-button" type="submit">GİRİŞ YAP</button>
-              <p id="adminMessage" style="text-align: center; margin-top: 15px; font-size: 0.9rem;"></p>
-            </form>
-            <div style="text-align: center; margin-top: 25px;"><a href="#" id="btnCancelLogin" style="color: #666; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #444; padding-bottom: 2px;">← Müşteri Ekranına Dön</a></div>
-          </section>
+          <section class="panel" id="adminLoginSection" style="max-width:380px; margin:40px auto;"><h2 style="text-align:center; font-size:1.3rem; margin-bottom:20px;">Yönetici Girişi</h2><form id="adminLoginForm"><input id="adminPinInput" name="adminPin" type="password" placeholder="****" required style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:15px;" /><button class="primary-button" type="submit">GİRİŞ</button><p id="adminMessage" style="text-align:center; margin-top:10px; color:#ff4d4d; font-size:0.85rem;"></p></form></section>
 
           <div id="adminDashboardSection" hidden>
-            
-            <section class="panel" style="margin-bottom: 30px; border-top: 4px solid var(--primary); padding: 20px;">
-              <div style="margin-bottom: 15px;"><span class="eyebrow">GÜNLÜK AJANDA</span><h2 style="font-size: 1.5rem;">Tarihe Göre Randevu Listesi</h2></div>
+            <section class="panel" style="border-top:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
+                <div><span class="eyebrow">DÜKKAN AKIŞI</span><h2>Günlük Ajanda Tablosu</h2></div>
+                <div style="width:220px;"><input type="text" id="adminSearchInput" placeholder="🔍 Müşteri Adı veya Tel Ara..." style="padding:8px 12px; font-size:0.85rem;" /></div>
+              </div>
               <div id="appointmentsList"></div>
             </section>
 
              <section class="panel">
-              <div style="margin-bottom: 25px;"><span class="eyebrow">SİSTEM</span><h2 style="font-size: 1.5rem;">Genel Ayarlar</h2></div>
+              <h2>Genel Ayarlar</h2>
               <form id="settingsForm">
-                <div style="margin-bottom: 25px; background: #0a0a0a; padding: 20px; border-radius: 12px; border: 2px dashed var(--border);">
-                  <label style="font-size: 0.95rem; color: var(--primary); margin-bottom:10px; display:block; font-weight:700;">Salon Ana Görseli (Dosyadan Seç)</label>
-                  <input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="padding: 10px; background: #111 !important;" />
-                </div>
-
-                <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
-                  <div style="flex: 1; min-width: 200px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Sistem Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div>
-                  <div style="flex: 1; min-width: 200px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">İletişim Numarası</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div>
-                </div>
-                <div style="margin-bottom: 40px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Açık Adres (Harita için)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
+                <div style="margin-bottom:20px; background:#0a0a0a; padding:15px; border-radius:10px; border:2px dashed var(--border);"><label style="color:var(--primary); font-weight:700; display:block; margin-bottom:8px;">Salon Kapak Fotoğrafı</label><input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="background:#111; padding:8px;" /></div>
+                <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;"><div style="flex:1; min-width:180px;"><label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:5px;">Salon Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div><div style="flex:1; min-width:180px;"><label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:5px;">Telefon</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div></div>
+                <div style="margin-bottom:25px;"><label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:5px;">Açık Adres (Harita Köprüsü)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
                 
-                <div style="margin-bottom: 35px; border-top: 2px solid var(--border); padding-top: 30px;">
-                  <span class="eyebrow" style="color: #ff4d4d !important;">Mola / İzin</span>
-                  <h2 style="font-size: 1.3rem; margin-bottom: 15px;">Belirli Bir Saati Kapat</h2>
-                  <div style="display:flex; gap:15px; align-items:flex-end; background: #0a0a0a; padding: 20px; border-radius: 12px; border: 1px solid #333; flex-wrap:wrap;">
-                    <div style="flex:1; min-width: 130px;"><label style="font-size: 0.9rem; color:#bbb; margin-bottom:8px; display:block; font-weight:600;">Tarih</label><input type="date" id="blockDateInput" /></div>
-                    <div style="flex:1; min-width: 130px;"><label style="font-size: 0.9rem; color:#bbb; margin-bottom:8px; display:block; font-weight:600;">Saat</label><select id="blockTimeInput"></select></div>
-                    <button class="danger-button" type="button" id="btnBlockSlot" style="height: 52px; background: #ff4d4d !important; color:#fff !important; min-width: 100px;">KAPAT</button>
+                <div style="margin-bottom:35px; border-top:2px solid var(--border); padding-top:20px;">
+                  <span class="eyebrow" style="color:#ff4d4d !important;">Mola / İzin Otomasyonu</span><h2>Berbere Özel Saat Kapat</h2>
+                  <div style="display:flex; gap:12px; background:#0a0a0a; padding:15px; border-radius:12px; border:1px solid #333; flex-wrap:wrap; align-items:flex-end;">
+                    <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Berber Seçimi</label><select id="blockBarberSelect" style="padding:10px;"></select></div>
+                    <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Tarih</label><input type="date" id="blockDateInput" style="padding:10px;" /></div>
+                    <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Saat Dili (Mola Başı)</label><select id="blockTimeInput" style="padding:10px;"></select></div>
+                    <button class="danger-button" type="button" id="btnBlockSlot" style="height:44px; background:#ff4d4d !important; color:#fff !important; flex:1; min-width:80px; padding:0 15px;">BLOKE ET</button>
                   </div>
-                  <p id="blockMessage" style="font-size: 0.9rem; margin-top: 15px; color: var(--primary); font-weight:700;"></p>
+                  <p id="blockMessage" style="font-size:0.85rem; margin-top:10px; color:var(--primary); font-weight:700;"></p>
                 </div>
 
-                <div style="margin-bottom: 20px; border-top: 2px solid var(--border); padding-top: 30px;"><span class="eyebrow">Hizmetler & Fiyatlar</span></div>
-                <div id="serviceSettings"></div>
-                <button class="primary-button" id="addService" type="button" style="margin-bottom: 40px; font-size: 0.9rem; background: #222 !important; color: #fff !important; width: 100%; padding: 12px 20px;">+ Yeni Hizmet Ekle</button>
-                
-                <div style="margin-bottom: 20px; border-top: 2px solid var(--border); padding-top: 30px;"><span class="eyebrow">Ekip</span></div>
-                <div id="barberSettings"></div>
-                <button class="primary-button" id="addBarber" type="button" style="font-size: 0.9rem; background: #222 !important; color: #fff !important; width: 100%; padding: 12px 20px;">+ Berber Ekle</button>
-                
-                <div style="margin-top:50px; border-top: 2px solid var(--border); padding-top: 30px;">
-                  <button class="primary-button" type="submit" style="padding: 20px; font-size: 1.2rem !important; box-shadow: 0 10px 30px rgba(255,215,0,0.2);">TÜM AYARLARI KAYDET</button>
-                  <p id="settingsMessage" style="margin-top: 20px; text-align: center; font-size: 1.1rem; color: var(--primary); font-weight: 800;"></p>
-                </div>
+                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Hizmet Listesi</span></div><div id="serviceSettings"></div><button class="primary-button" id="addService" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:auto;">+ Yeni Hizmet</button>
+                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Berber Kadrosu</span></div><div id="barberSettings"></div><button class="primary-button" id="addBarber" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:auto;">+ Berber Ekle</button>
+                <div style="margin-top:30px; border-top:2px solid var(--border); padding-top:20px;"><button class="primary-button" type="submit" style="padding:18px;">DEĞİŞİKLİKLERİ KAYDET ✅</button><p id="settingsMessage" style="margin-top:15px; text-align:center; font-weight:800; color:var(--primary);"></p></div>
               </form>
             </section>
           </div>

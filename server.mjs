@@ -8,17 +8,21 @@ const host = process.env.HOST || "0.0.0.0";
 const root = process.cwd();
 const adminSessions = new Map();
 
-// FİREBASE LİNKİN
 const FIREBASE_URL = "https://salon-bayber-dbddd-default-rtdb.firebaseio.com"; 
 
 const defaultSettings = {
   salonName: "Salon Bayber", salonPhone: "0539 596 0584", salonAddress: "Reyhanlı, Hatay",
   salonImage: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80",
-  adminPinHash: hashPin(process.env.ADMIN_PIN || "1234"),
-  barbers: [{ id: "meh-ali", name: "Mehmet Ali Şanverdi", title: "Usta berber", initials: "MA" }],
+  adminPinHash: createHash("sha256").update("1234").digest("hex"),
+  barbers: [
+    { id: "meh-ali", name: "Mehmet Ali Şanverdi", title: "Usta Başi Berber", initials: "MA" },
+    { id: "abdullah", name: "Abdullah Polat Şanverdi", title: "Uzman Berber", initials: "AP" }
+  ],
   services: [
-    { id: "haircut", name: "Saç kesimi", price: 350 }, { id: "beard", name: "Sakal düzeltme", price: 200 },
-    { id: "combo", name: "Saç + sakal", price: 500 }, { id: "care", name: "Bakım paketi", price: 750 },
+    { id: "haircut", name: "Saç Kesimi", price: 350, duration: "30 dk" },
+    { id: "beard", name: "Sakal Düzeltme", price: 200, duration: "30 dk" },
+    { id: "combo", name: "Saç + Sakal Komple", price: 500, duration: "60 dk" },
+    { id: "care", name: "Hydrafacial Cilt Bakımı", price: 750, duration: "60 dk" }
   ]
 };
 
@@ -29,19 +33,15 @@ const timeSlots = [
 ];
 
 const types = { ".css": "text/css; charset=utf-8", ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
-
 function hashPin(pin) { return createHash("sha256").update(String(pin)).digest("hex"); }
 
-// --- TÜRKİYE SAATİ MOTORU (Sunucu saati yanlış olsa bile her zaman TR saatini baz alır) ---
 function getTurkeyTime() {
   return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Istanbul" }));
 }
-
 function todayISO() { 
   const d = getTurkeyTime();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-
 function isClosedDate(dateValue) { return new Date(`${dateValue}T12:00:00`).getDay() === 0; }
 
 function isPastSlot(dateValue, time) {
@@ -50,7 +50,6 @@ function isPastSlot(dateValue, time) {
   const now = getTurkeyTime();
   return (hours * 60 + minutes) <= (now.getHours() * 60 + now.getMinutes());
 }
-// ------------------------------------------------------------------------------------------
 
 function getBookedTimes(db, barberId, date) {
   let booked = [];
@@ -58,7 +57,7 @@ function getBookedTimes(db, barberId, date) {
   for (const app of appointments) {
     const startIndex = timeSlots.indexOf(app.time);
     if (startIndex !== -1) {
-      const slotCount = Array.isArray(app.serviceIds) && app.serviceIds.length > 0 ? app.serviceIds.length : 1;
+      const slotCount = Array.isArray(app.serviceIds) ? app.serviceIds.length : 1;
       for (let i = 0; i < slotCount; i++) {
         if (startIndex + i < timeSlots.length) booked.push(timeSlots[startIndex + i]);
       }
@@ -75,7 +74,6 @@ function getAvailableSlots(db, barberId, date) {
 
 async function readDb() {
   try {
-    if (!FIREBASE_URL) return { settings: normalizeSettings({}), appointments: [] };
     const response = await fetch(`${FIREBASE_URL.replace(/\/$/, "")}/db.json`);
     let db = await response.json();
     if (!db) { db = { settings: structuredClone(defaultSettings), appointments: [] }; await writeDb(db); }
@@ -85,95 +83,84 @@ async function readDb() {
 
 async function writeDb(db) {
   try {
-    if (!FIREBASE_URL) return;
     await fetch(`${FIREBASE_URL.replace(/\/$/, "")}/db.json`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(db) });
   } catch (error) {}
 }
 
 function normalizeSettings(settings = {}) {
-  const salonName = settings.salonName || defaultSettings.salonName; const salonPhone = settings.salonPhone || defaultSettings.salonPhone;
-  const salonAddress = settings.salonAddress || defaultSettings.salonAddress; const salonImage = settings.salonImage || defaultSettings.salonImage;
-  const adminPinHash = settings.adminPinHash || defaultSettings.adminPinHash;
-  const barbers = Array.isArray(settings.barbers) && settings.barbers.length ? settings.barbers : structuredClone(defaultSettings.barbers);
-  const services = Array.isArray(settings.services) && settings.services.length ? settings.services : structuredClone(defaultSettings.services);
-  return { salonName, salonPhone, salonAddress, salonImage, adminPinHash, barbers, services };
+  return {
+    salonName: settings.salonName || defaultSettings.salonName,
+    salonPhone: settings.salonPhone || defaultSettings.salonPhone,
+    salonAddress: settings.salonAddress || defaultSettings.salonAddress,
+    salonImage: settings.salonImage || defaultSettings.salonImage,
+    adminPinHash: settings.adminPinHash || defaultSettings.adminPinHash,
+    barbers: Array.isArray(settings.barbers) && settings.barbers.length ? settings.barbers : structuredClone(defaultSettings.barbers),
+    services: Array.isArray(settings.services) && settings.services.length ? settings.services : structuredClone(defaultSettings.services)
+  };
 }
 
 function sendJson(res, status, payload) { res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" }); res.end(JSON.stringify(payload)); }
 async function readJson(request) { let body = ""; for await (const chunk of request) body += chunk; return body ? JSON.parse(body) : {}; }
 function requireAdmin(req, res) { const token = (req.headers.authorization || "").replace("Bearer ", ""); if (!adminSessions.has(token)) { sendJson(res, 401, { message: "Yetkisiz işlem." }); return false; } return true; }
 
-async function handlePublicState(req, res, url) {
-  const db = await readDb();
-  const date = url.searchParams.get("date") || todayISO(); const barberId = url.searchParams.get("barberId") || db.settings.barbers[0]?.id || "";
-  sendJson(res, 200, {
-    settings: { salonName: db.settings.salonName, salonPhone: db.settings.salonPhone, salonAddress: db.settings.salonAddress, salonImage: db.settings.salonImage, barbers: db.settings.barbers, services: db.settings.services },
-    timeSlots, availableSlots: getAvailableSlots(db, barberId, date), todayCount: db.appointments.filter(a => a.date === todayISO()).length,
-  });
-}
-
-async function handleCreateAppointment(req, res) {
-  const db = await readDb(); const payload = await readJson(req); const serviceIds = Array.isArray(payload.serviceIds) ? payload.serviceIds : [];
-  if (!payload.customerName || !payload.customerPhone || serviceIds.length === 0 || !payload.barberId || !payload.date || !payload.time) return sendJson(res, 400, { message: "Tüm alanları doldurun ve en az 1 hizmet seçin." });
-
-  const startIndex = timeSlots.indexOf(payload.time);
-  if (startIndex === -1) return sendJson(res, 400, { message: "Geçersiz saat." });
-  const slotCount = serviceIds.length;
-  const bookedTimes = getBookedTimes(db, payload.barberId, payload.date);
-
-  for (let i = 0; i < slotCount; i++) {
-    const slotToCheck = timeSlots[startIndex + i];
-    if (!slotToCheck || bookedTimes.includes(slotToCheck) || isPastSlot(payload.date, slotToCheck)) {
-      return sendJson(res, 409, { message: "Seçtiğiniz hizmetlerin toplam süresi için bu saatte yeterli boş vaktimiz bulunmuyor." });
-    }
-  }
-
-  const cancelCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const appointment = { id: randomUUID(), cancelCode, customerName: String(payload.customerName).trim(), customerPhone: String(payload.customerPhone).trim(), serviceIds, barberId: String(payload.barberId), date: String(payload.date), time: String(payload.time) };
-  
-  db.appointments.push(appointment); await writeDb(db);
-  sendJson(res, 201, { message: "Başarılı", cancelCode: appointment.cancelCode });
-}
-
-async function handleCustomerCancel(req, res) {
-  const db = await readDb(); const code = String((await readJson(req)).code || "").trim().toUpperCase();
-  const initialLength = db.appointments.length; db.appointments = db.appointments.filter(a => a.cancelCode !== code);
-  if (db.appointments.length === initialLength) return sendJson(res, 404, { message: "Kod hatalı." });
-  await writeDb(db); sendJson(res, 200, { message: "Randevunuz iptal edildi." });
-}
-
-async function handleUpdateSettings(req, res) {
-  if (!requireAdmin(req, res)) return; const db = await readDb(); const payload = await readJson(req);
-  if (payload.services && Array.isArray(payload.services) && payload.services.length > 0) db.settings.services = payload.services;
-  if (payload.barbers && Array.isArray(payload.barbers) && payload.barbers.length > 0) db.settings.barbers = payload.barbers;
-  if (payload.salonName !== undefined) db.settings.salonName = payload.salonName;
-  if (payload.salonPhone !== undefined) db.settings.salonPhone = payload.salonPhone;
-  if (payload.salonAddress !== undefined) db.settings.salonAddress = payload.salonAddress;
-  if (payload.salonImage !== undefined) db.settings.salonImage = payload.salonImage;
-  await writeDb(db); sendJson(res, 200, { settings: db.settings });
-}
-
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   try {
-    if (req.method === "GET" && url.pathname === "/api/public-state") return await handlePublicState(req, res, url);
-    if (req.method === "POST" && url.pathname === "/api/appointments") return await handleCreateAppointment(req, res);
-    if (req.method === "POST" && url.pathname === "/api/appointments/cancel") return await handleCustomerCancel(req, res);
+    if (req.method === "GET" && url.pathname === "/api/public-state") {
+      const db = await readDb();
+      const date = url.searchParams.get("date") || todayISO();
+      const barberId = url.searchParams.get("barberId") || db.settings.barbers[0]?.id || "";
+      return sendJson(res, 200, {
+        settings: db.settings, timeSlots, availableSlots: getAvailableSlots(db, barberId, date),
+        allBarbersSlots: db.settings.barbers.reduce((acc, b) => { acc[b.id] = getAvailableSlots(db, b.id, date); return acc; }, {}),
+        appointments: db.appointments
+      });
+    }
+    if (req.method === "POST" && url.pathname === "/api/appointments") {
+      const db = await readDb(); const payload = await readJson(req);
+      const serviceIds = Array.isArray(payload.serviceIds) ? payload.serviceIds : [];
+      if (!payload.customerName || !payload.barberId || !payload.date || !payload.time) return sendJson(res, 400, { message: "Eksik bilgi." });
+
+      const startIndex = timeSlots.indexOf(payload.time);
+      const bookedTimes = getBookedTimes(db, payload.barberId, payload.date);
+      for (let i = 0; i < serviceIds.length; i++) {
+        const slot = timeSlots[startIndex + i];
+        if (!slot || bookedTimes.includes(slot) || isPastSlot(payload.date, slot)) {
+          return sendJson(res, 409, { message: "Seçilen saat veya süre dolu/uygun değil." });
+        }
+      }
+      const cancelCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const app = { id: randomUUID(), cancelCode, customerName: String(payload.customerName).trim(), customerPhone: String(payload.customerPhone || "").trim(), serviceIds, barberId: String(payload.barberId), date: String(payload.date), time: String(payload.time) };
+      db.appointments.push(app); await writeDb(db);
+      return sendJson(res, 201, { message: "Başarılı", cancelCode });
+    }
+    if (req.method === "POST" && url.pathname === "/api/appointments/cancel") {
+      const db = await readDb(); const code = String((await readJson(req)).code || "").trim().toUpperCase();
+      const len = db.appointments.length; db.appointments = db.appointments.filter(a => a.cancelCode !== code);
+      if (db.appointments.length === len) return sendJson(res, 404, { message: "Kod bulunamadı." });
+      await writeDb(db); return sendJson(res, 200, { message: "İptal edildi." });
+    }
     if (req.method === "POST" && url.pathname === "/api/admin/login") {
       const db = await readDb(); if (hashPin((await readJson(req)).pin) !== db.settings.adminPinHash) return sendJson(res, 401, { message: "Şifre hatalı." });
       const token = randomUUID(); adminSessions.set(token, true); return sendJson(res, 200, { token });
     }
-    if (req.method === "GET" && url.pathname === "/api/admin/dashboard") { if (!requireAdmin(req, res)) return; const db = await readDb(); return sendJson(res, 200, { settings: db.settings, appointments: db.appointments }); }
-    if (req.method === "PUT" && url.pathname === "/api/admin/settings") return await handleUpdateSettings(req, res);
+    if (req.method === "GET" && url.pathname === "/api/admin/dashboard") {
+      if (!requireAdmin(req, res)) return; const db = await readDb(); return sendJson(res, 200, { settings: db.settings, appointments: db.appointments });
+    }
+    if (req.method === "PUT" && url.pathname === "/api/admin/settings") {
+      if (!requireAdmin(req, res)) return; const db = await readDb(); const payload = await readJson(req);
+      Object.assign(db.settings, payload); await writeDb(db); return sendJson(res, 200, { settings: db.settings });
+    }
     if (req.method === "DELETE" && url.pathname.startsWith("/api/admin/appointments/")) {
-      if (!requireAdmin(req, res)) return; const db = await readDb(); db.appointments = db.appointments.filter(a => a.id !== decodeURIComponent(url.pathname.split("/").at(-1)));
-      await writeDb(db); return sendJson(res, 200, { message: "İptal edildi." });
+      if (!requireAdmin(req, res)) return; const db = await readDb();
+      db.appointments = db.appointments.filter(a => a.id !== decodeURIComponent(url.pathname.split("/").at(-1)));
+      await writeDb(db); return sendJson(res, 200, { message: "Silindi." });
     }
     const pathname = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
-    if (pathname.startsWith("/data/") || pathname === "/server.mjs") { res.writeHead(404); return res.end("Not found"); }
+    if (pathname.startsWith("/data/") || pathname === "/server.mjs") { res.writeHead(404); return res.end(); }
     const filePath = normalize(join(root, pathname));
-    try { const file = await readFile(filePath); res.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream" }); res.end(file); } catch { res.writeHead(404); res.end("Not found"); }
-  } catch { sendJson(res, 500, { message: "Sunucu hatası." }); }
+    try { const file = await readFile(filePath); res.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream" }); res.end(file); } catch { res.writeHead(404); res.end(); }
+  } catch { sendJson(res, 500, { message: "Sistem hatası." }); }
 });
 
 server.listen(port, host, () => console.log(`Çalışıyor: http://localhost:${port}`));
