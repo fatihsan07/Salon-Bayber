@@ -27,6 +27,12 @@
         box-sizing: border-box;
       }
 
+      img,
+      svg,
+      video {
+        max-width: 100%;
+      }
+
       html,
       body {
         margin: 0;
@@ -59,6 +65,7 @@
         max-width: 1400px;
         margin: 0 auto;
         padding: 18px;
+        width: 100%;
       }
 
       .panel {
@@ -122,6 +129,7 @@
 
       .main-content {
         min-width: 0;
+        width: 100%;
       }
 
       .layout-stack {
@@ -458,9 +466,74 @@
         text-decoration: underline;
       }
 
+      .customer-footer {
+        display: grid;
+        gap: 14px;
+      }
+
+      .customer-footer-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .customer-footer-identity {
+        display: grid;
+        gap: 6px;
+      }
+
+      .customer-footer-credit {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+
+      .customer-footer-credit a {
+        color: var(--accent-2);
+        text-decoration: none;
+        font-weight: 800;
+      }
+
+      .customer-footer-credit a:hover {
+        text-decoration: underline;
+      }
+
       .admin-grid {
         display: grid;
         gap: 16px;
+      }
+
+      .admin-date-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding: 2px 2px 10px;
+      }
+
+      .admin-date-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .admin-date-tab {
+        border: 1px solid #343434;
+        background: #181818;
+        color: #d0d0d0;
+        border-radius: 999px;
+        padding: 8px 12px;
+        white-space: nowrap;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        flex: 0 0 auto;
+      }
+
+      .admin-date-tab.is-active {
+        border-color: var(--accent);
+        color: #111;
+        background: linear-gradient(160deg, var(--accent), #9d701d);
       }
 
       .list-stack {
@@ -562,11 +635,37 @@
         }
 
         .slot-board {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .panel {
           padding: 14px;
+        }
+
+        .service-card {
+          grid-template-columns: auto minmax(0, 1fr);
+          align-items: start;
+        }
+
+        .service-price {
+          grid-column: 1 / -1;
+          padding-left: 34px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .app-shell {
+          padding: 10px;
+          gap: 12px;
+        }
+
+        .slot-board {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .barber-tab {
+          padding: 10px 13px;
+          font-size: 0.86rem;
         }
       }
     </style>
@@ -590,12 +689,6 @@
           <img id="mainShopImage" alt="Salon" src="" />
         </figure>
 
-        <section class="panel footer-links">
-          <div id="displayPhone">0539 596 0584</div>
-          <div id="displayAddress">Reyhanli, Hatay</div>
-          <a id="displayMapLink" href="#" target="_blank" rel="noopener">Haritada ac</a>
-          <a href="#" id="btnShowLogin" class="mini" style="margin-top:6px;">Yonetim Paneli</a>
-        </section>
       </aside>
 
       <main class="main-content" id="customerMain">
@@ -691,6 +784,22 @@
               <p id="cancelMessage" class="mini"></p>
             </form>
           </section>
+
+          <section class="panel customer-footer">
+            <div class="customer-footer-top">
+              <div class="customer-footer-identity footer-links">
+                <div id="displayPhone">0539 596 0584</div>
+                <div id="displayAddress">Reyhanli, Hatay</div>
+                <a id="displayMapLink" href="#" target="_blank" rel="noopener">Haritada ac</a>
+              </div>
+              <a href="#" id="btnShowLogin" class="ghost-button">Yonetim Paneli</a>
+            </div>
+            <p class="mini customer-footer-credit">
+              Bu site
+              <a href="https://www.instagram.com/fth_media1?igsh=MWs5dm84OGRiaDFlMg==" target="_blank" rel="noopener">FTH MEDYA</a>
+              tarafindan yapildi.
+            </p>
+          </section>
         </div>
       </main>
 
@@ -720,6 +829,7 @@
                 <h2>Gunluk Ajanda</h2>
                 <input id="adminDateInput" type="date" style="max-width:200px;" />
               </div>
+              <div id="adminDateTabs" class="admin-date-tabs"></div>
               <div id="appointmentsList" class="list-stack"></div>
             </section>
 

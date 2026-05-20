@@ -71,6 +71,7 @@ const elements = {
   adminMessage: document.querySelector("#adminMessage"),
 
   adminDateInput: document.querySelector("#adminDateInput"),
+  adminDateTabs: document.querySelector("#adminDateTabs"),
   appointmentsList: document.querySelector("#appointmentsList"),
 
   blockBarberInput: document.querySelector("#blockBarberInput"),
@@ -130,6 +131,26 @@ function dateLabel(dateStr) {
     month: "long",
     weekday: "long"
   });
+}
+
+function toLocalISO(dateObj) {
+  const offset = dateObj.getTimezoneOffset() * 60000;
+  return new Date(dateObj.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function shiftISODate(baseDate, dayOffset) {
+  const d = new Date(`${baseDate}T12:00:00`);
+  d.setDate(d.getDate() + dayOffset);
+  return toLocalISO(d);
+}
+
+function adminDateTabLabel(dateStr) {
+  const today = todayISO();
+  if (dateStr === today) return "Bugun";
+  const date = new Date(`${dateStr}T12:00:00`);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleDateString("tr-TR", { month: "short" });
+  return `${day} ${month}`;
 }
 
 function normalizeWhatsappPhone(rawPhone) {
@@ -406,6 +427,20 @@ function renderAppointments() {
   }
 
   elements.adminDateInput.value = state.selectedAdminDate;
+
+  if (elements.adminDateTabs) {
+    const tabDates = [];
+    for (let i = -5; i <= 10; i += 1) {
+      tabDates.push(shiftISODate(state.selectedAdminDate, i));
+    }
+
+    elements.adminDateTabs.innerHTML = tabDates
+      .map((dateStr) => {
+        const activeClass = dateStr === state.selectedAdminDate ? " is-active" : "";
+        return `<button type="button" class="admin-date-tab${activeClass}" data-admin-date="${dateStr}" title="${escapeHtml(dateLabel(dateStr))}">${escapeHtml(adminDateTabLabel(dateStr))}</button>`;
+      })
+      .join("");
+  }
 
   const daily = state.appointments
     .filter((appointment) => appointment.date === state.selectedAdminDate)
@@ -1005,6 +1040,15 @@ function bindEvents() {
   if (elements.adminDateInput) {
     elements.adminDateInput.addEventListener("change", () => {
       state.selectedAdminDate = elements.adminDateInput.value;
+      renderAppointments();
+    });
+  }
+
+  if (elements.adminDateTabs) {
+    elements.adminDateTabs.addEventListener("click", (event) => {
+      const tabButton = event.target.closest("[data-admin-date]");
+      if (!tabButton) return;
+      state.selectedAdminDate = tabButton.dataset.adminDate;
       renderAppointments();
     });
   }
