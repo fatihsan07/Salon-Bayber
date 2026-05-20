@@ -2,7 +2,7 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#111111" />
     <title>Salon Bayber | Premium Randevu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,9 +38,13 @@
         color: var(--text);
         font-family: "Manrope", sans-serif;
         min-height: 100%;
-        width: 100vw;
+        width: 100%;
         max-width: 100%;
         overflow-x: hidden; /* Sayfanın sağa-sola kaymasını KESİNLİKLE engeller */
+      }
+
+      body {
+        overscroll-behavior-x: none;
       }
 
       h1, h2, h3, h4 {
@@ -56,12 +60,35 @@
 
       .app-shell {
         display: grid;
-        grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
         gap: 24px;
         max-width: 1400px;
         margin: 0 auto;
         padding: 18px;
         width: 100%;
+      }
+
+      .app-shell,
+      .main-content,
+      #customerMain,
+      #adminMain,
+      #adminDashboardSection,
+      .layout-stack,
+      .booking-form,
+      .admin-grid,
+      .admin-grid > *,
+      .panel,
+      .section-title,
+      .date-row,
+      .date-row > div,
+      .list-stack,
+      .admin-item,
+      .admin-item-head,
+      .admin-item-head > div,
+      .customer-footer,
+      .customer-footer-top {
+        min-width: 0;
+        max-width: 100%;
       }
 
       .panel {
@@ -130,6 +157,7 @@
         min-width: 0;
         width: 100%;
         max-width: 100%;
+        overflow-x: hidden;
       }
 
       .layout-stack {
@@ -212,24 +240,23 @@
       }
 
       /* Tümüyle Güvenli Yatay Kaydırma Mimarısi */
-      .date-tabs, .barber-tabs, .slot-board, .admin-date-tabs {
+      .date-tabs, .barber-tabs, .admin-date-tabs {
         display: flex;
         gap: 10px;
         overflow-x: auto;
         padding-bottom: 12px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x proximity;
         flex-wrap: nowrap;
         touch-action: pan-x;
         overscroll-behavior-x: contain;
         width: 100%;
+        scroll-padding-inline: 4px;
         max-width: 100%; /* Sınırları kilitle */
       }
 
       .date-tabs::-webkit-scrollbar,
       .barber-tabs::-webkit-scrollbar,
-      .slot-board::-webkit-scrollbar,
       .admin-date-tabs::-webkit-scrollbar {
         display: none;
       }
@@ -245,7 +272,6 @@
         white-space: nowrap;
         cursor: pointer;
         flex: 0 0 auto;
-        scroll-snap-align: start;
         transition: 0.2s;
       }
 
@@ -265,7 +291,6 @@
         cursor: pointer;
         font-weight: 700;
         flex: 0 0 auto;
-        scroll-snap-align: start;
         transition: 0.2s ease;
       }
 
@@ -455,7 +480,6 @@
         font-weight: 700;
         cursor: pointer;
         flex: 0 0 auto;
-        scroll-snap-align: start;
       }
       .admin-date-tab.is-active { border-color: var(--accent); color: #111; background: linear-gradient(160deg, var(--accent), #9d701d); }
 
@@ -486,7 +510,7 @@
       [hidden] { display: none !important; }
 
       @media (max-width: 1100px) {
-        .app-shell { grid-template-columns: 1fr; padding: 12px; }
+        .app-shell { grid-template-columns: 1fr; gap: 14px; padding: 12px; }
         .sidebar { position: static; }
         .sidebar figure { height: 160px; }
         .date-row { grid-template-columns: 1fr; }
@@ -495,16 +519,44 @@
       /* DİKEY MOBİL TASARIM (%100 Koruma) */
       @media (max-width: 760px) {
         html { font-size: 14px; }
+        body { width: 100%; overflow-x: hidden; }
+        .app-shell { width: 100%; max-width: 100%; padding: 10px; gap: 12px; }
         .success-actions, .two-col, .settings-row, .block-form-grid { grid-template-columns: 1fr; }
         .panel { padding: 16px; border-radius: 16px; }
 
+        .date-tabs,
+        .barber-tabs,
+        .admin-date-tabs,
         .slot-board {
-          display: flex; /* Mobilde saatleri zorla yatay swipe yapar */
+          overflow-x: auto;
+          overflow-y: hidden;
+          flex-wrap: nowrap;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-x;
         }
+
+        .slot-board {
+          display: flex;
+          padding-bottom: 10px;
+          scrollbar-width: none;
+        }
+        .slot-board::-webkit-scrollbar { display: none; }
+
         .slot-button {
-          flex: 0 0 auto; 
-          min-width: 82px; 
-          scroll-snap-align: start;
+          flex: 0 0 auto;
+          min-width: 82px;
+        }
+
+        .admin-item-head > div:last-child {
+          width: 100%;
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .admin-item-head > div:last-child .ghost-button,
+        .admin-item-head > div:last-child .danger-button {
+          flex: 1 1 140px;
         }
 
         .service-card { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
