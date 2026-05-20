@@ -72,12 +72,12 @@ window.quickSelectSlot = function(barberId, timeStr) {
   triggerStateUpdate();
 }
 
+// 1. TAM GÜVENLİ VE SAKLANAN SEÇİM MANTIĞIYLA YENİDEN YAZILAN SEÇİM MOTORU
 function renderServicesAndBarbers() {
   if(elements.serviceCheckboxes) {
-    // FIX: DISPLAY GİZLENMELERİ KALDIRILDI VE NAME ETİKETLERİ DOĞRULANDI
     elements.serviceCheckboxes.innerHTML = (state.settings.services || []).map(s => `
-      <label class="modern-service-card" style="display: flex !important;">
-        <input type="checkbox" name="serviceItem" value="${s.id}" style="display:none !important;">
+      <label class="modern-service-card" data-id="${s.id}">
+        <input type="checkbox" name="serviceItem" value="${s.id}" style="position: absolute; opacity: 0; width: 0; height: 0;">
         <div class="service-left">
           <div class="custom-checkbox"></div>
           <div>
@@ -88,40 +88,51 @@ function renderServicesAndBarbers() {
         <span class="service-price">${formatPrice(s.price)}</span>
       </label>`).join("");
     
-    document.querySelectorAll('input[name="serviceItem"]').forEach(cb => { 
-      cb.addEventListener('change', () => { calculateTotal(); renderSlotBoard(); }); 
+    // Mobil Safari & Chrome için her tıklamayı kilitleyen güvenli dinleyici
+    document.querySelectorAll('.modern-service-card').forEach(card => {
+      const cb = card.querySelector('input[name="serviceItem"]');
+      card.addEventListener('click', (e) => {
+        if (e.target !== cb) { e.preventDefault(); cb.checked = !cb.checked; }
+        if (cb.checked) card.classList.add('is-checked'); else card.classList.remove('is-checked');
+        calculateTotal(); renderSlotBoard();
+      });
     });
     calculateTotal();
   }
+  
   if(elements.barberSelect) {
+    const currentVal = elements.barberSelect.value || state.selectedBarberId;
     elements.barberSelect.innerHTML = (state.settings.barbers || []).map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
-    if(state.selectedBarberId) elements.barberSelect.value = state.selectedBarberId;
+    if(currentVal && (state.settings.barbers || []).some(b => b.id === currentVal)) { elements.barberSelect.value = currentVal; }
     state.selectedBarberId = elements.barberSelect.value;
   }
+  
   if(elements.blockBarberSelect) {
     elements.blockBarberSelect.innerHTML = (state.settings.barbers || []).map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
   }
 }
 
-function calculateTotal() {
-  const checkboxes = document.querySelectorAll('input[name="serviceItem"]:checked'); let total = 0;
-  checkboxes.forEach(cb => { const s = state.settings.services.find(x => x.id === cb.value); if(s) total += Number(s.price); });
-  if(elements.totalPriceDisplay) elements.totalPriceDisplay.textContent = formatPrice(total);
+function canFitServices(timeStr, reqSlots) {
+  const startIndex = state.timeSlots.indexOf(timeStr); if (startIndex === -1) return false;
+  for (let i = 0; i < reqSlots; i++) { const nextSlot = state.timeSlots[startIndex + i]; if (!nextSlot || !state.availableSlots.includes(nextSlot)) return false; } return true;
+}
+
+function renderTimeSelect() {
+  if(!elements.timeSelect) return;
+  const reqSlots = document.querySelectorAll('input[name="serviceItem"]:checked').length || 1;
+  const fittingSlots = state.availableSlots.filter(t => canFitServices(t, reqSlots));
+  const currentValue = state.selectedTime || elements.timeSelect.value;
+  elements.timeSelect.innerHTML = fittingSlots.map(t => `<option value="${t}">${t}</option>`).join("");
+  if (currentValue && fittingSlots.includes(currentValue)) elements.timeSelect.value = currentValue;
+  else if (fittingSlots.length) elements.timeSelect.value = fittingSlots[0];
+  else elements.timeSelect.innerHTML = `<option value="">Müsait Yok</option>`;
+  state.selectedTime = elements.timeSelect.value;
 }
 
 function renderSlotBoard() {
   if(!elements.slotBoard || !elements.timeSelect) return;
   const reqSlots = document.querySelectorAll('input[name="serviceItem"]:checked').length || 1;
   
-  elements.timeSelect.innerHTML = state.timeSlots.map(t => {
-    let booked = !state.availableSlots.includes(t);
-    if(!booked) {
-      const idx = state.timeSlots.indexOf(t);
-      for(let i=0; i<reqSlots; i++) { if(!state.availableSlots.includes(state.timeSlots[idx+i])) booked = true; }
-    }
-    return `<option value="${t}" ${booked?'disabled':''}>${t}</option>`;
-  }).join("");
-
   elements.slotBoard.innerHTML = state.timeSlots.map(t => {
     let booked = !state.availableSlots.includes(t);
     if(!booked) {
@@ -165,14 +176,14 @@ function renderAppointments() {
     dailyApps.forEach(app => {
       if(app.customerName === "KAPALI_SAAT") {
         const barber = state.settings.barbers.find(b => b.id === app.barberId) || {name:"Usta"};
-        appsHtml += `<div style="background:#0a0a0a; border:1px dashed #444; padding:12px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        appsHtml += `<div style="background:#0a0a0a; border:1px dashed #444; padding:12px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%;">
           <span style="color:#aaa; font-weight:600; font-size:0.9rem;">🚫 ${app.time} - Blok: ${escapeHtml(barber.name)}</span>
           <button class="danger-button" type="button" data-cancel="${app.id}" style="padding:4px 10px; font-size:0.75rem;">Kaldır</button>
         </div>`;
       } else {
         const b = state.settings.barbers.find(x => x.id === app.barberId) || { name: "Berber" };
         const s = app.serviceIds.map(id => (state.settings.services.find(x=>x.id===id)||{}).name || "Hizmet").join(", ");
-        appsHtml += `<div style="background:#111; border:1px solid #222; padding:15px; border-radius:12px; margin-bottom:12px;">
+        appsHtml += `<div style="background:#111; border:1px solid #222; padding:15px; border-radius:12px; margin-bottom:12px; width:100%;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
             <div><h3 style="margin:0 0 3px 0; font-size:1.1rem;">${escapeHtml(app.customerName)}</h3><p style="margin:0; color:#888; font-size:0.85rem;">📞 ${escapeHtml(app.customerPhone)}</p></div>
             <div style="display:flex; gap:8px;"><button class="ghost-button" type="button" data-remind="${app.id}" style="padding:5px 10px; font-size:0.8rem; border-color:#25D366; color:#25D366;">📲 Hatırlat</button><button class="danger-button" type="button" data-cancel="${app.id}" style="padding:5px 10px; font-size:0.8rem;">İptal</button></div>
@@ -192,8 +203,8 @@ function renderAppointments() {
 
 function renderSettingsForm() {
   if(!elements.serviceSettings || !elements.barberSettings || !elements.blockTimeInput) return;
-  elements.serviceSettings.innerHTML = state.settings.services.map((s,i) => `<div style="background:#0a0a0a; border:1px solid #333; padding:15px; margin-bottom:10px; border-radius:12px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="color:var(--primary); font-weight:700;">Hizmet ${i+1}</span><button class="danger-button" type="button" data-delete-service="${s.id}" style="padding:4px 8px; font-size:0.75rem;">Sil</button></div><div style="display:flex; gap:10px; flex-wrap:wrap;"><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" style="flex:2; min-width:130px;" placeholder="Hizmet Adı" /><input name="servicePrice-${s.id}" type="number" value="${s.price}" style="flex:1; min-width:80px;" placeholder="Fiyat" /></div></div>`).join("");
-  elements.barberSettings.innerHTML = state.settings.barbers.map((b,i) => `<div style="background:#0a0a0a; border:1px solid #333; padding:15px; margin-bottom:10px; border-radius:12px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="color:var(--primary); font-weight:700;">Berber ${i+1}</span><button class="danger-button" type="button" data-delete-barber="${b.id}" style="padding:4px 8px; font-size:0.75rem;">Sil</button></div><div style="display:flex; gap:10px; flex-wrap:wrap;"><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" style="flex:1; min-width:120px;" placeholder="İsim" /><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" style="flex:1; min-width:120px;" placeholder="Uzmanlık" /></div></div>`).join("");
+  elements.serviceSettings.innerHTML = state.settings.services.map((s,i) => `<div style="background:#0a0a0a; border:1px solid #333; padding:15px; margin-bottom:10px; border-radius:12px; width:100%;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="color:var(--primary); font-weight:700;">Hizmet ${i+1}</span><button class="danger-button" type="button" data-delete-service="${s.id}" style="padding:4px 8px; font-size:0.75rem;">Sil</button></div><div style="display:flex; gap:10px; flex-wrap:wrap;"><input name="serviceName-${s.id}" type="text" value="${escapeHtml(s.name)}" style="flex:2; min-width:130px;" placeholder="Hizmet Adı" /><input name="servicePrice-${s.id}" type="number" value="${s.price}" style="flex:1; min-width:80px;" placeholder="Fiyat" /></div></div>`).join("");
+  elements.barberSettings.innerHTML = state.settings.barbers.map((b,i) => `<div style="background:#0a0a0a; border:1px solid #333; padding:15px; margin-bottom:10px; border-radius:12px; width:100%;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="color:var(--primary); font-weight:700;">Berber ${i+1}</span><button class="danger-button" type="button" data-delete-barber="${b.id}" style="padding:4px 8px; font-size:0.75rem;">Sil</button></div><div style="display:flex; gap:10px; flex-wrap:wrap;"><input name="barberName-${b.id}" type="text" value="${escapeHtml(b.name)}" style="flex:1; min-width:120px;" placeholder="İsim" /><input name="barberTitle-${b.id}" type="text" value="${escapeHtml(b.title)}" style="flex:1; min-width:120px;" placeholder="Uzmanlık" /></div></div>`).join("");
   elements.blockTimeInput.innerHTML = state.timeSlots.map(t => `<option value="${t}">${t}</option>`).join("");
 }
 
@@ -205,26 +216,47 @@ function setupCalendarButton() {
   const endDateTime = new Date(startDateTime.getTime() + 30 * 60000 * (app.serviceIds?.length || 1));
   const fTime = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g,"");
   const gLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(state.settings.salonName || "Salon Bayber")}+Randevusu&dates=${fTime(startDateTime)}/${fTime(endDateTime)}&details=${encodeURIComponent("Berber: "+b.name+"\nLütfen randevu saatinden 10 dk önce dükkanda olunuz.")}&location=${encodeURIComponent(state.settings.salonAddress || "Reyhanlı, Hatay")}&sf=true&output=xml`;
-  elements.btnAddToCalendar.href = gLink;
-  elements.btnAddToCalendar.target = "_blank";
+  elements.btnAddToCalendar.href = gLink; elements.btnAddToCalendar.target = "_blank";
   if(elements.successCalendarArea) elements.successCalendarArea.style.display = "block";
 }
 
 function renderSettingsVisibility() {
-  if (state.adminUnlocked) { 
-    elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = true; elements.adminDashboardSection.hidden = false; elements.lockSettings.hidden = false; elements.adminGreeting.textContent = "Control Paneli"; 
-  } else if (state.showLoginScreen) { 
-    elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = false; elements.adminDashboardSection.hidden = true; elements.lockSettings.hidden = true; elements.adminGreeting.textContent = "Yetkili Girişi"; 
-  } else { 
-    elements.customerMain.hidden = false; elements.adminMain.hidden = true; 
-  }
+  if (state.adminUnlocked) { elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = true; elements.adminDashboardSection.hidden = false; elements.lockSettings.hidden = false; elements.adminGreeting.textContent = "Control Paneli"; } 
+  else if (state.showLoginScreen) { elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = false; elements.adminDashboardSection.hidden = true; elements.lockSettings.hidden = true; elements.adminGreeting.textContent = "Yetkili Girişi"; } 
+  else { elements.customerMain.hidden = false; elements.adminMain.hidden = true; }
 }
 
+// 2. SUNUCUDAN GELEN VERİLERLE ARAYÜZÜ ANLIK EŞİTLEYEN GÜVENLİ TETİKLEYİCİ SİSTEMİ
 async function triggerStateUpdate() {
-  const query = new URLSearchParams({ date: state.selectedDate, barberId: state.selectedBarberId });
-  const payload = await api(`/api/public-state?${query.toString()}`);
-  state.settings = payload.settings; state.timeSlots = payload.timeSlots; state.availableSlots = payload.availableSlots; state.todayCount = payload.todayCount; state.allBarbersSlots = payload.allBarbersSlots || {}; state.appointments = payload.appointments || [];
-  renderBrand(); renderLiveStatusGrid(); renderSlotBoard(); renderStats(); renderAppointments();
+  try {
+    const query = new URLSearchParams({ date: state.selectedDate, barberId: state.selectedBarberId });
+    const payload = await api(`/api/public-state?${query.toString()}`);
+    
+    // Tıklanmış hizmetleri hafızada tut
+    const selectedServices = Array.from(document.querySelectorAll('input[name="serviceItem"]:checked')).map(cb => cb.value);
+    
+    state.settings = payload.settings; 
+    state.timeSlots = payload.timeSlots || []; 
+    state.availableSlots = payload.availableSlots || []; 
+    state.todayCount = payload.todayCount || 0; 
+    state.allBarbersSlots = payload.allBarbersSlots || {}; 
+    state.appointments = payload.appointments || [];
+    
+    renderBrand(); 
+    renderServicesAndBarbers(); // Akış bittiğinde arayüzü doldur
+    
+    // Hafızadaki seçimleri geri yükle
+    selectedServices.forEach(id => {
+      const cb = document.querySelector(`input[name="serviceItem"][value="${id}"]`);
+      if(cb) {
+         cb.checked = true;
+         const card = cb.closest('.modern-service-card');
+         if(card) card.classList.add('is-checked');
+      }
+    });
+    
+    calculateTotal(); renderLiveStatusGrid(); renderSlotBoard(); renderStats(); renderAppointments();
+  } catch (err) { console.error("Güncelleme hatası:", err); }
 }
 
 function bindEvents() {
@@ -262,36 +294,17 @@ function bindEvents() {
   if(elements.adminSearchInput) elements.adminSearchInput.addEventListener("input", renderAppointments);
   if(elements.customerDateView) elements.customerDateView.addEventListener("change", (e) => { state.selectedDate = e.target.value; if(elements.dateSelect) elements.dateSelect.value = e.target.value; triggerStateUpdate(); });
   if(elements.dateSelect) elements.dateSelect.addEventListener("change", (e) => { state.selectedDate = e.target.value; if(elements.customerDateView) elements.customerDateView.value = e.target.value; triggerStateUpdate(); });
-  if(elements.barberSelect) elements.barberSelect.addEventListener("change", (e) => { state.selectedBarberId = e.target.value; triggerStateUpdate(); });
   
-  if(elements.slotBoard) {
-    elements.slotBoard.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-time]"); if(!btn || btn.disabled) return;
-      state.selectedTime = btn.dataset.time; if(elements.timeSelect) elements.timeSelect.value = btn.dataset.time; renderSlotBoard();
+  if(elements.barberSelect) {
+    elements.barberSelect.addEventListener("change", (e) => { 
+      state.selectedBarberId = e.target.value; 
+      triggerStateUpdate(); 
     });
   }
-
-  // FIX: YÖNETİCİ BUTONU TETİKLEME VE EKRAN YENİLEME BAĞLANTISI ONARILDI
-  if(elements.btnShowLogin) {
-    elements.btnShowLogin.addEventListener("click", (e) => { 
-      e.preventDefault(); 
-      state.showLoginScreen = true; 
-      renderSettingsVisibility(); 
-    });
-  }
-  if(elements.btnCancelLogin) {
-    elements.btnCancelLogin.addEventListener("click", (e) => { 
-      e.preventDefault(); 
-      state.showLoginScreen = false; 
-      renderSettingsVisibility(); 
-    });
-  }
-  if(elements.lockSettings) {
-    elements.lockSettings.addEventListener("click", () => { 
-      state.adminToken = ""; state.adminUnlocked = false; state.showLoginScreen = false; sessionStorage.removeItem("barberline-admin-token"); 
-      renderSettingsVisibility(); 
-    });
-  }
+  
+  if(elements.btnShowLogin) elements.btnShowLogin.addEventListener("click", (e) => { e.preventDefault(); state.showLoginScreen = true; renderSettingsVisibility(); });
+  if(elements.btnCancelLogin) elements.btnCancelLogin.addEventListener("click", (e) => { e.preventDefault(); state.showLoginScreen = false; renderSettingsVisibility(); });
+  if(elements.lockSettings) elements.lockSettings.addEventListener("click", () => { state.adminToken = ""; state.adminUnlocked = false; state.showLoginScreen = false; sessionStorage.removeItem("barberline-admin-token"); renderSettingsVisibility(); });
 
   if(elements.adminLoginForm) {
     elements.adminLoginForm.addEventListener("submit", async (e) => {
@@ -350,6 +363,9 @@ async function loadAdminDashboard() { if(state.adminToken) { const res = await a
 async function init() {
   if(elements.dateSelect) { elements.dateSelect.min = todayISO(); elements.dateSelect.value = state.selectedDate; }
   if(elements.customerDateView) { elements.customerDateView.min = todayISO(); elements.customerDateView.value = state.selectedDate; }
-  bindEvents(); renderServicesAndBarbers(); await triggerStateUpdate(); if(state.adminUnlocked) { await loadAdminDashboard(); renderSettingsForm(); } renderSettingsVisibility();
+  bindEvents();
+  await triggerStateUpdate(); 
+  if(state.adminUnlocked) { await loadAdminDashboard(); renderSettingsForm(); } 
+  renderSettingsVisibility();
 }
 init();

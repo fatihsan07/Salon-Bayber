@@ -9,11 +9,12 @@
     <meta property="og:description" content="Sıra beklemeden berber randevunuzu saniyeler içinde alın! Altyapı: FTH MEDYA" />
     
     <title>Anasayfa | 𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 VIP Randevu</title>
+    <link rel="stylesheet" href="styles.css" />
     <style>
       :root { color-scheme: dark !important; --primary: #FFD700; --bg: #050505; --surface: #111111; --text: #ffffff; --text-muted: #888888; --border: #222222; }
       
-      /* MOBİLDEKİ TÜM TAŞMALARI ENGELLEYEN EVRENSAL KURAL */
-      *, *::before, *::after { box-sizing: border-box; max-width: 100%; }
+      /* MOBİLDEKİ VE YÖNETİCİ PANELİNDEKİ TÜM TAŞMALARI ENGELLEYEN MUTLAK KURAL */
+      *, *::before, *::after { box-sizing: border-box !important; max-width: 100% !important; }
       
       html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; -webkit-tap-highlight-color: transparent; overflow-x: hidden; width: 100%; }
       
@@ -35,27 +36,29 @@
       input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background-color: #000; }
       select { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 96%; background-position-y: center; }
 
-      /* HİZMET TABLOSUNUN GÖRÜNMESİNİ SAĞLAYAN PREMİUM MOBİL KART DÜZENİ */
+      /* JAVASCRIPT DESTEKLİ BULLETPROOF HİZMET KARTI TASARIMI */
       .modern-service-card { display: flex !important; justify-content: space-between; align-items: center; background-color: #0a0a0a; padding: 16px 18px; border: 2px solid var(--border); margin-bottom: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s all; width: 100%; gap: 12px; }
       .modern-service-card:active { transform: scale(0.98); }
-      .modern-service-card:has(input[type="checkbox"]:checked) { border-color: var(--primary); background-color: rgba(255, 215, 0, 0.05); }
-      .modern-service-card input[type="checkbox"] { display: none !important; }
+      
+      /* JS Sınıf Tetiklemesi */
+      .modern-service-card.is-checked { border-color: var(--primary) !important; background-color: rgba(255, 215, 0, 0.05) !important; }
       
       .service-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
       .custom-checkbox { width: 22px; height: 22px; border: 2px solid #555; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
-      .modern-service-card:has(input[type="checkbox"]:checked) .custom-checkbox { background-color: var(--primary); border-color: var(--primary); }
-      .modern-service-card:has(input[type="checkbox"]:checked) .custom-checkbox::after { content: "✓"; color: #000; font-size: 14px; font-weight: 900; }
+      .modern-service-card.is-checked .custom-checkbox { background-color: var(--primary) !important; border-color: var(--primary) !important; }
+      .modern-service-card.is-checked .custom-checkbox::after { content: "✓" !important; color: #000 !important; font-size: 14px !important; font-weight: 900 !important; }
+      
       .service-name { color: #fff; font-size: 0.95rem; font-weight: 600; line-height: 1.4; word-break: break-word; }
-      .service-price { color: var(--primary); font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
+      .service-price { color: var(--primary); font-size: 1.1rem; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
 
       .primary-button { background-color: var(--primary); color: #000; border: none; padding: 16px 24px; border-radius: 10px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 1rem; width: 100%; display: block; text-align: center; text-decoration: none; }
       .primary-button:hover { background-color: #e6c200; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2); }
       .danger-button { background-color: transparent; border: 2px solid #ff4d4d; color: #ff4d4d; border-radius: 8px; padding: 10px 15px; cursor: pointer; font-weight: bold; display: inline-block; text-align: center; }
       .ghost-button { color: var(--primary); border: 2px solid var(--primary); background: transparent; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; display: inline-block; text-decoration: none; text-align: center;}
 
-      /* YATAY AJANDA VE SEKMELER */
-      .admin-calendar-tabs { display: flex; overflow-x: auto; gap: 10px; padding: 5px 0 15px 0; margin-bottom: 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; }
-      .admin-calendar-tabs::-webkit-scrollbar { display: none; }
+      /* YATAY KAYDIRILABİLİR AJANDA SEKMELERİ */
+      .admin-calendar-tabs { display: flex !important; overflow-x: auto !important; gap: 10px; padding: 5px 0 15px 0; margin-bottom: 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; }
+      .admin-calendar-tabs::-webkit-scrollbar { display: none !important; }
       .cal-tab { background: #111; border: 1px solid #333; padding: 12px 20px; border-radius: 30px; color: #888; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.3s; font-size: 0.9rem; flex-shrink: 0; }
       .cal-tab.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 4px 10px rgba(255,215,0,0.2); }
 
@@ -96,12 +99,12 @@
               <div style="margin-bottom: 20px;"><span class="eyebrow">Kayıt Formu</span><h2>Randevunuzu Oluşturun</h2></div>
               <form id="bookingForm">
                 <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Ad Soyad</label><input id="customerName" name="customerName" type="text" required /></div>
-                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Telefon</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
+                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block; font-weight:600;">Ad Soyad</label><input id="customerName" name="customerName" type="text" required /></div>
+                  <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block; font-weight:600;">Telefon</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
                 </div>
-                <div style="margin-bottom: 20px;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Seçtiğiniz Berber</label><select id="barberSelect" name="barberSelect" required></select></div>
+                <div style="margin-bottom: 20px;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block; font-weight:600;">Seçtiğiniz Berber</label><select id="barberSelect" name="barberSelect" required></select></div>
                 <div style="margin-bottom: 20px;">
-                  <label style="font-size: 0.9rem; color: #bbb; margin-bottom:8px; display:block;">Yapılacak İşlemler</label>
+                  <label style="font-size: 0.9rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Yapılacak İşlemler</label>
                   <div id="serviceCheckboxes"></div>
                   <div style="text-align: right; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border);"><span style="color:#aaa;">Tutar:</span> <span id="totalPriceDisplay" style="color:var(--primary); font-size:1.4rem; font-weight:800; margin-left:10px;">₺0</span></div>
                 </div>
@@ -138,38 +141,47 @@
         <div style="padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%;">
           <header class="panel" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;"><header><p class="eyebrow">Yetkili Ekranı</p><h2 id="adminGreeting" style="font-size:1.3rem; margin:0;">Giriş Yapıldı</h2></header><button class="danger-button" id="lockSettings" type="button" hidden>Güvenli Çıkış 🔒</button></header>
 
-          <section class="panel" id="adminLoginSection" style="max-width:380px; margin:40px auto;"><h2 style="text-align:center; font-size:1.3rem; margin-bottom:20px;">Yönetici Girişi</h2><form id="adminLoginForm"><input id="adminPinInput" name="adminPin" type="password" placeholder="****" required style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:15px;" /><button class="primary-button" type="submit">GİRİŞ</button><p id="adminMessage" style="text-align:center; margin-top:10px; color:#ff4d4d; font-size:0.85rem;"></p></form></section>
+          <section class="panel" id="adminLoginSection" style="max-width:380px; margin:40px auto;"><h2 style="text-align:center; font-size:1.3rem; margin-bottom:20px;">Yönetici Şifresi</h2><form id="adminLoginForm"><input id="adminPinInput" name="adminPin" type="password" placeholder="****" required style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:15px;" /><button class="primary-button" type="submit">GİRİŞ</button><p id="adminMessage" style="text-align:center; margin-top:10px; color:#ff4d4d; font-size:0.85rem;"></p></form></section>
 
           <div id="adminDashboardSection" hidden>
-            <section class="panel" style="border-top:4px solid var(--primary);">
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
-                <div><span class="eyebrow">DÜKKAN AKIŞI</span><h2>Günlük Ajanda Tablosu</h2></div>
-                <div style="width:220px;"><input type="text" id="adminSearchInput" placeholder="🔍 Müşteri Adı veya Tel Ara..." style="padding:8px 12px; font-size:0.85rem;" /></div>
-              </div>
+            <section class="panel" style="border-top:4px solid var(--primary); padding: 15px;">
+              <div style="margin-bottom: 15px;"><span class="eyebrow">GÜNLÜK AJANDA</span><h2 style="font-size: 1.4rem;">Tarihe Göre Randevu Listesi</h2></div>
               <div id="appointmentsList"></div>
             </section>
 
              <section class="panel">
               <h2>Genel Ayarlar</h2>
               <form id="settingsForm">
-                <div style="margin-bottom:20px; background:#0a0a0a; padding:15px; border-radius:10px; border:2px dashed var(--border);"><label style="color:var(--primary); font-weight:700; display:block; margin-bottom:8px;">Salon Kapak Fotoğrafı</label><input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="background:#111; padding:8px;" /></div>
-                <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;"><div style="flex:1; min-width:180px;"><label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:5px;">Salon Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div><div style="flex:1; min-width:180px;"><label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:5px;">Telefon</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div></div>
-                <div style="margin-bottom:25px;"><label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:5px;">Açık Adres (Harita Köprüsü)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
+                <div style="margin-bottom:25px; background:#0a0a0a; padding:20px; border-radius:12px; border:2px dashed var(--border);"><label style="color:var(--primary); font-weight:700; display:block; margin-bottom:8px;">Salon Kapak Fotoğrafı</label><input id="salonImageInput" name="salonImage" type="file" accept="image/*" style="background:#111; padding:8px;" /></div>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; width: 100%;">
+                  <div style="flex: 1; min-width: 240px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Sistem Adı</label><input id="salonNameInput" name="salonName" type="text" required /></div>
+                  <div style="flex: 1; min-width: 240px;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">İletişim Numarası</label><input id="salonPhoneInput" name="salonPhone" type="text" required /></div>
+                </div>
+                <div style="margin-bottom: 40px; width: 100%;"><label style="font-size: 0.95rem; color: #bbb; margin-bottom:8px; display:block; font-weight:600;">Açık Adres (Harita için)</label><textarea id="salonAddressInput" name="salonAddress" rows="2" required></textarea></div>
                 
-                <div style="margin-bottom:35px; border-top:2px solid var(--border); padding-top:20px;">
-                  <span class="eyebrow" style="color:#ff4d4d !important;">Mola / İzin Otomasyonu</span><h2>Berbere Özel Saat Kapat</h2>
-                  <div style="display:flex; gap:12px; background:#0a0a0a; padding:15px; border-radius:12px; border:1px solid #333; flex-wrap:wrap; align-items:flex-end;">
-                    <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Berber Seçimi</label><select id="blockBarberSelect" style="padding:10px;"></select></div>
-                    <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Tarih</label><input type="date" id="blockDateInput" style="padding:10px;" /></div>
-                    <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Saat Dili (Mola Başı)</label><select id="blockTimeInput" style="padding:10px;"></select></div>
-                    <button class="danger-button" type="button" id="btnBlockSlot" style="height:44px; background:#ff4d4d !important; color:#fff !important; flex:1; min-width:80px; padding:0 15px;">BLOKE ET</button>
+                <div style="margin-bottom: 35px; border-top: 2px solid var(--border); padding-top: 30px; width: 100%;">
+                  <span class="eyebrow" style="color: #ff4d4d !important;">Mola / İzin</span>
+                  <h2 style="font-size: 1.3rem; margin-bottom: 15px;">Belirli Bir Saati Kapat</h2>
+                  <div style="display:flex; gap:12px; align-items:flex-end; background: #0a0a0a; padding: 20px; border-radius: 12px; border: 1px solid #333; flex-wrap:wrap; width: 100%;">
+                    <div style="flex:1; min-width: 130px;"><label style="font-size: 0.9rem; color:#bbb; margin-bottom:8px; display:block; font-weight:600;">Tarih</label><input type="date" id="blockDateInput" /></div>
+                    <div style="flex:1; min-width: 130px;"><label style="font-size: 0.9rem; color:#bbb; margin-bottom:8px; display:block; font-weight:600;">Saat</label><select id="blockTimeInput"></select></div>
+                    <button class="danger-button" type="button" id="btnBlockSlot" style="height: 50px; background: #ff4d4d !important; color:#fff !important; flex: 1; min-width: 100px; padding: 10px;">KAPAT</button>
                   </div>
-                  <p id="blockMessage" style="font-size:0.9rem; margin-top:10px; color:var(--primary); font-weight:700;"></p>
+                  <p id="blockMessage" style="font-size: 0.9rem; margin-top: 15px; color: var(--primary); font-weight:700;"></p>
                 </div>
 
-                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Hizmet Listesi</span></div><div id="serviceSettings" style="width: 100%;"></div><button class="primary-button" id="addService" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:100%;">+ Yeni Hizmet</button>
-                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Berber Kadrosu</span></div><div id="barberSettings" style="width: 100%;"></div><button class="primary-button" id="addBarber" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:100%;">+ Berber Ekle</button>
-                <div style="margin-top:40px; border-top:2px solid var(--border); padding-top:25px; width: 100%;"><button class="primary-button" type="submit" style="padding:18px; font-size:1.1rem !important;">DEĞİŞİKLİKLERİ KAYDET ✅</button><p id="settingsMessage" style="margin-top:20px; text-align:center; font-weight:800; color:var(--primary);"></p></div>
+                <div style="margin-bottom: 20px; border-top: 2px solid var(--border); padding-top: 30px; width: 100%;"><span class="eyebrow">Hizmetler & Fiyatlar</span></div>
+                <div id="serviceSettings" style="width: 100%;"></div>
+                <button class="primary-button" id="addService" type="button" style="margin-bottom: 40px; font-size: 0.95rem; background: #222 !important; color: #fff !important; width: 100%; padding: 14px 20px;">+ Yeni Hizmet Ekle</button>
+                
+                <div style="margin-bottom: 20px; border-top: 2px solid var(--border); padding-top: 30px; width: 100%;"><span class="eyebrow">Ekip</span></div>
+                <div id="barberSettings" style="width: 100%;"></div>
+                <button class="primary-button" id="addBarber" type="button" style="font-size: 0.95rem; background: #222 !important; color: #fff !important; width: 100%; padding: 14px 20px;">+ Berber Ekle</button>
+                
+                <div style="margin-top:40px; border-top: 2px solid var(--border); padding-top: 25px; width: 100%;">
+                  <button class="primary-button" type="submit" style="padding: 18px; font-size: 1.1rem !important; box-shadow: 0 10px 30px rgba(255,215,0,0.2); width: 100%;">TÜM AYARLARI KAYDET</button>
+                  <p id="settingsMessage" style="margin-top: 20px; text-align: center; font-size: 1.05rem; color: var(--primary); font-weight: 800;"></p>
+                </div>
               </form>
             </section>
           </div>
