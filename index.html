@@ -70,6 +70,16 @@
         width: 100%;
       }
 
+      .is-mobile-viewport {
+        font-size: 14px;
+      }
+
+      .is-mobile-viewport .app-shell {
+        grid-template-columns: 1fr;
+        padding: 10px;
+        gap: 10px;
+      }
+
       .panel {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent), var(--surface);
         border: 1px solid var(--line);
@@ -89,6 +99,15 @@
         align-self: start;
         position: sticky;
         top: 18px;
+      }
+
+      .is-mobile-viewport .sidebar {
+        position: static;
+        gap: 10px;
+      }
+
+      .is-mobile-viewport .sidebar figure {
+        display: none;
       }
 
       .brand-card {
@@ -205,6 +224,10 @@
         align-items: end;
       }
 
+      .is-mobile-viewport .date-row {
+        grid-template-columns: 1fr;
+      }
+
       .campaign-badge {
         display: inline-flex;
         align-items: center;
@@ -222,6 +245,7 @@
         display: flex;
         gap: 8px;
         overflow-x: auto;
+        overflow-y: hidden;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         padding: 4px 2px 8px;
@@ -260,6 +284,7 @@
         display: flex;
         gap: 10px;
         overflow-x: auto;
+        overflow-y: hidden;
         padding: 2px 2px 8px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
@@ -303,6 +328,23 @@
         gap: 9px;
       }
 
+      .is-mobile-viewport .slot-board {
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        touch-action: pan-x;
+        overscroll-behavior-x: contain;
+      }
+
+      .is-mobile-viewport .slot-board::-webkit-scrollbar {
+        display: none;
+      }
+
       .slot-button {
         border: 1px solid #3a3a3a;
         background: #111111;
@@ -312,6 +354,14 @@
         cursor: pointer;
         font-weight: 700;
         transition: 0.2s;
+      }
+
+      .is-mobile-viewport .slot-button {
+        flex: 0 0 auto;
+        min-width: 72px;
+        padding: 10px 8px;
+        scroll-snap-align: start;
+        font-size: 0.85rem;
       }
 
       .slot-button:hover:not(:disabled) {
@@ -377,6 +427,11 @@
         transition: 0.2s;
       }
 
+      .is-mobile-viewport .service-card {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+      }
+
       .service-card input {
         display: none;
       }
@@ -416,6 +471,11 @@
         font-family: "Sora", sans-serif;
         color: var(--accent);
         font-weight: 700;
+      }
+
+      .is-mobile-viewport .service-price {
+        grid-column: 1 / -1;
+        padding-left: 34px;
       }
 
       .totals {
@@ -502,6 +562,33 @@
         gap: 12px;
       }
 
+      .is-mobile-viewport .two-col,
+      .is-mobile-viewport .settings-row,
+      .is-mobile-viewport .block-form-grid,
+      .is-mobile-viewport .success-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .is-mobile-viewport .panel {
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      .is-mobile-viewport .brand-badge {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+      }
+
+      .is-mobile-viewport h1 {
+        font-size: 1.1rem;
+        overflow-wrap: anywhere;
+      }
+
+      .is-mobile-viewport .section-title h2 {
+        font-size: 1.08rem;
+      }
+
       .footer-links {
         display: grid;
         gap: 8px;
@@ -559,6 +646,7 @@
         display: flex;
         gap: 8px;
         overflow-x: auto;
+        overflow-y: hidden;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         padding: 2px 2px 10px;

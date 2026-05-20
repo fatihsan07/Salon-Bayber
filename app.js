@@ -184,6 +184,32 @@ function setMessage(element, message, type = "success") {
   }
 }
 
+function applyMobileViewportMode() {
+  const width = window.visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || 0;
+  const coarsePointer = window.matchMedia ? window.matchMedia("(pointer: coarse)").matches : false;
+  const shouldForceMobile = coarsePointer || width <= 980;
+  document.documentElement.classList.toggle("is-mobile-viewport", shouldForceMobile);
+}
+
+async function cleanupLegacyBarberlineServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+  } catch {
+    // Eski SW kayitlari silinemese bile uygulama calismaya devam etsin.
+  }
+
+  if (!("caches" in window)) return;
+  try {
+    const cacheKeys = await caches.keys();
+    const legacyKeys = cacheKeys.filter((key) => key.startsWith("barberline-"));
+    await Promise.all(legacyKeys.map((key) => caches.delete(key)));
+  } catch {
+    // Cache temizligi basarisiz olsa da bloklama yapma.
+  }
+}
+
 async function api(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
   if (state.adminToken) {
@@ -1007,6 +1033,12 @@ function openReminderWhatsApp(appointment) {
 }
 
 function bindEvents() {
+  window.addEventListener("resize", applyMobileViewportMode);
+  window.addEventListener("orientationchange", applyMobileViewportMode);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", applyMobileViewportMode);
+  }
+
   if (elements.dateSelect) {
     elements.dateSelect.addEventListener("change", async () => {
       state.selectedDate = elements.dateSelect.value;
@@ -1233,6 +1265,9 @@ function bindEvents() {
 }
 
 async function init() {
+  await cleanupLegacyBarberlineServiceWorker();
+  applyMobileViewportMode();
+
   if (elements.dateSelect) {
     elements.dateSelect.min = todayISO();
     elements.dateSelect.value = state.selectedDate;
@@ -1247,6 +1282,7 @@ async function init() {
   }
 
   bindEvents();
+  applyMobileViewportMode();
 
   try {
     await refreshAll();
