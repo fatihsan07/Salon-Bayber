@@ -27,28 +27,23 @@
         box-sizing: border-box;
       }
 
-      img,
-      svg,
-      video {
+      img, svg, video {
         max-width: 100%;
       }
 
-      html,
-      body {
+      html, body {
         margin: 0;
         padding: 0;
         background: radial-gradient(circle at 10% 10%, #171717 0%, var(--bg) 45%);
         color: var(--text);
         font-family: "Manrope", sans-serif;
         min-height: 100%;
-        overflow-x: hidden;
-        width: 100%;
+        width: 100vw;
+        max-width: 100%;
+        overflow-x: hidden; /* Sayfanın sağa-sola kaymasını KESİNLİKLE engeller */
       }
 
-      h1,
-      h2,
-      h3,
-      h4 {
+      h1, h2, h3, h4 {
         margin: 0;
         font-family: "Sora", sans-serif;
         line-height: 1.2;
@@ -74,7 +69,9 @@
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 18px;
+        width: 100%;
         max-width: 100%;
+        min-width: 0; /* Taşan içeriğin paneli büyütmesini engeller */
       }
 
       .sidebar {
@@ -132,16 +129,21 @@
       .main-content {
         min-width: 0;
         width: 100%;
+        max-width: 100%;
       }
 
       .layout-stack {
         display: grid;
         gap: 16px;
+        min-width: 0;
+        width: 100%;
       }
 
       .booking-form {
         display: grid;
         gap: 16px;
+        min-width: 0;
+        width: 100%;
       }
 
       .section-title {
@@ -165,16 +167,11 @@
         display: block;
       }
 
-      input,
-      select,
-      textarea,
-      button {
+      input, select, textarea, button {
         font: inherit;
       }
 
-      input,
-      select,
-      textarea {
+      input, select, textarea {
         width: 100%;
         border: 1px solid var(--line);
         background: #0f0f0f;
@@ -183,9 +180,7 @@
         padding: 12px 14px;
       }
 
-      input:focus,
-      select:focus,
-      textarea:focus {
+      input:focus, select:focus, textarea:focus {
         outline: 1px solid var(--accent);
         border-color: var(--accent);
       }
@@ -195,6 +190,12 @@
         grid-template-columns: minmax(160px, 220px) 1fr;
         gap: 12px;
         align-items: end;
+      }
+
+      /* Kapsayıcılara min-width:0 vererek grid taşmasını engelliyoruz */
+      .date-row > div {
+        min-width: 0;
+        max-width: 100%;
       }
 
       .campaign-badge {
@@ -210,7 +211,7 @@
         font-weight: 700;
       }
 
-      /* YATAY KAYDIRMA MİMARİSİ (Swipe Koruma Alanları) */
+      /* Tümüyle Güvenli Yatay Kaydırma Mimarısi */
       .date-tabs, .barber-tabs, .slot-board, .admin-date-tabs {
         display: flex;
         gap: 10px;
@@ -222,6 +223,8 @@
         flex-wrap: nowrap;
         touch-action: pan-x;
         overscroll-behavior-x: contain;
+        width: 100%;
+        max-width: 100%; /* Sınırları kilitle */
       }
 
       .date-tabs::-webkit-scrollbar,
@@ -277,7 +280,7 @@
         box-shadow: 0 8px 18px rgba(231, 182, 71, 0.25);
       }
 
-      /* Masaüstü için Slot Board Grid, mobilde Flex Swipe'a dönecek */
+      /* Slot-board mobilde de desktopta da düzgün kayması veya dizilmesi için */
       .slot-board {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
@@ -489,18 +492,18 @@
         .date-row { grid-template-columns: 1fr; }
       }
 
-      /* DİKEY MOBİL TASARIM (Yatay Kaydırma Aktif Edilir) */
+      /* DİKEY MOBİL TASARIM (%100 Koruma) */
       @media (max-width: 760px) {
         html { font-size: 14px; }
         .success-actions, .two-col, .settings-row, .block-form-grid { grid-template-columns: 1fr; }
         .panel { padding: 16px; border-radius: 16px; }
 
         .slot-board {
-          display: flex; /* Mobilde zorunlu Flex yatay kaydırma */
+          display: flex; /* Mobilde saatleri zorla yatay swipe yapar */
         }
         .slot-button {
-          flex: 0 0 auto; /* Esnemesini engelle, sabit boyut kalsın */
-          min-width: 82px; /* Düğmenin sıkışmaması için */
+          flex: 0 0 auto; 
+          min-width: 82px; 
           scroll-snap-align: start;
         }
 
@@ -534,7 +537,7 @@
         <div class="layout-stack">
           <section class="panel">
             <div class="eyebrow">Hizli Islem</div>
-            <h2>Once tarih ve berber sec, sonra bilgilerini gir</h2>
+            <h2>Önce tarih ve berber seç, sonra bilgilerini gir</h2>
           </section>
 
           <form id="bookingForm" class="booking-form">
@@ -543,13 +546,13 @@
 
             <section class="panel">
               <div class="section-title">
-                <h2>1. Musaitlik ve Takvim</h2>
-                <span id="campaignNotice" class="campaign-badge" hidden>20-26 Mayis arasi 00:00'a kadar acik</span>
+                <h2>1. Müsaitlik ve Takvim</h2>
+                <span id="campaignNotice" class="campaign-badge" hidden>20-26 Mayıs arası 00:00'a kadar açık</span>
               </div>
 
               <div class="date-row">
                 <div>
-                  <label class="label" for="dateSelect">Tarih Secimi</label>
+                  <label class="label" for="dateSelect">Tarih Seçimi</label>
                   <input id="dateSelect" name="dateSelect" type="date" required style="display: none;" />
                   <div class="date-tabs" id="customerDateTabs"></div>
                 </div>
@@ -559,21 +562,21 @@
                 </div>
               </div>
 
-              <p class="slot-hint" id="slotHint" style="margin-top: 15px;">Bir saat secmek icin kartlara dokunun.</p>
-              <div class="armoured-alert" id="slotUnavailableAlert" hidden>⚠️ Bu berber secilen tarihte musait degildir.</div>
+              <p class="slot-hint" id="slotHint" style="margin-top: 15px;">Bir saat seçmek için kartlara dokunun.</p>
+              <div class="armoured-alert" id="slotUnavailableAlert" hidden>⚠️ Bu berber seçilen tarihte müsait değildir.</div>
               <div class="slot-board" id="slotBoard"></div>
             </section>
 
             <section class="panel">
               <div class="section-title">
                 <h2>2. Hizmetler</h2>
-                <span class="mini">Sure ve fiyat sunucudan canli gelir</span>
+                <span class="mini">Süre ve fiyat sunucudan canlı gelir</span>
               </div>
 
               <div id="serviceCheckboxes" class="services-grid"></div>
               <div class="totals">
                 <div>
-                  <div class="mini">Toplam sure</div>
+                  <div class="mini">Toplam süre</div>
                   <strong id="totalDurationDisplay">0 dk</strong>
                 </div>
                 <div style="text-align:right;">
@@ -585,7 +588,7 @@
 
             <section class="panel">
               <div class="section-title">
-                <h2>3. Musteri Bilgileri</h2>
+                <h2>3. Müşteri Bilgileri</h2>
               </div>
 
               <div class="two-col">
@@ -605,22 +608,22 @@
           </form>
 
           <section id="bookingSuccessCard" class="success-card" hidden>
-            <div class="eyebrow" style="color: #9be0bb;">Randevu Basarili</div>
+            <div class="eyebrow" style="color: #9be0bb;">Randevu Başarılı</div>
             <div id="successSummary"></div>
             <div class="success-actions">
               <a id="successWhatsappBtn" class="primary-button" href="#" target="_blank" rel="noopener">WhatsApp Onay</a>
-              <button id="successCalendarBtn" type="button" class="ghost-button">Akilli Takvime Ekle</button>
+              <button id="successCalendarBtn" type="button" class="ghost-button">Akıllı Takvime Ekle</button>
             </div>
-            <button id="successCloseBtn" type="button" class="danger-button">Karti Kapat</button>
+            <button id="successCloseBtn" type="button" class="danger-button">Kartı Kapat</button>
           </section>
 
           <section class="panel">
             <div class="section-title">
-              <h2>Randevu Iptali</h2>
+              <h2>Randevu İptali</h2>
             </div>
             <form id="cancelForm" class="layout-stack">
-              <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="Iptal kodu" required />
-              <button class="danger-button" type="submit">Kod ile Iptal Et</button>
+              <input id="cancelCodeInput" name="cancelCode" type="text" placeholder="İptal kodu" required />
+              <button class="danger-button" type="submit">Kod ile İptal Et</button>
               <p id="cancelMessage" class="mini"></p>
             </form>
           </section>
@@ -629,15 +632,15 @@
             <div class="customer-footer-top">
               <div class="customer-footer-identity footer-links">
                 <div id="displayPhone">0539 596 0584</div>
-                <div id="displayAddress">Reyhanli, Hatay</div>
-                <a id="displayMapLink" href="#" target="_blank" rel="noopener">Haritada ac</a>
+                <div id="displayAddress">Reyhanlı, Hatay</div>
+                <a id="displayMapLink" href="#" target="_blank" rel="noopener">Haritada aç</a>
               </div>
-              <a href="#" id="btnShowLogin" class="ghost-button">Yonetim Paneli</a>
+              <a href="#" id="btnShowLogin" class="ghost-button">Yönetim Paneli</a>
             </div>
             <p class="mini customer-footer-credit">
               Bu site
               <a href="https://www.instagram.com/fth_media1?igsh=MWs5dm84OGRiaDFlMg==" target="_blank" rel="noopener">FTH MEDYA</a>
-              tarafindan yapildi.
+              tarafından yapıldı.
             </p>
           </section>
         </div>
@@ -647,26 +650,26 @@
         <div class="admin-grid">
           <section class="panel" style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
             <div>
-              <div class="eyebrow">Yonetim Paneli</div>
-              <h2 id="adminGreeting">Yetkili Girisi</h2>
+              <div class="eyebrow">Yönetim Paneli</div>
+              <h2 id="adminGreeting">Yetkili Girişi</h2>
             </div>
-            <button class="danger-button" id="lockSettings" type="button" hidden>Guvenli Cikis</button>
+            <button class="danger-button" id="lockSettings" type="button" hidden>Güvenli Çıkış</button>
           </section>
 
           <section class="panel" id="adminLoginSection">
             <form id="adminLoginForm" class="layout-stack" style="max-width:360px;">
-              <label class="label" for="adminPinInput">Sifre</label>
+              <label class="label" for="adminPinInput">Şifre</label>
               <input id="adminPinInput" name="adminPin" type="password" required />
-              <button class="primary-button" type="submit">Giris Yap</button>
+              <button class="primary-button" type="submit">Giriş Yap</button>
               <p id="adminMessage" class="mini"></p>
-              <a href="#" id="btnCancelLogin" class="mini">Musteri ekranina don</a>
+              <a href="#" id="btnCancelLogin" class="mini">Müşteri ekranına dön</a>
             </form>
           </section>
 
           <div id="adminDashboardSection" hidden class="admin-grid">
             <section class="panel">
               <div class="section-title">
-                <h2>Gunluk Ajanda</h2>
+                <h2>Günlük Ajanda</h2>
                 <input id="adminDateInput" type="date" style="max-width:200px;" />
               </div>
               <div id="adminDateTabs" class="admin-date-tabs"></div>
@@ -676,7 +679,7 @@
             <section class="panel">
               <div class="section-title">
                 <h2>Berber Engelleri</h2>
-                <span class="mini">full_day veya saat araligi</span>
+                <span class="mini">full_day veya saat aralığı</span>
               </div>
 
               <div class="block-form-grid">
@@ -691,16 +694,16 @@
                 <div>
                   <label class="label" for="blockTypeInput">Engel Tipi</label>
                   <select id="blockTypeInput">
-                    <option value="hours">Saat Araligi</option>
-                    <option value="full_day">Tum Gun Kapali</option>
+                    <option value="hours">Saat Aralığı</option>
+                    <option value="full_day">Tüm Gün Kapalı</option>
                   </select>
                 </div>
                 <div>
-                  <label class="label" for="blockStartInput">Baslangic (Saat Araligi)</label>
+                  <label class="label" for="blockStartInput">Başlangıç (Saat Aralığı)</label>
                   <input id="blockStartInput" type="time" value="12:00" step="1800" />
                 </div>
                 <div>
-                  <label class="label" for="blockEndInput">Bitis (Saat Araligi)</label>
+                  <label class="label" for="blockEndInput">Bitiş (Saat Aralığı)</label>
                   <input id="blockEndInput" type="time" value="15:00" step="1800" />
                 </div>
               </div>
@@ -721,7 +724,7 @@
               <form id="settingsForm" class="layout-stack">
                 <div class="settings-row">
                   <div>
-                    <label class="label" for="salonNameInput">Salon Adi</label>
+                    <label class="label" for="salonNameInput">Salon Adı</label>
                     <input id="salonNameInput" name="salonName" type="text" required />
                   </div>
                   <div>
@@ -736,7 +739,7 @@
                 </div>
 
                 <div>
-                  <label class="label" for="salonImageInput">Salon Gorseli</label>
+                  <label class="label" for="salonImageInput">Salon Görseli</label>
                   <input id="salonImageInput" name="salonImage" type="file" accept="image/*" />
                 </div>
 
@@ -752,7 +755,7 @@
                 </div>
                 <div id="barberSettings" class="list-stack"></div>
 
-                <button class="primary-button" type="submit">Ayarlari Kaydet</button>
+                <button class="primary-button" type="submit">Ayarları Kaydet</button>
                 <p id="settingsMessage" class="mini"></p>
               </form>
             </section>
