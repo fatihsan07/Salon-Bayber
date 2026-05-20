@@ -1,55 +1,264 @@
 <!doctype html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 VIP Randevu</title>
-    <style>
-      :root { color-scheme: dark !important; --primary: #FFD700; --bg: #050505; --surface: #111111; --text: #ffffff; --border: #222222; }
-      *, *::before, *::after { box-sizing: border-box !important; max-width: 100% !important; }
-      html, body { margin: 0; background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; overflow-x: hidden; width: 100%; }
-      .panel { background-color: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; width: 100%; overflow: hidden; }
-      
-      /* HİZMET KARTLARI */
-      .v-card { display: flex !important; justify-content: space-between !important; align-items: center !important; background: #0a0a0a !important; padding: 15px !important; border: 2px solid var(--border) !important; margin-bottom: 10px !important; border-radius: 12px !important; cursor: pointer !important; }
-      .v-card.is-checked { border-color: var(--primary) !important; background: rgba(255, 215, 0, 0.05) !important; }
-      .v-check-icon { width: 22px; height: 22px; border: 2px solid #555; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-      .v-card.is-checked .v-check-icon { background: var(--primary); border-color: var(--primary); }
-      .v-card.is-checked .v-check-icon::after { content: "✓"; color: #000; font-weight: 900; }
-      
-      .booking-grid { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
-      @media (min-width: 900px) { .booking-grid { grid-template-columns: 1.2fr 1fr; } }
-      .primary-button { background: var(--primary); color: #000; border: none; padding: 16px; border-radius: 10px; font-weight: 800; width: 100%; text-transform: uppercase; }
-      .admin-calendar-tabs { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; width: 100%; }
-      .cal-tab { background: #111; padding: 10px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-size: 0.85rem; border: 1px solid #333; }
-      .cal-tab.active { background: var(--primary); color: #000; }
-      .whatsapp-float-btn { position: fixed; bottom: 25px; right: 25px; background: #25D366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    </style>
-  </head>
-  <body>
-    <a href="https://api.whatsapp.com/send/?phone=905395960584" class="whatsapp-float-btn"><svg width="32" height="32" fill="#fff" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.05-.084-.182-.133-.38-.232"/></svg></a>
-    <main style="padding: 20px;">
-      <div id="customerMain">
-        <section class="panel"><h2>Müsaitlik</h2><div id="liveStatusContainer"></div></section>
-        <div class="booking-grid">
-          <section class="panel">
-            <form id="bookingForm">
-              <input id="customerName" placeholder="Ad Soyad" required />
-              <input id="customerPhone" placeholder="Telefon" required />
-              <select id="barberSelect" required></select>
-              <div id="serviceCheckboxes"></div>
-              <input id="dateSelect" type="date" required />
-              <select id="timeSelect" required></select>
-              <button class="primary-button" type="submit">ONAYLA</button>
-            </form>
-          </section>
-          <section class="panel"><div id="slotBoard"></div></section>
-        </div>
-      </div>
-      <main id="adminMain" hidden>
-        <section class="panel"><div id="appointmentsList"></div></section>
-      </main>
-    </main>
-    <script src="app.js"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Salon Bayber VIP Randevu</title>
+
+<style>
+:root{
+  --primary:#FFD700;
+  --bg:#050505;
+  --surface:#111111;
+  --text:#ffffff;
+  --border:#222222;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+main{
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+h2{
+  margin-top:0;
+}
+
+.booking-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+}
+
+@media(min-width:900px){
+  .booking-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+input,
+select{
+  width:100%;
+  padding:14px;
+  margin-bottom:14px;
+  border-radius:12px;
+  border:1px solid #333;
+  background:#0a0a0a;
+  color:white;
+  font-size:16px;
+  outline:none;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--primary);
+}
+
+.primary-button{
+  width:100%;
+  border:none;
+  padding:16px;
+  border-radius:12px;
+  background:var(--primary);
+  color:black;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.v-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#0a0a0a;
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.v-card.is-checked{
+  border-color:var(--primary);
+  background:rgba(255,215,0,0.08);
+}
+
+.v-service-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.v-check-icon{
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  border:2px solid #555;
+}
+
+.v-card.is-checked .v-check-icon{
+  background:var(--primary);
+  border-color:var(--primary);
+  position:relative;
+}
+
+.v-card.is-checked .v-check-icon::after{
+  content:"✓";
+  position:absolute;
+  top:-1px;
+  left:4px;
+  color:black;
+  font-weight:bold;
+}
+
+.v-service-price{
+  font-weight:bold;
+  color:var(--primary);
+}
+
+#slotBoard{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.slot-button{
+  border:none;
+  background:#151515;
+  color:white;
+  padding:12px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  border:1px solid #333;
+  transition:0.2s;
+}
+
+.slot-button:hover{
+  border-color:var(--primary);
+}
+
+.slot-button.active{
+  background:var(--primary);
+  color:black;
+  font-weight:bold;
+}
+
+.whatsapp-float-btn{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:#25D366;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<a
+href="https://api.whatsapp.com/send/?phone=905395960584"
+class="whatsapp-float-btn"
+target="_blank"
+>
+<svg width="30" height="30" fill="#fff" viewBox="0 0 16 16">
+<path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326z"/>
+</svg>
+</a>
+
+<main>
+
+<section class="panel">
+<h2>Müsait Saatler</h2>
+<div id="slotBoard"></div>
+</section>
+
+<div class="booking-grid">
+
+<section class="panel">
+
+<form id="bookingForm">
+
+<input
+id="customerName"
+placeholder="Ad Soyad"
+required
+/>
+
+<input
+id="customerPhone"
+placeholder="Telefon"
+required
+/>
+
+<select id="barberSelect" required></select>
+
+<div id="serviceCheckboxes"></div>
+
+<input
+id="dateSelect"
+type="date"
+required
+/>
+
+<button
+class="primary-button"
+type="submit"
+>
+RANDEVUYU OLUŞTUR
+</button>
+
+</form>
+
+</section>
+
+<section class="panel">
+
+<h2>Bilgi</h2>
+
+<p>
+Lütfen hizmet seçip uygun saati belirleyiniz.
+</p>
+
+<p>
+Randevu oluşturduktan sonra
+berber tarafından onaylanacaktır.
+</p>
+
+</section>
+
+</div>
+
+</main>
+
+<script src="app.js"></script>
+
+</body>
 </html>
