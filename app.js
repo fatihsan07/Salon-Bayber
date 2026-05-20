@@ -24,6 +24,7 @@ const elements = {
 
 function todayISO() { const offset = new Date().getTimezoneOffset() * 60000; return new Date(Date.now() - offset).toISOString().slice(0, 10); }
 function escapeHtml(value) { return String(value).replaceAll("&", "&").replaceAll("<", "<").replaceAll(">", ">"); }
+function makeInitials(name) { const words = String(name).trim().split(/\s+/).filter(Boolean); if (!words.length) return "BL"; return words.slice(0, 2).map((word) => word[0].toLocaleUpperCase("tr-TR")).join(""); }
 function formatPrice(price) { return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 }).format(price); }
 function formatDate(dateValue) { return new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date(`${dateValue}T12:00:00`)); }
 
@@ -33,6 +34,7 @@ async function api(path, options = {}) {
   const response = await fetch(path, { ...options, headers }); const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.message || "Hata oluştu."); return payload;
 }
+function setMessage(element, message, type = "success") { if(element) { element.textContent = message; element.style.color = type === "error" ? "#ff4d4d" : "var(--primary)"; } }
 
 function renderBrand() {
   const s = state.settings;
@@ -72,13 +74,23 @@ window.quickSelectSlot = function(barberId, timeStr) {
 
 function renderServicesAndBarbers() {
   if(elements.serviceCheckboxes) {
+    // FIX: DISPLAY GİZLENMELERİ KALDIRILDI VE NAME ETİKETLERİ DOĞRULANDI
     elements.serviceCheckboxes.innerHTML = (state.settings.services || []).map(s => `
-      <label class="modern-service-card">
-        <input type="checkbox" name="serviceItem" value="${s.id}">
-        <div class="service-left"><div class="custom-checkbox"></div><div><span class="service-name">${escapeHtml(s.name)}</span><span style="font-size:0.75rem; color:#666; display:block; margin-top:2px;">🕒 Süre: ${s.duration || '30 dk'}</span></div></div>
+      <label class="modern-service-card" style="display: flex !important;">
+        <input type="checkbox" name="serviceItem" value="${s.id}" style="display:none !important;">
+        <div class="service-left">
+          <div class="custom-checkbox"></div>
+          <div>
+            <span class="service-name">${escapeHtml(s.name)}</span>
+            <span style="font-size:0.75rem; color:#666; display:block; margin-top:2px;">🕒 Süre: ${s.duration || '30 dk'}</span>
+          </div>
+        </div>
         <span class="service-price">${formatPrice(s.price)}</span>
       </label>`).join("");
-    document.querySelectorAll('input[name="serviceItem"]').forEach(cb => { cb.addEventListener('change', () => { calculateTotal(); triggerStateUpdate(); }); });
+    
+    document.querySelectorAll('input[name="serviceItem"]').forEach(cb => { 
+      cb.addEventListener('change', () => { calculateTotal(); renderSlotBoard(); }); 
+    });
     calculateTotal();
   }
   if(elements.barberSelect) {
@@ -100,7 +112,6 @@ function calculateTotal() {
 function renderSlotBoard() {
   if(!elements.slotBoard || !elements.timeSelect) return;
   const reqSlots = document.querySelectorAll('input[name="serviceItem"]:checked').length || 1;
-  const startIndex = state.timeSlots.indexOf(state.selectedTime);
   
   elements.timeSelect.innerHTML = state.timeSlots.map(t => {
     let booked = !state.availableSlots.includes(t);
@@ -124,7 +135,6 @@ function renderSlotBoard() {
 
 window.selectAdminDate = function(dateStr) { state.adminSelectedDate = dateStr; renderAppointments(); }
 
-// AKILLI YATAY TAKVİM VE ARAMA MOTORLU LİSTELEME
 function renderAppointments() {
   if(!elements.appointmentsList) return;
   let tabsHtml = `<div class="admin-calendar-tabs">`;
@@ -187,21 +197,27 @@ function renderSettingsForm() {
   elements.blockTimeInput.innerHTML = state.timeSlots.map(t => `<option value="${t}">${t}</option>`).join("");
 }
 
-// YENİ: SAF MÜŞTERİ GOOGLE/APPLE TAKVİM ENTEGRASYON MOTORU
 function setupCalendarButton() {
   if(!elements.btnAddToCalendar || !state.lastCreatedApp) return;
   const app = state.lastCreatedApp;
   const b = state.settings.barbers.find(x => x.id === app.barberId) || {name:"Usta"};
-  
   const startDateTime = new Date(`${app.date}T${app.time}:00`);
   const endDateTime = new Date(startDateTime.getTime() + 30 * 60000 * (app.serviceIds?.length || 1));
-  
   const fTime = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g,"");
   const gLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(state.settings.salonName || "Salon Bayber")}+Randevusu&dates=${fTime(startDateTime)}/${fTime(endDateTime)}&details=${encodeURIComponent("Berber: "+b.name+"\nLütfen randevu saatinden 10 dk önce dükkanda olunuz.")}&location=${encodeURIComponent(state.settings.salonAddress || "Reyhanlı, Hatay")}&sf=true&output=xml`;
-  
   elements.btnAddToCalendar.href = gLink;
   elements.btnAddToCalendar.target = "_blank";
   if(elements.successCalendarArea) elements.successCalendarArea.style.display = "block";
+}
+
+function renderSettingsVisibility() {
+  if (state.adminUnlocked) { 
+    elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = true; elements.adminDashboardSection.hidden = false; elements.lockSettings.hidden = false; elements.adminGreeting.textContent = "Control Paneli"; 
+  } else if (state.showLoginScreen) { 
+    elements.customerMain.hidden = true; elements.adminMain.hidden = false; elements.adminLoginSection.hidden = false; elements.adminDashboardSection.hidden = true; elements.lockSettings.hidden = true; elements.adminGreeting.textContent = "Yetkili Girişi"; 
+  } else { 
+    elements.customerMain.hidden = false; elements.adminMain.hidden = true; 
+  }
 }
 
 async function triggerStateUpdate() {
@@ -255,6 +271,28 @@ function bindEvents() {
     });
   }
 
+  // FIX: YÖNETİCİ BUTONU TETİKLEME VE EKRAN YENİLEME BAĞLANTISI ONARILDI
+  if(elements.btnShowLogin) {
+    elements.btnShowLogin.addEventListener("click", (e) => { 
+      e.preventDefault(); 
+      state.showLoginScreen = true; 
+      renderSettingsVisibility(); 
+    });
+  }
+  if(elements.btnCancelLogin) {
+    elements.btnCancelLogin.addEventListener("click", (e) => { 
+      e.preventDefault(); 
+      state.showLoginScreen = false; 
+      renderSettingsVisibility(); 
+    });
+  }
+  if(elements.lockSettings) {
+    elements.lockSettings.addEventListener("click", () => { 
+      state.adminToken = ""; state.adminUnlocked = false; state.showLoginScreen = false; sessionStorage.removeItem("barberline-admin-token"); 
+      renderSettingsVisibility(); 
+    });
+  }
+
   if(elements.adminLoginForm) {
     elements.adminLoginForm.addEventListener("submit", async (e) => {
       e.preventDefault(); try {
@@ -277,7 +315,7 @@ function bindEvents() {
           finalImage = await new Promise(res => {
             const rd = new FileReader(); rd.onload = (ev) => {
               const im = new Image(); im.onload = () => {
-                const cv = document.createElement("canvas"); cv.width = 600; cv.height = 400; cv.getContext("2d").drawImage(im,0,0,600,400); res(cv.toDataURL("image/jpeg", 0.7));
+                const canvas = document.createElement("canvas"); canvas.width = 600; canvas.height = 400; canvas.getContext("2d").drawImage(im,0,0,600,400); res(canvas.toDataURL("image/jpeg", 0.7));
               }; im.src = ev.target.result;
             }; rd.readAsDataURL(imgInp.files[0]);
           });
@@ -289,9 +327,6 @@ function bindEvents() {
     });
   }
 
-  if(elements.btnShowLogin) elements.btnShowLogin.addEventListener("click", (e) => { e.preventDefault(); state.showLoginScreen = true; renderSettingsVisibility(); });
-  if(elements.btnCancelLogin) elements.btnCancelLogin.addEventListener("click", (e) => { e.preventDefault(); state.showLoginScreen = false; renderSettingsVisibility(); });
-  if(elements.lockSettings) elements.lockSettings.addEventListener("click", () => { state.adminToken = ""; state.adminUnlocked = false; state.showLoginScreen = false; sessionStorage.removeItem("barberline-admin-token"); renderSettingsVisibility(); });
   if(elements.addService) elements.addService.addEventListener("click", () => { state.settings.services.push({ id: `srv-${Date.now()}`, name: "Yeni Hizmet", price: 150, duration:"30 dk" }); renderSettingsForm(); });
   if(elements.addBarber) elements.addBarber.addEventListener("click", () => { state.settings.barbers.push({ id: `brb-${Date.now()}`, name: "Yeni Berber", title: "Kalfalık", initials: "YB" }); renderSettingsForm(); });
 

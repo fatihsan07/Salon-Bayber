@@ -4,12 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#050505" />
-    <title>𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 VIP Otomasyon</title>
-    <link rel="stylesheet" href="styles.css" />
+    
+    <meta property="og:title" content="Salon Bayber | Online Randevu Sistemi" />
+    <meta property="og:description" content="Sıra beklemeden berber randevunuzu saniyeler içinde alın! Altyapı: FTH MEDYA" />
+    
+    <title>Anasayfa | 𝚜𝚊𝚕𝚘𝚗 𝚋𝚊𝚢𝚋𝚎𝚛 VIP Randevu</title>
     <style>
       :root { color-scheme: dark !important; --primary: #FFD700; --bg: #050505; --surface: #111111; --text: #ffffff; --text-muted: #888888; --border: #222222; }
+      
+      /* MOBİLDEKİ TÜM TAŞMALARI ENGELLEYEN EVRENSAL KURAL */
       *, *::before, *::after { box-sizing: border-box; max-width: 100%; }
-      html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; width: 100%; }
+      
+      html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; -webkit-tap-highlight-color: transparent; overflow-x: hidden; width: 100%; }
       
       .app-shell { display: flex; flex-direction: row; height: 100vh; overflow: hidden; width: 100%; }
       .sidebar { overflow-y: auto; height: 100vh; padding-bottom: 50px; flex-shrink: 0; }
@@ -27,10 +33,15 @@
 
       input, select, textarea { background-color: #0a0a0a; color: #ffffff; border: 2px solid var(--border); padding: 14px 16px; border-radius: 10px; font-family: inherit; font-size: 1rem; width: 100%; font-weight: 500; display: block; }
       input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background-color: #000; }
+      select { -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 96%; background-position-y: center; }
 
-      .modern-service-card { display: flex; justify-content: space-between; align-items: center; background-color: #0a0a0a; padding: 15px 18px; border: 2px solid var(--border); margin-bottom: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s all; width: 100%; gap: 10px; }
+      /* HİZMET TABLOSUNUN GÖRÜNMESİNİ SAĞLAYAN PREMİUM MOBİL KART DÜZENİ */
+      .modern-service-card { display: flex !important; justify-content: space-between; align-items: center; background-color: #0a0a0a; padding: 16px 18px; border: 2px solid var(--border); margin-bottom: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s all; width: 100%; gap: 12px; }
+      .modern-service-card:active { transform: scale(0.98); }
       .modern-service-card:has(input[type="checkbox"]:checked) { border-color: var(--primary); background-color: rgba(255, 215, 0, 0.05); }
-      .modern-service-card input[type="checkbox"] { display: none; }
+      .modern-service-card input[type="checkbox"] { display: none !important; }
+      
+      .service-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
       .custom-checkbox { width: 22px; height: 22px; border: 2px solid #555; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
       .modern-service-card:has(input[type="checkbox"]:checked) .custom-checkbox { background-color: var(--primary); border-color: var(--primary); }
       .modern-service-card:has(input[type="checkbox"]:checked) .custom-checkbox::after { content: "✓"; color: #000; font-size: 14px; font-weight: 900; }
@@ -38,16 +49,16 @@
       .service-price { color: var(--primary); font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
 
       .primary-button { background-color: var(--primary); color: #000; border: none; padding: 16px 24px; border-radius: 10px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s all; font-size: 1rem; width: 100%; display: block; text-align: center; text-decoration: none; }
+      .primary-button:hover { background-color: #e6c200; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2); }
       .danger-button { background-color: transparent; border: 2px solid #ff4d4d; color: #ff4d4d; border-radius: 8px; padding: 10px 15px; cursor: pointer; font-weight: bold; display: inline-block; text-align: center; }
       .ghost-button { color: var(--primary); border: 2px solid var(--primary); background: transparent; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; display: inline-block; text-decoration: none; text-align: center;}
 
-      /* AKILLI AJANDA VE SEKMELER */
+      /* YATAY AJANDA VE SEKMELER */
       .admin-calendar-tabs { display: flex; overflow-x: auto; gap: 10px; padding: 5px 0 15px 0; margin-bottom: 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; }
       .admin-calendar-tabs::-webkit-scrollbar { display: none; }
       .cal-tab { background: #111; border: 1px solid #333; padding: 12px 20px; border-radius: 30px; color: #888; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.3s; font-size: 0.9rem; flex-shrink: 0; }
       .cal-tab.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 4px 10px rgba(255,215,0,0.2); }
 
-      /* MÜŞTERİ CANLI TAKVİM TASARIMI */
       .live-barber-row { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
       .live-slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
 
@@ -89,7 +100,9 @@
                   <div style="flex:1; min-width:100%;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Telefon</label><input id="customerPhone" name="customerPhone" type="tel" placeholder="05xx xxx xx xx" required /></div>
                 </div>
                 <div style="margin-bottom: 20px;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:6px; display:block;">Seçtiğiniz Berber</label><select id="barberSelect" name="barberSelect" required></select></div>
-                <div style="margin-bottom: 20px;"><label style="font-size: 0.9rem; color: #bbb; margin-bottom:8px; display:block;">Yapılacak İşlemler</label><div id="serviceCheckboxes"></div>
+                <div style="margin-bottom: 20px;">
+                  <label style="font-size: 0.9rem; color: #bbb; margin-bottom:8px; display:block;">Yapılacak İşlemler</label>
+                  <div id="serviceCheckboxes"></div>
                   <div style="text-align: right; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border);"><span style="color:#aaa;">Tutar:</span> <span id="totalPriceDisplay" style="color:var(--primary); font-size:1.4rem; font-weight:800; margin-left:10px;">₺0</span></div>
                 </div>
                 <div style="display: flex; gap: 15px; margin-bottom: 25px;"><div style="flex:1;"><label style="font-size:0.9rem; color:#bbb; margin-bottom:6px; display:block;">Tarih</label><input id="dateSelect" name="dateSelect" type="date" required /></div><div style="flex:1;"><label style="font-size:0.9rem; color:#bbb; margin-bottom:6px; display:block;">Saat</label><select id="timeSelect" name="timeSelect" required></select></div></div>
@@ -103,6 +116,7 @@
             </section>
 
             <aside>
+              <section class="panel" style="margin-bottom: 25px;"><span class="eyebrow">Adım 2</span><h2 style="font-size: 1.4rem; margin-bottom: 15px;">Müsait Saatler</h2><p style="font-size:0.85rem; color:#aaa; margin-bottom:15px;">Seçtiğiniz tarihteki boş saatleriniz.</p><div class="slot-board" id="slotBoard"></div></section>
               <section class="panel" style="border: 2px solid #7f1d1d; background: #2f0c0c;"><span class="eyebrow" style="color:#f87171 !important;">İptal</span><h2>Randevu İptal</h2>
                 <form id="cancelForm"><input id="cancelCodeInput" name="cancelCode" type="text" placeholder="İptal Kodunuz" required style="margin-bottom: 12px; border-color:#991b1b; background:#000 !important;" /><button class="danger-button" type="submit" style="width:100%;">İPTAL ET</button><p id="cancelMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; color:#f87171; font-weight:600;"></p></form>
               </section>
@@ -116,7 +130,7 @@
             <div class="footer-item"><span style="font-size:1.6rem; margin-bottom:3px;">📞</span><span style="color:#aaa; font-size:0.85rem;">Telefon</span><span id="displayPhone" style="font-size:1rem; font-weight:700;">0539 596 0584</span></div>
             <div class="footer-item"><span style="font-size:1.6rem; margin-bottom:3px;">🕒</span><span style="color:#aaa; font-size:0.85rem;">Saatler</span><span style="font-size:1rem; font-weight:700;">09:00 - 21:00</span></div>
           </div>
-          <div style="border-top:1px solid #1a1a1a; padding-top:20px; margin-top:25px;"><a href="https://www.instagram.com/fth_media1" target="_blank" class="fth-footer-badge"><div class="fth-icon">FM</div><div class="fth-text">Powered by <strong>FTH MEDYA</strong></div></a><div style="margin-top:20px;"><a href="#" id="btnShowLogin" style="color:#444; text-decoration:none; font-size:0.8rem; font-weight:800; background:#111; padding:8px 12px; border-radius:6px;">YÖNETİM PANELİ 🔒</a></div></div>
+          <div style="border-top:1px solid #1a1a1a; padding-top:20px; margin-top:25px;"><a href="https://www.instagram.com/fth_media1" target="_blank" class="fth-footer-badge"><div class="fth-icon">FM</div><div class="fth-text">Powered by <strong>FTH MEDYA</strong></div></a><div style="margin-top:20px;"><a href="#" id="btnShowLogin" style="color:#444; text-decoration:none; font-size:0.8rem; font-weight:800; background:#111; padding:8px 12px; border-radius:6px; cursor:pointer;">YÖNETİM PANELİ 🔒</a></div></div>
         </footer>
       </main>
 
@@ -150,12 +164,12 @@
                     <div style="flex:1; min-width:130px;"><label style="font-size:0.85rem; color:#bbb; display:block; margin-bottom:5px;">Saat Dili (Mola Başı)</label><select id="blockTimeInput" style="padding:10px;"></select></div>
                     <button class="danger-button" type="button" id="btnBlockSlot" style="height:44px; background:#ff4d4d !important; color:#fff !important; flex:1; min-width:80px; padding:0 15px;">BLOKE ET</button>
                   </div>
-                  <p id="blockMessage" style="font-size:0.85rem; margin-top:10px; color:var(--primary); font-weight:700;"></p>
+                  <p id="blockMessage" style="font-size:0.9rem; margin-top:10px; color:var(--primary); font-weight:700;"></p>
                 </div>
 
-                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Hizmet Listesi</span></div><div id="serviceSettings"></div><button class="primary-button" id="addService" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:auto;">+ Yeni Hizmet</button>
-                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Berber Kadrosu</span></div><div id="barberSettings"></div><button class="primary-button" id="addBarber" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:auto;">+ Berber Ekle</button>
-                <div style="margin-top:30px; border-top:2px solid var(--border); padding-top:20px;"><button class="primary-button" type="submit" style="padding:18px;">DEĞİŞİKLİKLERİ KAYDET ✅</button><p id="settingsMessage" style="margin-top:15px; text-align:center; font-weight:800; color:var(--primary);"></p></div>
+                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Hizmet Listesi</span></div><div id="serviceSettings" style="width: 100%;"></div><button class="primary-button" id="addService" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:100%;">+ Yeni Hizmet</button>
+                <div style="border-top:1px solid var(--border); padding-top:20px; margin-bottom:15px;"><span class="eyebrow">Berber Kadrosu</span></div><div id="barberSettings" style="width: 100%;"></div><button class="primary-button" id="addBarber" type="button" style="margin-bottom:30px; background:#222 !important; color:#fff !important; font-size:0.9rem; padding:10px 15px; width:100%;">+ Berber Ekle</button>
+                <div style="margin-top:40px; border-top:2px solid var(--border); padding-top:25px; width: 100%;"><button class="primary-button" type="submit" style="padding:18px; font-size:1.1rem !important;">DEĞİŞİKLİKLERİ KAYDET ✅</button><p id="settingsMessage" style="margin-top:20px; text-align:center; font-weight:800; color:var(--primary);"></p></div>
               </form>
             </section>
           </div>
