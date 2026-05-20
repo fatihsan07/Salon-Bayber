@@ -208,6 +208,43 @@
         font-weight: 700;
       }
 
+      .date-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding: 4px 2px 8px;
+        margin-top: 10px;
+        scroll-snap-type: x proximity;
+        flex-wrap: nowrap;
+        touch-action: pan-x;
+      }
+
+      .date-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .date-tab {
+        border: 1px solid #3a3a3a;
+        background: #171717;
+        color: #d5d5d5;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        white-space: nowrap;
+        cursor: pointer;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+      }
+
+      .date-tab.is-active {
+        border-color: var(--accent);
+        background: linear-gradient(160deg, var(--accent), #8c651d);
+        color: #111111;
+      }
+
       .barber-tabs {
         display: flex;
         gap: 10px;
@@ -216,6 +253,8 @@
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x proximity;
+        flex-wrap: nowrap;
+        touch-action: pan-x;
       }
 
       .barber-tabs::-webkit-scrollbar {
@@ -511,6 +550,8 @@
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         padding: 2px 2px 10px;
+        flex-wrap: nowrap;
+        touch-action: pan-x;
       }
 
       .admin-date-tabs::-webkit-scrollbar {
@@ -528,6 +569,7 @@
         font-weight: 700;
         cursor: pointer;
         flex: 0 0 auto;
+        scroll-snap-align: start;
       }
 
       .admin-date-tab.is-active {
@@ -627,6 +669,10 @@
       }
 
       @media (max-width: 760px) {
+        html {
+          font-size: 14px;
+        }
+
         .success-actions,
         .two-col,
         .settings-row,
@@ -635,11 +681,22 @@
         }
 
         .slot-board {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          display: flex;
+          overflow-x: auto;
+          gap: 8px;
+          padding-bottom: 8px;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+          scroll-snap-type: x proximity;
+          touch-action: pan-x;
+        }
+
+        .slot-board::-webkit-scrollbar {
+          display: none;
         }
 
         .panel {
-          padding: 14px;
+          padding: 12px;
         }
 
         .service-card {
@@ -650,6 +707,24 @@
         .service-price {
           grid-column: 1 / -1;
           padding-left: 34px;
+        }
+
+        .slot-button {
+          flex: 0 0 auto;
+          min-width: 72px;
+          padding: 10px 8px;
+          scroll-snap-align: start;
+        }
+
+        .barber-tab {
+          padding: 9px 12px;
+          font-size: 0.86rem;
+        }
+
+        .date-tab,
+        .admin-date-tab {
+          font-size: 0.8rem;
+          padding: 8px 11px;
         }
       }
 
@@ -666,6 +741,10 @@
         .barber-tab {
           padding: 10px 13px;
           font-size: 0.86rem;
+        }
+
+        .date-row .label {
+          margin-bottom: 6px;
         }
       }
     </style>
@@ -712,6 +791,7 @@
                 <div>
                   <label class="label" for="dateSelect">Tarih Secimi</label>
                   <input id="dateSelect" name="dateSelect" type="date" required />
+                  <div class="date-tabs" id="customerDateTabs"></div>
                 </div>
                 <div>
                   <label class="label">Berber Sekmeleri</label>

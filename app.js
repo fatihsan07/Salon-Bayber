@@ -42,6 +42,7 @@ const elements = {
   customerName: document.querySelector("#customerName"),
   customerPhone: document.querySelector("#customerPhone"),
   dateSelect: document.querySelector("#dateSelect"),
+  customerDateTabs: document.querySelector("#customerDateTabs"),
   barberSelect: document.querySelector("#barberSelect"),
   timeSelect: document.querySelector("#timeSelect"),
   barberTabs: document.querySelector("#barberTabs"),
@@ -147,6 +148,17 @@ function shiftISODate(baseDate, dayOffset) {
 function adminDateTabLabel(dateStr) {
   const today = todayISO();
   if (dateStr === today) return "Bugun";
+  const date = new Date(`${dateStr}T12:00:00`);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleDateString("tr-TR", { month: "short" });
+  return `${day} ${month}`;
+}
+
+function customerDateTabLabel(dateStr) {
+  const today = todayISO();
+  const tomorrow = shiftISODate(today, 1);
+  if (dateStr === today) return "Bugun";
+  if (dateStr === tomorrow) return "Yarin";
   const date = new Date(`${dateStr}T12:00:00`);
   const day = String(date.getDate()).padStart(2, "0");
   const month = date.toLocaleDateString("tr-TR", { month: "short" });
@@ -281,6 +293,33 @@ function renderBrand() {
 function renderCampaignBadge() {
   if (!elements.campaignNotice) return;
   elements.campaignNotice.hidden = !state.campaign?.isActive;
+}
+
+function renderCustomerDateTabs() {
+  if (!elements.customerDateTabs) return;
+
+  const today = todayISO();
+  const dateList = [];
+  for (let i = 0; i <= 14; i += 1) {
+    dateList.push(shiftISODate(today, i));
+  }
+
+  if (!dateList.includes(state.selectedDate)) {
+    dateList.push(state.selectedDate);
+    dateList.sort((a, b) => a.localeCompare(b));
+  }
+
+  elements.customerDateTabs.innerHTML = dateList
+    .map((dateStr) => {
+      const activeClass = dateStr === state.selectedDate ? " is-active" : "";
+      const longTitle = dateLabel(dateStr);
+      return `<button type="button" class="date-tab${activeClass}" data-customer-date="${dateStr}" title="${escapeHtml(longTitle)}">${escapeHtml(customerDateTabLabel(dateStr))}</button>`;
+    })
+    .join("");
+
+  if (elements.dateSelect) {
+    elements.dateSelect.value = state.selectedDate;
+  }
 }
 
 function renderBarberTabs() {
@@ -584,6 +623,7 @@ function renderAll() {
   renderVisibility();
   renderBrand();
   renderCampaignBadge();
+  renderCustomerDateTabs();
   renderBarberTabs();
   renderServices();
   renderSuccessCard();
@@ -951,6 +991,19 @@ function bindEvents() {
     elements.dateSelect.addEventListener("change", async () => {
       state.selectedDate = elements.dateSelect.value;
       state.selectedTime = "";
+      await refreshAll();
+    });
+  }
+
+  if (elements.customerDateTabs) {
+    elements.customerDateTabs.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-customer-date]");
+      if (!button) return;
+      const nextDate = button.dataset.customerDate;
+      if (!nextDate || nextDate === state.selectedDate) return;
+      state.selectedDate = nextDate;
+      state.selectedTime = "";
+      if (elements.dateSelect) elements.dateSelect.value = nextDate;
       await refreshAll();
     });
   }
