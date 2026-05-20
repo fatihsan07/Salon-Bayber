@@ -147,7 +147,7 @@ function shiftISODate(baseDate, dayOffset) {
 
 function adminDateTabLabel(dateStr) {
   const today = todayISO();
-  if (dateStr === today) return "Bugun";
+  if (dateStr === today) return "Bugün";
   const date = new Date(`${dateStr}T12:00:00`);
   const day = String(date.getDate()).padStart(2, "0");
   const month = date.toLocaleDateString("tr-TR", { month: "short" });
@@ -157,8 +157,8 @@ function adminDateTabLabel(dateStr) {
 function customerDateTabLabel(dateStr) {
   const today = todayISO();
   const tomorrow = shiftISODate(today, 1);
-  if (dateStr === today) return "Bugun";
-  if (dateStr === tomorrow) return "Yarin";
+  if (dateStr === today) return "Bugün";
+  if (dateStr === tomorrow) return "Yarın";
   const date = new Date(`${dateStr}T12:00:00`);
   const day = String(date.getDate()).padStart(2, "0");
   const month = date.toLocaleDateString("tr-TR", { month: "short" });
@@ -184,32 +184,6 @@ function setMessage(element, message, type = "success") {
   }
 }
 
-function applyMobileViewportMode() {
-  const width = window.visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || 0;
-  const coarsePointer = window.matchMedia ? window.matchMedia("(pointer: coarse)").matches : false;
-  const shouldForceMobile = coarsePointer || width <= 980;
-  document.documentElement.classList.toggle("is-mobile-viewport", shouldForceMobile);
-}
-
-async function cleanupLegacyBarberlineServiceWorker() {
-  if (!("serviceWorker" in navigator)) return;
-  try {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map((registration) => registration.unregister()));
-  } catch {
-    // Eski SW kayitlari silinemese bile uygulama calismaya devam etsin.
-  }
-
-  if (!("caches" in window)) return;
-  try {
-    const cacheKeys = await caches.keys();
-    const legacyKeys = cacheKeys.filter((key) => key.startsWith("barberline-"));
-    await Promise.all(legacyKeys.map((key) => caches.delete(key)));
-  } catch {
-    // Cache temizligi basarisiz olsa da bloklama yapma.
-  }
-}
-
 async function api(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
   if (state.adminToken) {
@@ -220,7 +194,7 @@ async function api(path, options = {}) {
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(payload.message || "Islem basarisiz.");
+    throw new Error(payload.message || "İşlem başarısız.");
   }
 
   return payload;
@@ -269,10 +243,10 @@ function getFittingSlots(requiredSlots) {
 
 function availabilityReasonDetail() {
   const reason = state.noAvailabilityReason;
-  if (reason === "full_day_block") return "Bu berber bu tarihte yonetici tarafindan tum gun kapatildi.";
-  if (reason === "blocked") return "Bu tarih icin saatlerin tamami yonetici bloklari nedeniyle kapali.";
-  if (reason === "day_closed") return "Bu tarih standart takvimde kapali gun olarak isaretli.";
-  if (reason === "fully_booked") return "Tum uygun saatler dolmus durumda.";
+  if (reason === "full_day_block") return "Bu berber bu tarihte yönetici tarafından tam gün kapatıldı.";
+  if (reason === "blocked") return "Bu tarih için saatlerin tamamı yönetici blokları nedeniyle kapalı.";
+  if (reason === "day_closed") return "Bu tarih standart takvimde kapalı gün olarak işaretli.";
+  if (reason === "fully_booked") return "Tüm uygun saatler dolmuş durumda.";
   return "";
 }
 
@@ -293,7 +267,7 @@ function renderVisibility() {
     elements.adminLoginSection.hidden = false;
     elements.adminDashboardSection.hidden = true;
     elements.lockSettings.hidden = true;
-    elements.adminGreeting.textContent = "Yetkili Girisi";
+    elements.adminGreeting.textContent = "Yetkili Girişi";
     return;
   }
 
@@ -304,13 +278,16 @@ function renderVisibility() {
 function renderBrand() {
   const salonName = state.settings.salonName || "Salon Bayber";
   const salonPhone = state.settings.salonPhone || "0539 596 0584";
-  const salonAddress = state.settings.salonAddress || "Reyhanli, Hatay";
+  const salonAddress = state.settings.salonAddress || "Reyhanlı, Hatay";
   const salonImage = state.settings.salonImage || "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80";
 
   if (elements.salonNameDisplay) elements.salonNameDisplay.textContent = salonName;
   if (elements.displayPhone) elements.displayPhone.textContent = salonPhone;
   if (elements.displayAddress) elements.displayAddress.textContent = salonAddress;
-  if (elements.displayMapLink) elements.displayMapLink.href = `https://maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
+  
+  // HATA DÜZELTİLDİ: Doğru Google Haritalar arama URL'si
+  if (elements.displayMapLink) elements.displayMapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salonAddress)}`;
+  
   if (elements.mainShopImage) elements.mainShopImage.src = salonImage;
 
   document.title = `${salonName} | Premium Randevu`;
@@ -343,6 +320,11 @@ function renderCustomerDateTabs() {
     })
     .join("");
 
+  const activeDateTab = elements.customerDateTabs.querySelector(".date-tab.is-active");
+  if (activeDateTab) {
+    activeDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
+
   if (elements.dateSelect) {
     elements.dateSelect.value = state.selectedDate;
   }
@@ -353,7 +335,7 @@ function renderBarberTabs() {
 
   const barbers = state.settings.barbers || [];
   if (!barbers.length) {
-    elements.barberTabs.innerHTML = "<span class=\"mini\">Berber bulunamadi.</span>";
+    elements.barberTabs.innerHTML = "<span class=\"mini\">Berber bulunamadı.</span>";
     state.selectedBarberId = "";
     elements.barberSelect.value = "";
     return;
@@ -372,6 +354,10 @@ function renderBarberTabs() {
 
   elements.barberSelect.value = state.selectedBarberId;
 
+  const activeBarberTab = elements.barberTabs.querySelector(".barber-tab.is-active");
+  if (activeBarberTab) {
+    activeBarberTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
 }
 
 function renderServices() {
@@ -440,16 +426,21 @@ function renderSlots() {
     })
     .join("");
 
+  const selectedSlotButton = elements.slotBoard.querySelector(".slot-button.is-selected");
+  if (selectedSlotButton) {
+    selectedSlotButton.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
+
   const hasSlot = fittingSlots.length > 0;
   elements.slotUnavailableAlert.hidden = hasSlot;
 
   const reasonText = availabilityReasonDetail();
   if (hasSlot) {
-    elements.slotHint.textContent = `${totals.requiredSlots} slot sure ihtiyaci ile secilebilir saatler listelendi.`;
+    elements.slotHint.textContent = `${totals.requiredSlots} slot süre ihtiyacı ile seçilebilir saatler listelendi.`;
   } else if (reasonText) {
     elements.slotHint.textContent = reasonText;
   } else {
-    elements.slotHint.textContent = "Bu secimde uygun saat bulunamadi.";
+    elements.slotHint.textContent = "Bu seçimde uygun saat bulunamadı.";
   }
 }
 
@@ -465,17 +456,17 @@ function renderSuccessCard() {
   const servicesText = booking.services.map((service) => service.name).join(", ");
 
   elements.successSummary.innerHTML = `
-    <div><strong>${escapeHtml(booking.customerName)}</strong> icin randevu olusturuldu.</div>
+    <div><strong>${escapeHtml(booking.customerName)}</strong> için randevu oluşturuldu.</div>
     <div class="mini">${escapeHtml(dateLabel(booking.date))} - ${escapeHtml(booking.time)}</div>
     <div class="mini">Berber: ${escapeHtml(booking.barberName)}</div>
     <div class="mini">Hizmetler: ${escapeHtml(servicesText)}</div>
     <div class="mini">Toplam: ${escapeHtml(formatPrice(booking.totalPrice))} / ${escapeHtml(String(booking.totalMinutes))} dk</div>
-    <div class="mini">Iptal Kodu: ${escapeHtml(booking.cancelCode)}</div>
+    <div class="mini">İptal Kodu: ${escapeHtml(booking.cancelCode)}</div>
   `;
 
   const salonPhone = normalizeWhatsappPhone(state.settings.salonPhone);
   const waText = encodeURIComponent(
-    `Merhaba, ${state.settings.salonName} icin randevum olustu.\nAd Soyad: ${booking.customerName}\nTarih: ${booking.date}\nSaat: ${booking.time}\nBerber: ${booking.barberName}\nHizmetler: ${servicesText}\nIptal Kodu: ${booking.cancelCode}`
+    `Merhaba, ${state.settings.salonName} için randevum oluştu.\nAd Soyad: ${booking.customerName}\nTarih: ${booking.date}\nSaat: ${booking.time}\nBerber: ${booking.barberName}\nHizmetler: ${servicesText}\nİptal Kodu: ${booking.cancelCode}`
   );
 
   elements.successWhatsappBtn.href = salonPhone
@@ -507,6 +498,10 @@ function renderAppointments() {
       })
       .join("");
 
+    const activeAdminDateTab = elements.adminDateTabs.querySelector(".admin-date-tab.is-active");
+    if (activeAdminDateTab) {
+      activeAdminDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
   }
 
   const daily = state.appointments
@@ -533,7 +528,7 @@ function renderAppointments() {
               <div class="mini">${escapeHtml(appointment.customerPhone || "Telefon yok")}</div>
             </div>
             <div style="display:flex; gap:8px;">
-              <button class="ghost-button" type="button" data-remind-id="${escapeHtml(appointment.id)}">WhatsApp Hatirlat</button>
+              <button class="ghost-button" type="button" data-remind-id="${escapeHtml(appointment.id)}">WhatsApp Hatırlat</button>
               <button class="danger-button" type="button" data-delete-appointment="${escapeHtml(appointment.id)}">Sil</button>
             </div>
           </div>
@@ -578,7 +573,7 @@ function renderBlocks() {
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
   if (!list.length) {
-    elements.blockList.innerHTML = "<p class=\"mini\">Bu filtrede engel kaydi bulunmuyor.</p>";
+    elements.blockList.innerHTML = "<p class=\"mini\">Bu filtrede engel kaydı bulunmuyor.</p>";
     return;
   }
 
@@ -586,7 +581,7 @@ function renderBlocks() {
     .map((block) => {
       const barber = state.settings.barbers.find((item) => item.id === block.barberId);
       const details = block.type === "full_day"
-        ? "Tum gun kapali"
+        ? "Tüm gün kapalı"
         : block.hours.map((range) => `${range.start}-${range.end}`).join(", ");
 
       return `
@@ -768,12 +763,12 @@ function buildICS(booking) {
     `LOCATION:${escapeICSText(state.settings.salonAddress)}`,
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
-    "DESCRIPTION:Randevunuza 1 gun kaldi.",
+    "DESCRIPTION:Randevunuza 1 gün kaldı.",
     "TRIGGER:-P1D",
     "END:VALARM",
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
-    "DESCRIPTION:Randevunuza 2 saat kaldi.",
+    "DESCRIPTION:Randevunuza 2 saat kaldı.",
     "TRIGGER:-PT2H",
     "END:VALARM",
     "END:VEVENT",
@@ -800,12 +795,12 @@ async function createAppointment(event) {
 
   const selectedServices = getSelectedServices();
   if (!selectedServices.length) {
-    setMessage(elements.formMessage, "En az bir hizmet secmelisiniz.", "error");
+    setMessage(elements.formMessage, "En az bir hizmet seçmelisiniz.", "error");
     return;
   }
 
   if (!state.selectedTime) {
-    setMessage(elements.formMessage, "Lutfen uygun bir saat secin.", "error");
+    setMessage(elements.formMessage, "Lütfen uygun bir saat seçin.", "error");
     return;
   }
 
@@ -816,7 +811,7 @@ async function createAppointment(event) {
   const date = state.selectedDate;
 
   if (!customerName || !customerPhone || !barberId || !date) {
-    setMessage(elements.formMessage, "Lutfen zorunlu alanlari doldurun.", "error");
+    setMessage(elements.formMessage, "Lütfen zorunlu alanları doldurun.", "error");
     return;
   }
 
@@ -857,7 +852,8 @@ async function createAppointment(event) {
 
     await refreshAll();
     renderSuccessCard();
-    setMessage(elements.formMessage, "Randevu olusturuldu. Ozet karti hazir.");
+    setMessage(elements.formMessage, "Randevu oluşturuldu. Özet kartı hazır.");
+    elements.bookingSuccessCard.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (error) {
     setMessage(elements.formMessage, error.message, "error");
   }
@@ -883,7 +879,7 @@ async function cancelAppointmentFromCustomer(event) {
 
 async function unlockAdmin(event) {
   event.preventDefault();
-  setMessage(elements.adminMessage, "Giris yapiliyor...");
+  setMessage(elements.adminMessage, "Giriş yapılıyor...");
 
   try {
     const payload = await api("/api/admin/login", {
@@ -965,7 +961,7 @@ async function addBlock() {
   const type = elements.blockTypeInput.value;
 
   if (!barberId || !date) {
-    setMessage(elements.blockMessage, "Berber ve tarih secimi zorunlu.", "error");
+    setMessage(elements.blockMessage, "Berber ve tarih seçimi zorunlu.", "error");
     return;
   }
 
@@ -980,7 +976,7 @@ async function addBlock() {
     const end = elements.blockEndInput.value;
 
     if (!start || !end || end <= start) {
-      setMessage(elements.blockMessage, "Saat araligi gecersiz.", "error");
+      setMessage(elements.blockMessage, "Saat aralığı geçersiz.", "error");
       return;
     }
 
@@ -994,7 +990,7 @@ async function addBlock() {
       body: JSON.stringify(payload)
     });
 
-    setMessage(elements.blockMessage, "Engel basariyla eklendi.");
+    setMessage(elements.blockMessage, "Engel başarıyla eklendi.");
     await refreshAll();
   } catch (error) {
     setMessage(elements.blockMessage, error.message, "error");
@@ -1007,19 +1003,13 @@ function openReminderWhatsApp(appointment) {
 
   const salonName = state.settings.salonName || "Salon Bayber";
   const message = encodeURIComponent(
-    `Merhaba ${appointment.customerName}, ${dateLabel(appointment.date)} saat ${appointment.time} icin ${salonName} randevunuzu hatirlatiyoruz. Lutfen 10 dakika once salonda olun.`
+    `Merhaba ${appointment.customerName}, ${dateLabel(appointment.date)} saat ${appointment.time} için ${salonName} randevunuzu hatırlatıyoruz. Lütfen 10 dakika önce salonda olun.`
   );
 
   window.open(`https://api.whatsapp.com/send/?phone=${phone}&text=${message}`, "_blank");
 }
 
 function bindEvents() {
-  window.addEventListener("resize", applyMobileViewportMode);
-  window.addEventListener("orientationchange", applyMobileViewportMode);
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", applyMobileViewportMode);
-  }
-
   if (elements.dateSelect) {
     elements.dateSelect.addEventListener("change", async () => {
       state.selectedDate = elements.dateSelect.value;
@@ -1233,7 +1223,7 @@ function bindEvents() {
     const deleteBlockBtn = event.target.closest("[data-delete-block]");
     if (deleteBlockBtn) {
       const blockId = deleteBlockBtn.dataset.deleteBlock;
-      if (!window.confirm("Bu engel kaydini silmek istiyor musunuz?")) return;
+      if (!window.confirm("Bu engel kaydını silmek istiyor musunuz?")) return;
 
       try {
         await api(`/api/admin/blocks?id=${encodeURIComponent(blockId)}`, { method: "DELETE" });
@@ -1246,9 +1236,6 @@ function bindEvents() {
 }
 
 async function init() {
-  await cleanupLegacyBarberlineServiceWorker();
-  applyMobileViewportMode();
-
   if (elements.dateSelect) {
     elements.dateSelect.min = todayISO();
     elements.dateSelect.value = state.selectedDate;
@@ -1263,13 +1250,12 @@ async function init() {
   }
 
   bindEvents();
-  applyMobileViewportMode();
 
   try {
     await refreshAll();
   } catch (error) {
     console.error(error);
-    setMessage(elements.formMessage, "Sistem verisi yuklenemedi.", "error");
+    setMessage(elements.formMessage, "Sistem verisi yüklenemedi.", "error");
   }
 }
 

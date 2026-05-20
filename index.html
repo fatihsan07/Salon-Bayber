@@ -1,8 +1,8 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#111111" />
     <title>Salon Bayber | Premium Randevu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,7 +43,6 @@
         min-height: 100%;
         overflow-x: hidden;
         width: 100%;
-        max-width: 100%;
       }
 
       h1,
@@ -70,26 +69,12 @@
         width: 100%;
       }
 
-      .is-mobile-viewport {
-        font-size: 14px;
-      }
-
-      .is-mobile-viewport .app-shell {
-        grid-template-columns: 1fr;
-        padding: 10px;
-        gap: 10px;
-      }
-
       .panel {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent), var(--surface);
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 18px;
         max-width: 100%;
-      }
-
-      .panel * {
-        min-width: 0;
       }
 
       .sidebar {
@@ -99,15 +84,6 @@
         align-self: start;
         position: sticky;
         top: 18px;
-      }
-
-      .is-mobile-viewport .sidebar {
-        position: static;
-        gap: 10px;
-      }
-
-      .is-mobile-viewport .sidebar figure {
-        display: none;
       }
 
       .brand-card {
@@ -156,19 +132,16 @@
       .main-content {
         min-width: 0;
         width: 100%;
-        max-width: 100%;
       }
 
       .layout-stack {
         display: grid;
         gap: 16px;
-        min-width: 0;
       }
 
       .booking-form {
         display: grid;
         gap: 16px;
-        min-width: 0;
       }
 
       .section-title {
@@ -224,10 +197,6 @@
         align-items: end;
       }
 
-      .is-mobile-viewport .date-row {
-        grid-template-columns: 1fr;
-      }
-
       .campaign-badge {
         display: inline-flex;
         align-items: center;
@@ -241,22 +210,24 @@
         font-weight: 700;
       }
 
-      .date-tabs {
+      /* YATAY KAYDIRMA MİMARİSİ (Swipe Koruma Alanları) */
+      .date-tabs, .barber-tabs, .slot-board, .admin-date-tabs {
         display: flex;
-        gap: 8px;
+        gap: 10px;
         overflow-x: auto;
-        overflow-y: hidden;
+        padding-bottom: 12px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
-        padding: 4px 2px 8px;
-        margin-top: 10px;
         scroll-snap-type: x proximity;
         flex-wrap: nowrap;
         touch-action: pan-x;
         overscroll-behavior-x: contain;
       }
 
-      .date-tabs::-webkit-scrollbar {
+      .date-tabs::-webkit-scrollbar,
+      .barber-tabs::-webkit-scrollbar,
+      .slot-board::-webkit-scrollbar,
+      .admin-date-tabs::-webkit-scrollbar {
         display: none;
       }
 
@@ -265,13 +236,14 @@
         background: #171717;
         color: #d5d5d5;
         border-radius: 999px;
-        padding: 8px 12px;
-        font-size: 0.82rem;
+        padding: 10px 14px;
+        font-size: 0.85rem;
         font-weight: 700;
         white-space: nowrap;
         cursor: pointer;
         flex: 0 0 auto;
         scroll-snap-align: start;
+        transition: 0.2s;
       }
 
       .date-tab.is-active {
@@ -280,35 +252,18 @@
         color: #111111;
       }
 
-      .barber-tabs {
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 2px 2px 8px;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x proximity;
-        flex-wrap: nowrap;
-        touch-action: pan-x;
-        overscroll-behavior-x: contain;
-      }
-
-      .barber-tabs::-webkit-scrollbar {
-        display: none;
-      }
-
       .barber-tab {
         border: 1px solid #3d3d3d;
         background: linear-gradient(180deg, #202020, #151515);
         color: #d5d5d5;
         border-radius: 999px;
-        padding: 10px 16px;
+        padding: 12px 18px;
         white-space: nowrap;
         cursor: pointer;
         font-weight: 700;
-        transition: 0.2s ease;
+        flex: 0 0 auto;
         scroll-snap-align: start;
+        transition: 0.2s ease;
       }
 
       .barber-tab:hover {
@@ -322,27 +277,11 @@
         box-shadow: 0 8px 18px rgba(231, 182, 71, 0.25);
       }
 
+      /* Masaüstü için Slot Board Grid, mobilde Flex Swipe'a dönecek */
       .slot-board {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
         gap: 9px;
-      }
-
-      .is-mobile-viewport .slot-board {
-        display: flex;
-        overflow-x: auto;
-        overflow-y: hidden;
-        gap: 8px;
-        padding-bottom: 8px;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x proximity;
-        touch-action: pan-x;
-        overscroll-behavior-x: contain;
-      }
-
-      .is-mobile-viewport .slot-board::-webkit-scrollbar {
-        display: none;
       }
 
       .slot-button {
@@ -350,18 +289,11 @@
         background: #111111;
         color: #efefef;
         border-radius: 10px;
-        padding: 11px 6px;
+        padding: 12px 8px;
         cursor: pointer;
         font-weight: 700;
         transition: 0.2s;
-      }
-
-      .is-mobile-viewport .slot-button {
-        flex: 0 0 auto;
-        min-width: 72px;
-        padding: 10px 8px;
-        scroll-snap-align: start;
-        font-size: 0.85rem;
+        text-align: center;
       }
 
       .slot-button:hover:not(:disabled) {
@@ -392,15 +324,9 @@
       }
 
       @keyframes pulseAlert {
-        0% {
-          box-shadow: 0 0 0 0 rgba(255, 102, 102, 0.3);
-        }
-        70% {
-          box-shadow: 0 0 0 9px rgba(255, 102, 102, 0);
-        }
-        100% {
-          box-shadow: 0 0 0 0 rgba(255, 102, 102, 0);
-        }
+        0% { box-shadow: 0 0 0 0 rgba(255, 102, 102, 0.3); }
+        70% { box-shadow: 0 0 0 9px rgba(255, 102, 102, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 102, 102, 0); }
       }
 
       .slot-hint {
@@ -425,11 +351,6 @@
         align-items: center;
         cursor: pointer;
         transition: 0.2s;
-      }
-
-      .is-mobile-viewport .service-card {
-        grid-template-columns: auto minmax(0, 1fr);
-        align-items: start;
       }
 
       .service-card input {
@@ -457,26 +378,9 @@
         background: var(--accent);
       }
 
-      .service-name {
-        font-weight: 800;
-      }
-
-      .service-duration {
-        color: var(--muted);
-        font-size: 0.82rem;
-        margin-top: 2px;
-      }
-
-      .service-price {
-        font-family: "Sora", sans-serif;
-        color: var(--accent);
-        font-weight: 700;
-      }
-
-      .is-mobile-viewport .service-price {
-        grid-column: 1 / -1;
-        padding-left: 34px;
-      }
+      .service-name { font-weight: 800; }
+      .service-duration { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+      .service-price { font-family: "Sora", sans-serif; color: var(--accent); font-weight: 700; }
 
       .totals {
         display: flex;
@@ -489,12 +393,10 @@
         flex-wrap: wrap;
       }
 
-      .primary-button,
-      .ghost-button,
-      .danger-button {
+      .primary-button, .ghost-button, .danger-button {
         border-radius: 12px;
         border: 1px solid transparent;
-        padding: 12px 14px;
+        padding: 14px 16px;
         font-weight: 800;
         cursor: pointer;
         text-decoration: none;
@@ -505,35 +407,14 @@
         transition: 0.2s ease;
       }
 
-      .primary-button {
-        width: 100%;
-        background: linear-gradient(160deg, var(--accent), #8f671d);
-        color: #131313;
-      }
-
-      .primary-button:hover {
-        transform: translateY(-1px);
-      }
-
-      .ghost-button {
-        background: transparent;
-        color: var(--accent-2);
-        border-color: #685321;
-      }
-
-      .ghost-button:hover {
-        background: rgba(231, 182, 71, 0.1);
-      }
-
-      .danger-button {
-        background: transparent;
-        border-color: #733535;
-        color: #ff9f9f;
-      }
-
-      .danger-button:hover {
-        background: rgba(255, 102, 102, 0.1);
-      }
+      .primary-button { width: 100%; background: linear-gradient(160deg, var(--accent), #8f671d); color: #131313; }
+      .primary-button:hover { transform: translateY(-1px); }
+      
+      .ghost-button { background: transparent; color: var(--accent-2); border-color: #685321; }
+      .ghost-button:hover { background: rgba(231, 182, 71, 0.1); }
+      
+      .danger-button { background: transparent; border-color: #733535; color: #ff9f9f; }
+      .danger-button:hover { background: rgba(255, 102, 102, 0.1); }
 
       .success-card {
         border: 1px solid #246f44;
@@ -544,190 +425,44 @@
         gap: 14px;
       }
 
-      .success-actions {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-      }
+      .success-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .form-message { text-align: center; font-weight: 700; min-height: 1.2em; }
+      .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .footer-links { display: grid; gap: 8px; color: var(--muted); }
+      .footer-links a { color: var(--accent-2); text-decoration: none; }
+      .footer-links a:hover { text-decoration: underline; }
 
-      .form-message {
-        text-align: center;
-        font-weight: 700;
-        min-height: 1.2em;
-      }
+      .customer-footer { display: grid; gap: 14px; }
+      .customer-footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+      .customer-footer-identity { display: grid; gap: 6px; }
+      .customer-footer-credit { border-top: 1px solid var(--line); padding-top: 12px; }
+      .customer-footer-credit a { color: var(--accent-2); text-decoration: none; font-weight: 800; }
+      .customer-footer-credit a:hover { text-decoration: underline; }
 
-      .two-col {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .is-mobile-viewport .two-col,
-      .is-mobile-viewport .settings-row,
-      .is-mobile-viewport .block-form-grid,
-      .is-mobile-viewport .success-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .is-mobile-viewport .panel {
-        padding: 12px;
-        border-radius: 12px;
-      }
-
-      .is-mobile-viewport .brand-badge {
-        width: 44px;
-        height: 44px;
-        font-size: 1rem;
-      }
-
-      .is-mobile-viewport h1 {
-        font-size: 1.1rem;
-        overflow-wrap: anywhere;
-      }
-
-      .is-mobile-viewport .section-title h2 {
-        font-size: 1.08rem;
-      }
-
-      .footer-links {
-        display: grid;
-        gap: 8px;
-        color: var(--muted);
-      }
-
-      .footer-links a {
-        color: var(--accent-2);
-        text-decoration: none;
-      }
-
-      .footer-links a:hover {
-        text-decoration: underline;
-      }
-
-      .customer-footer {
-        display: grid;
-        gap: 14px;
-      }
-
-      .customer-footer-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .customer-footer-identity {
-        display: grid;
-        gap: 6px;
-      }
-
-      .customer-footer-credit {
-        border-top: 1px solid var(--line);
-        padding-top: 12px;
-      }
-
-      .customer-footer-credit a {
-        color: var(--accent-2);
-        text-decoration: none;
-        font-weight: 800;
-      }
-
-      .customer-footer-credit a:hover {
-        text-decoration: underline;
-      }
-
-      .admin-grid {
-        display: grid;
-        gap: 16px;
-      }
-
-      .admin-date-tabs {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-        padding: 2px 2px 10px;
-        flex-wrap: nowrap;
-        touch-action: pan-x;
-        overscroll-behavior-x: contain;
-      }
-
-      .admin-date-tabs::-webkit-scrollbar {
-        display: none;
-      }
+      .admin-grid { display: grid; gap: 16px; }
 
       .admin-date-tab {
         border: 1px solid #343434;
         background: #181818;
         color: #d0d0d0;
         border-radius: 999px;
-        padding: 8px 12px;
+        padding: 10px 14px;
         white-space: nowrap;
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         font-weight: 700;
         cursor: pointer;
         flex: 0 0 auto;
         scroll-snap-align: start;
       }
+      .admin-date-tab.is-active { border-color: var(--accent); color: #111; background: linear-gradient(160deg, var(--accent), #9d701d); }
 
-      .admin-date-tab.is-active {
-        border-color: var(--accent);
-        color: #111;
-        background: linear-gradient(160deg, var(--accent), #9d701d);
-      }
-
-      .list-stack {
-        display: grid;
-        gap: 10px;
-      }
-
-      .admin-item {
-        background: var(--surface-soft);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 12px;
-        display: grid;
-        gap: 8px;
-      }
-
-      .admin-item-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      .mini {
-        font-size: 0.82rem;
-        color: var(--muted);
-        overflow-wrap: anywhere;
-      }
-
-      .settings-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      .block-form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .service-settings-card,
-      .barber-settings-card {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: #101010;
-        padding: 12px;
-        display: grid;
-        gap: 10px;
-      }
+      .list-stack { display: grid; gap: 10px; }
+      .admin-item { background: var(--surface-soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; }
+      .admin-item-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; flex-wrap: wrap; }
+      .mini { font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+      .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .block-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .service-settings-card, .barber-settings-card { border: 1px solid var(--line); border-radius: 12px; background: #101010; padding: 12px; display: grid; gap: 10px; }
 
       .whatsapp-float-btn {
         position: fixed;
@@ -744,159 +479,34 @@
         box-shadow: 0 8px 18px rgba(37, 211, 102, 0.4);
         border: 2px solid #0f0f0f;
       }
-
-      .whatsapp-float-btn svg {
-        width: 30px;
-        height: 30px;
-        fill: currentColor;
-      }
-
-      [hidden] {
-        display: none !important;
-      }
+      .whatsapp-float-btn svg { width: 30px; height: 30px; fill: currentColor; }
+      [hidden] { display: none !important; }
 
       @media (max-width: 1100px) {
-        .app-shell {
-          grid-template-columns: 1fr;
-          padding: 12px;
-        }
-
-        .sidebar {
-          position: static;
-        }
-
-        .sidebar figure {
-          height: 160px;
-        }
-
-        .date-row {
-          grid-template-columns: 1fr;
-        }
+        .app-shell { grid-template-columns: 1fr; padding: 12px; }
+        .sidebar { position: static; }
+        .sidebar figure { height: 160px; }
+        .date-row { grid-template-columns: 1fr; }
       }
 
-      @media (max-width: 900px) {
-        html {
-          font-size: 14px;
-        }
-
-        .app-shell {
-          padding: 10px;
-          gap: 10px;
-        }
-
-        .sidebar {
-          gap: 10px;
-        }
-
-        .sidebar figure {
-          display: none;
-        }
-
-        .brand-badge {
-          width: 44px;
-          height: 44px;
-          font-size: 1rem;
-        }
-
-        .panel {
-          padding: 12px;
-          border-radius: 12px;
-        }
-
-        .section-title h2 {
-          font-size: 1.08rem;
-        }
-
-        h1 {
-          font-size: 1.1rem;
-          overflow-wrap: anywhere;
-        }
-
-        .service-name {
-          overflow-wrap: anywhere;
-        }
-      }
-
+      /* DİKEY MOBİL TASARIM (Yatay Kaydırma Aktif Edilir) */
       @media (max-width: 760px) {
-        html {
-          font-size: 14px;
-        }
-
-        .success-actions,
-        .two-col,
-        .settings-row,
-        .block-form-grid {
-          grid-template-columns: 1fr;
-        }
+        html { font-size: 14px; }
+        .success-actions, .two-col, .settings-row, .block-form-grid { grid-template-columns: 1fr; }
+        .panel { padding: 16px; border-radius: 16px; }
 
         .slot-board {
-          display: flex;
-          overflow-x: auto;
-          gap: 8px;
-          padding-bottom: 8px;
-          scrollbar-width: none;
-          -webkit-overflow-scrolling: touch;
-          scroll-snap-type: x proximity;
-          touch-action: pan-x;
-          overscroll-behavior-x: contain;
+          display: flex; /* Mobilde zorunlu Flex yatay kaydırma */
         }
-
-        .slot-board::-webkit-scrollbar {
-          display: none;
-        }
-
-        .panel {
-          padding: 12px;
-        }
-
-        .service-card {
-          grid-template-columns: auto minmax(0, 1fr);
-          align-items: start;
-        }
-
-        .service-price {
-          grid-column: 1 / -1;
-          padding-left: 34px;
-        }
-
         .slot-button {
-          flex: 0 0 auto;
-          min-width: 72px;
-          padding: 10px 8px;
+          flex: 0 0 auto; /* Esnemesini engelle, sabit boyut kalsın */
+          min-width: 82px; /* Düğmenin sıkışmaması için */
           scroll-snap-align: start;
-          font-size: 0.85rem;
         }
 
-        .barber-tab {
-          padding: 9px 12px;
-          font-size: 0.86rem;
-        }
-
-        .date-tab,
-        .admin-date-tab {
-          font-size: 0.8rem;
-          padding: 8px 11px;
-        }
-      }
-
-      @media (max-width: 520px) {
-        .app-shell {
-          padding: 10px;
-          gap: 12px;
-        }
-
-        .slot-board {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .barber-tab {
-          padding: 10px 13px;
-          font-size: 0.86rem;
-        }
-
-        .date-row .label {
-          margin-bottom: 6px;
-        }
+        .service-card { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+        .service-price { grid-column: 1 / -1; padding-left: 34px; }
+        .sidebar figure { display: none; }
       }
     </style>
   </head>
@@ -918,7 +528,6 @@
         <figure class="panel" style="padding: 0;">
           <img id="mainShopImage" alt="Salon" src="" />
         </figure>
-
       </aside>
 
       <main class="main-content" id="customerMain">
@@ -941,16 +550,16 @@
               <div class="date-row">
                 <div>
                   <label class="label" for="dateSelect">Tarih Secimi</label>
-                  <input id="dateSelect" name="dateSelect" type="date" required />
+                  <input id="dateSelect" name="dateSelect" type="date" required style="display: none;" />
                   <div class="date-tabs" id="customerDateTabs"></div>
                 </div>
-                <div>
+                <div style="margin-top: 10px;">
                   <label class="label">Berber Sekmeleri</label>
                   <div class="barber-tabs" id="barberTabs"></div>
                 </div>
               </div>
 
-              <p class="slot-hint" id="slotHint">Bir saat secmek icin kartlara dokunun.</p>
+              <p class="slot-hint" id="slotHint" style="margin-top: 15px;">Bir saat secmek icin kartlara dokunun.</p>
               <div class="armoured-alert" id="slotUnavailableAlert" hidden>⚠️ Bu berber secilen tarihte musait degildir.</div>
               <div class="slot-board" id="slotBoard"></div>
             </section>
@@ -1002,7 +611,7 @@
               <a id="successWhatsappBtn" class="primary-button" href="#" target="_blank" rel="noopener">WhatsApp Onay</a>
               <button id="successCalendarBtn" type="button" class="ghost-button">Akilli Takvime Ekle</button>
             </div>
-            <button id="successCloseBtn" type="button" class="danger-button">Kartı Kapat</button>
+            <button id="successCloseBtn" type="button" class="danger-button">Karti Kapat</button>
           </section>
 
           <section class="panel">
@@ -1151,7 +760,6 @@
         </div>
       </main>
     </div>
-
     <script src="app.js"></script>
   </body>
 </html>
