@@ -171,8 +171,11 @@
         font: inherit;
       }
 
+      /* KESİN ÇÖZÜM: min-width: 0 ile inputların genişliğini tarayıcı dayatmasından çıkarıyoruz */
       input, select, textarea {
         width: 100%;
+        min-width: 0; 
+        max-width: 100%;
         border: 1px solid var(--line);
         background: #0f0f0f;
         color: var(--text);
@@ -439,8 +442,12 @@
       .admin-item { background: var(--surface-soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; }
       .admin-item-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; flex-wrap: wrap; }
       .mini { font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+      
+      /* FORM TAŞMASINI ENGELLEYEN HÜCRE KONTROLLERİ */
       .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       .block-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .settings-row > div, .block-form-grid > div { min-width: 0; max-width: 100%; }
+
       .service-settings-card, .barber-settings-card { border: 1px solid var(--line); border-radius: 12px; background: #101010; padding: 12px; display: grid; gap: 10px; }
 
       .whatsapp-float-btn {
@@ -471,10 +478,11 @@
       @media (max-width: 760px) {
         html { font-size: 14px; }
         .success-actions, .two-col, .settings-row, .block-form-grid { grid-template-columns: 1fr; }
+        .success-actions > div, .two-col > div, .settings-row > div, .block-form-grid > div { min-width: 0; max-width: 100%; }
         .panel { padding: 16px; border-radius: 16px; }
 
         .slot-board {
-          display: flex;
+          display: flex; 
         }
         .slot-button {
           flex: 0 0 auto; 
@@ -528,7 +536,7 @@
               <div class="date-row">
                 <div>
                   <label class="label" for="dateSelect">Tarih Seçimi</label>
-                  <input id="dateSelect" name="dateSelect" type="date" required />
+                  <input id="dateSelect" name="dateSelect" type="date" required style="cursor: pointer;" />
                 </div>
                 <div style="margin-top: 10px;">
                   <label class="label">Berber Sekmeleri</label>
@@ -653,8 +661,7 @@
             <section class="panel">
               <div class="section-title">
                 <h2>Berber Engelleri</h2>
-                <span class="mini">full_day veya saat aralığı</span>
-              </div>
+                </div>
 
               <div class="block-form-grid">
                 <div>
