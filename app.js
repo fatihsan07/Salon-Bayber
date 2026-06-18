@@ -42,7 +42,7 @@ const elements = {
   customerName: document.querySelector("#customerName"),
   customerPhone: document.querySelector("#customerPhone"),
   dateSelect: document.querySelector("#dateSelect"),
-  customerDateTabs: document.querySelector("#customerDateTabs"),
+  /* customerDateTabs KULLANILMIYOR */
   barberSelect: document.querySelector("#barberSelect"),
   timeSelect: document.querySelector("#timeSelect"),
   barberTabs: document.querySelector("#barberTabs"),
@@ -103,9 +103,9 @@ function todayISO() {
 
 function escapeHtml(value) {
   return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
+    .replaceAll("&", "&")
+    .replaceAll("<", "<")
+    .replaceAll(">", ">")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
@@ -148,17 +148,6 @@ function shiftISODate(baseDate, dayOffset) {
 function adminDateTabLabel(dateStr) {
   const today = todayISO();
   if (dateStr === today) return "Bugün";
-  const date = new Date(`${dateStr}T12:00:00`);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = date.toLocaleDateString("tr-TR", { month: "short" });
-  return `${day} ${month}`;
-}
-
-function customerDateTabLabel(dateStr) {
-  const today = todayISO();
-  const tomorrow = shiftISODate(today, 1);
-  if (dateStr === today) return "Bugün";
-  if (dateStr === tomorrow) return "Yarın";
   const date = new Date(`${dateStr}T12:00:00`);
   const day = String(date.getDate()).padStart(2, "0");
   const month = date.toLocaleDateString("tr-TR", { month: "short" });
@@ -285,8 +274,7 @@ function renderBrand() {
   if (elements.displayPhone) elements.displayPhone.textContent = salonPhone;
   if (elements.displayAddress) elements.displayAddress.textContent = salonAddress;
   
-  // HATA DÜZELTİLDİ: Doğru Google Haritalar arama URL'si
-  if (elements.displayMapLink) elements.displayMapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salonAddress)}`;
+  if (elements.displayMapLink) elements.displayMapLink.href = `http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(salonAddress)}`;
   
   if (elements.mainShopImage) elements.mainShopImage.src = salonImage;
 
@@ -299,32 +287,7 @@ function renderCampaignBadge() {
 }
 
 function renderCustomerDateTabs() {
-  if (!elements.customerDateTabs) return;
-
-  const today = todayISO();
-  const dateList = [];
-  for (let i = 0; i <= 14; i += 1) {
-    dateList.push(shiftISODate(today, i));
-  }
-
-  if (!dateList.includes(state.selectedDate)) {
-    dateList.push(state.selectedDate);
-    dateList.sort((a, b) => a.localeCompare(b));
-  }
-
-  elements.customerDateTabs.innerHTML = dateList
-    .map((dateStr) => {
-      const activeClass = dateStr === state.selectedDate ? " is-active" : "";
-      const longTitle = dateLabel(dateStr);
-      return `<button type="button" class="date-tab${activeClass}" data-customer-date="${dateStr}" title="${escapeHtml(longTitle)}">${escapeHtml(customerDateTabLabel(dateStr))}</button>`;
-    })
-    .join("");
-
-  const activeDateTab = elements.customerDateTabs.querySelector(".date-tab.is-active");
-  if (activeDateTab) {
-    activeDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
-  }
-
+  // Yatay sekmeler kaldırıldığı için artık sadece native takvim güncellenecek
   if (elements.dateSelect) {
     elements.dateSelect.value = state.selectedDate;
   }
@@ -337,7 +300,7 @@ function renderBarberTabs() {
   if (!barbers.length) {
     elements.barberTabs.innerHTML = "<span class=\"mini\">Berber bulunamadı.</span>";
     state.selectedBarberId = "";
-    elements.barberSelect.value = "";
+    if (elements.barberSelect) elements.barberSelect.value = "";
     return;
   }
 
@@ -352,7 +315,7 @@ function renderBarberTabs() {
     })
     .join("");
 
-  elements.barberSelect.value = state.selectedBarberId;
+  if (elements.barberSelect) elements.barberSelect.value = state.selectedBarberId;
 
   const activeBarberTab = elements.barberTabs.querySelector(".barber-tab.is-active");
   if (activeBarberTab) {
@@ -415,7 +378,7 @@ function renderSlots() {
     state.selectedTime = fittingSlots[0];
   }
 
-  elements.timeSelect.value = state.selectedTime;
+  if (elements.timeSelect) elements.timeSelect.value = state.selectedTime;
 
   const fittingSet = new Set(fittingSlots);
   elements.slotBoard.innerHTML = state.timeSlots
@@ -432,15 +395,17 @@ function renderSlots() {
   }
 
   const hasSlot = fittingSlots.length > 0;
-  elements.slotUnavailableAlert.hidden = hasSlot;
+  if (elements.slotUnavailableAlert) elements.slotUnavailableAlert.hidden = hasSlot;
 
   const reasonText = availabilityReasonDetail();
-  if (hasSlot) {
-    elements.slotHint.textContent = `${totals.requiredSlots} slot süre ihtiyacı ile seçilebilir saatler listelendi.`;
-  } else if (reasonText) {
-    elements.slotHint.textContent = reasonText;
-  } else {
-    elements.slotHint.textContent = "Bu seçimde uygun saat bulunamadı.";
+  if (elements.slotHint) {
+    if (hasSlot) {
+      elements.slotHint.textContent = `${totals.requiredSlots} slot süre ihtiyacı ile seçilebilir saatler listelendi.`;
+    } else if (reasonText) {
+      elements.slotHint.textContent = reasonText;
+    } else {
+      elements.slotHint.textContent = "Bu seçimde uygun saat bulunamadı.";
+    }
   }
 }
 
@@ -469,9 +434,11 @@ function renderSuccessCard() {
     `Merhaba, ${state.settings.salonName} için randevum oluştu.\nAd Soyad: ${booking.customerName}\nTarih: ${booking.date}\nSaat: ${booking.time}\nBerber: ${booking.barberName}\nHizmetler: ${servicesText}\nİptal Kodu: ${booking.cancelCode}`
   );
 
-  elements.successWhatsappBtn.href = salonPhone
-    ? `https://api.whatsapp.com/send/?phone=${salonPhone}&text=${waText}`
-    : "#";
+  if (elements.successWhatsappBtn) {
+    elements.successWhatsappBtn.href = salonPhone
+      ? `https://api.whatsapp.com/send/?phone=${salonPhone}&text=${waText}`
+      : "#";
+  }
 
   elements.bookingSuccessCard.hidden = false;
 }
@@ -562,8 +529,8 @@ function renderBlocks() {
 
   const blockType = elements.blockTypeInput.value;
   const disableHourInputs = blockType === "full_day";
-  elements.blockStartInput.disabled = disableHourInputs;
-  elements.blockEndInput.disabled = disableHourInputs;
+  if (elements.blockStartInput) elements.blockStartInput.disabled = disableHourInputs;
+  if (elements.blockEndInput) elements.blockEndInput.disabled = disableHourInputs;
 
   const selectedBarberId = elements.blockBarberInput.value;
   const selectedDate = elements.blockDateInput.value;
@@ -843,8 +810,8 @@ async function createAppointment(event) {
       cancelCode: payload.cancelCode
     };
 
-    elements.customerName.value = "";
-    elements.customerPhone.value = "";
+    if (elements.customerName) elements.customerName.value = "";
+    if (elements.customerPhone) elements.customerPhone.value = "";
     document.querySelectorAll('input[name="serviceItem"]').forEach((input) => {
       input.checked = false;
     });
@@ -869,7 +836,7 @@ async function cancelAppointmentFromCustomer(event) {
       body: JSON.stringify({ code: elements.cancelCodeInput.value.trim() })
     });
 
-    elements.cancelForm.reset();
+    if (elements.cancelForm) elements.cancelForm.reset();
     setMessage(elements.cancelMessage, payload.message);
     await refreshAll();
   } catch (error) {
@@ -891,7 +858,7 @@ async function unlockAdmin(event) {
     state.adminUnlocked = true;
     state.showLoginScreen = false;
     sessionStorage.setItem("barberline-admin-token", payload.token);
-    elements.adminPinInput.value = "";
+    if (elements.adminPinInput) elements.adminPinInput.value = "";
     setMessage(elements.adminMessage, "");
     await refreshAll();
   } catch (error) {
@@ -1010,23 +977,11 @@ function openReminderWhatsApp(appointment) {
 }
 
 function bindEvents() {
+  // YENİ EKLENEN EVENT: TAKVİM KULLANILDIĞINDA ANLIK VERİ GETİRME!
   if (elements.dateSelect) {
     elements.dateSelect.addEventListener("change", async () => {
       state.selectedDate = elements.dateSelect.value;
       state.selectedTime = "";
-      await refreshAll();
-    });
-  }
-
-  if (elements.customerDateTabs) {
-    elements.customerDateTabs.addEventListener("click", async (event) => {
-      const button = event.target.closest("[data-customer-date]");
-      if (!button) return;
-      const nextDate = button.dataset.customerDate;
-      if (!nextDate || nextDate === state.selectedDate) return;
-      state.selectedDate = nextDate;
-      state.selectedTime = "";
-      if (elements.dateSelect) elements.dateSelect.value = nextDate;
       await refreshAll();
     });
   }
@@ -1048,7 +1003,7 @@ function bindEvents() {
       const button = event.target.closest("[data-time]");
       if (!button || button.disabled) return;
       state.selectedTime = button.dataset.time;
-      elements.timeSelect.value = state.selectedTime;
+      if (elements.timeSelect) elements.timeSelect.value = state.selectedTime;
       renderSlots();
     });
   }
@@ -1093,7 +1048,7 @@ function bindEvents() {
     elements.btnCancelLogin.addEventListener("click", (event) => {
       event.preventDefault();
       state.showLoginScreen = false;
-      elements.adminPinInput.value = "";
+      if (elements.adminPinInput) elements.adminPinInput.value = "";
       setMessage(elements.adminMessage, "");
       renderVisibility();
     });
