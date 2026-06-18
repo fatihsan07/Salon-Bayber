@@ -320,6 +320,11 @@ function renderCustomerDateTabs() {
     })
     .join("");
 
+  const activeDateTab = elements.customerDateTabs.querySelector(".date-tab.is-active");
+  if (activeDateTab) {
+    activeDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
+
   if (elements.dateSelect) {
     elements.dateSelect.value = state.selectedDate;
   }
@@ -349,6 +354,10 @@ function renderBarberTabs() {
 
   elements.barberSelect.value = state.selectedBarberId;
 
+  const activeBarberTab = elements.barberTabs.querySelector(".barber-tab.is-active");
+  if (activeBarberTab) {
+    activeBarberTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
 }
 
 function renderServices() {
@@ -417,6 +426,11 @@ function renderSlots() {
     })
     .join("");
 
+  const selectedSlotButton = elements.slotBoard.querySelector(".slot-button.is-selected");
+  if (selectedSlotButton) {
+    selectedSlotButton.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }
+
   const hasSlot = fittingSlots.length > 0;
   elements.slotUnavailableAlert.hidden = hasSlot;
 
@@ -484,6 +498,10 @@ function renderAppointments() {
       })
       .join("");
 
+    const activeAdminDateTab = elements.adminDateTabs.querySelector(".admin-date-tab.is-active");
+    if (activeAdminDateTab) {
+      activeAdminDateTab.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
   }
 
   const daily = state.appointments
@@ -509,7 +527,7 @@ function renderAppointments() {
               <strong>${escapeHtml(appointment.customerName)}</strong>
               <div class="mini">${escapeHtml(appointment.customerPhone || "Telefon yok")}</div>
             </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; gap:8px;">
               <button class="ghost-button" type="button" data-remind-id="${escapeHtml(appointment.id)}">WhatsApp Hatırlat</button>
               <button class="danger-button" type="button" data-delete-appointment="${escapeHtml(appointment.id)}">Sil</button>
             </div>
@@ -835,6 +853,7 @@ async function createAppointment(event) {
     await refreshAll();
     renderSuccessCard();
     setMessage(elements.formMessage, "Randevu oluşturuldu. Özet kartı hazır.");
+    elements.bookingSuccessCard.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (error) {
     setMessage(elements.formMessage, error.message, "error");
   }
